@@ -3,7 +3,7 @@ import _ from "lodash";
 
 /*
     *Pour faire une requete api il faut faire 
-    import api from "scripts/Network.js"
+    import {api} from "scripts/Network.js"
 
     const params = {
         thing : "value"
@@ -35,7 +35,7 @@ import _ from "lodash";
 const API_HOST = process.env.API_HOST ;
 
 const getApiFinalEndpoint = (endpoint) =>
-  endpoint[0] == "/" ? `${API_HOST}${endpoint}` : `${API_HOST}/${endpoint}`;
+  endpoint[0] === "/" ? `${API_HOST}${endpoint}` : `${API_HOST}/${endpoint}`;
 
 const apiDefaultOptions = {
   withCredentials: true,
@@ -106,10 +106,10 @@ const getCookie = (cname, cookieString) => {
     let ca = cookieString.split(";");
     for (let i = 0; i < ca.length; i++) {
       let c = ca[i];
-      while (c.charAt(0) == " ") {
+      while (c.charAt(0) === " ") {
         c = c.substring(1);
       }
-      if (c.indexOf(name) == 0) {
+      if (c.indexOf(name) === 0) {
         return c.substring(name.length, c.length);
       }
     }
