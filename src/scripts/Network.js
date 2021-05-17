@@ -1,6 +1,5 @@
 import Axios from "axios";
 import _ from "lodash";
-
 /*
     *Pour faire une requete api il faut faire 
     import {api} from "scripts/Network.js"
@@ -32,13 +31,14 @@ import _ from "lodash";
 */
 
 
-const API_HOST = process.env.API_HOST ;
+const API_HOST =  "https://autolib-dz.herokuapp.com";
 
 const getApiFinalEndpoint = (endpoint) =>
   endpoint[0] === "/" ? `${API_HOST}${endpoint}` : `${API_HOST}/${endpoint}`;
 
 const apiDefaultOptions = {
-  withCredentials: true,
+  crossDomain:true,
+  'Access-Control-Allow-Origin': '*',
   resultCondition: (r) => true,
 };
 const api = {
@@ -47,15 +47,10 @@ const api = {
     return new Promise((resolve, reject) => {
       Axios.post(getApiFinalEndpoint(endpoint), data, options)
         .then((suc) => {
-          let result = _.get(suc, "data.result");
           let success = _.get(suc, "data.success");
-          if (
-            result === undefined ||
-            !success ||
-            !options.resultCondition(result)
-          )
-            return reject(suc);
-          return resolve(result);
+          if (success)
+            return resolve(suc.data);
+          return reject(suc);
         })
         .catch(reject);
     });
@@ -65,15 +60,10 @@ const api = {
     return new Promise((resolve, reject) => {
       Axios.get(getApiFinalEndpoint(endpoint), options)
         .then((suc) => {
-          let result = _.get(suc, "data.result");
           let success = _.get(suc, "data.success");
-          if (
-            result === undefined ||
-            !success ||
-            !options.resultCondition(result)
-          )
-            return reject(suc);
-          return resolve(result);
+          if (success)
+            return resolve(suc.data);
+          return reject(suc);
         })
         .catch(reject);
     });

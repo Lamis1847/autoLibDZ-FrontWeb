@@ -24,36 +24,40 @@ const Connexion = () => {
     }
     
     const Connex = () => {
-        console.log(email) ;
         api.post(
-            "/api/auth/locataire",{
+            "api/auth/locataire",{
                 email : email ,
                 motdepasse : mdp
             }
         ).then(
             res => {
+                console.log(res)
                 if (res.success) {
                     setCookie("AL_Token",res.token)
                 }
             }
-        ).catch( err => console.log(err.message))
+        ).catch( err => console.log(err))
     }   
 
         return ( 
         <div className = "LoginPage" >
             <div className = "Main" >
-
-                <input type="text" placeHolder="E-mail" name="email"  value={email} onChange={onChangeHandler}></input>
-                <input type="password" placeHolder="Mot de passe" name="mdp" value={mdp} onChange={onChangeHandler} ></input>
+                <img src="Logo 3.png" alt=""/>
+                <h1>Se Connecter</h1>
+                <p>Veuillez remplir les champs suivants afin de vous connecter</p>
+                <input type="text" placeholder="Nom d'utilisateur ou e-mail" name="email"  value={email} onChange={onChangeHandler}></input>
+                <input type="password" placeholder="Mot de passe" name="mdp" value={mdp} onChange={onChangeHandler} ></input>
 
                 <button onClick={Connex}>
-                     Valider
+                     <span>Suivant</span> 
                 </button>
 
             </div> 
             <div className = "BlackBand" >
-
-
+                <h1 style ={{ marginTop : '60px'}}>Tour de contrôle</h1>
+                <img src="settings 1.png" alt=""/>
+                <p>Tableau de bord pour <br/> la gestion du système</p>
+                <img className="img2" src="Group 1.png" alt="" style ={{ marginTop : 'auto' , marginBottom : '20%' }}/>
             </div> 
             <div className = "ColoredBand" >
 
