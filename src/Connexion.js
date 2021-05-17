@@ -25,7 +25,7 @@ const Connexion = () => {
     
     const Connex = () => {
         api.post(
-            "api/auth/locataire",{
+            "api/auth/administrateur",{
                 email : email ,
                 motdepasse : mdp
             }
