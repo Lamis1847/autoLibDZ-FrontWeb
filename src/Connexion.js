@@ -4,6 +4,7 @@ import {api, setCookie} from "./scripts/Network.js" ;
 
 
 
+
 const Connexion = () => {
     
     const [email, setemail] = useState('')
@@ -34,6 +35,7 @@ const Connexion = () => {
                 console.log(res)
                 if (res.success) {
                     setCookie("AL_Token",res.token)
+                    window.location.href = "/dashboard"
                 }
             }
         ).catch( err => console.log(err))
