@@ -5,6 +5,10 @@ import { Container } from "reactstrap";
 import HistoriqueVehicule from "./components/GestionVehicules/HistoriqueVehicule"
 import DetailsVehicule from "./components/GestionVehicules/DetailsVehicule"
 
+//Dashboard
+//import DashboardView from "./components/Dashboard/DashboardView"
+import LocationParSaison from "./components/Dashboard/LocationParSaison"
+
 import {BrowserRouter as Router, Switch, Route} from "react-router-dom"
 
 function App() {
@@ -14,6 +18,9 @@ function App() {
         <Sidebar> 
         </Sidebar>
         <Switch>
+          <Route path="/dashboard">
+            <LocationParSaison></LocationParSaison>
+          </Route>
           <Route exact path="/vehicules">
               <ListeVehicules></ListeVehicules>          
           </Route>
