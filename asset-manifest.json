@@ -1,8 +1,8 @@
 {
   "files": {
     "main.css": "/autoLibDZ-FrontWeb/static/css/main.81e9f919.chunk.css",
-    "main.js": "/autoLibDZ-FrontWeb/static/js/main.8536c2dc.chunk.js",
-    "main.js.map": "/autoLibDZ-FrontWeb/static/js/main.8536c2dc.chunk.js.map",
+    "main.js": "/autoLibDZ-FrontWeb/static/js/main.b51730c7.chunk.js",
+    "main.js.map": "/autoLibDZ-FrontWeb/static/js/main.b51730c7.chunk.js.map",
     "runtime-main.js": "/autoLibDZ-FrontWeb/static/js/runtime-main.98602251.js",
     "runtime-main.js.map": "/autoLibDZ-FrontWeb/static/js/runtime-main.98602251.js.map",
     "static/css/2.d0d08bc3.chunk.css": "/autoLibDZ-FrontWeb/static/css/2.d0d08bc3.chunk.css",
@@ -24,6 +24,6 @@
     "static/css/2.d0d08bc3.chunk.css",
     "static/js/2.9b8f2889.chunk.js",
     "static/css/main.81e9f919.chunk.css",
-    "static/js/main.8536c2dc.chunk.js"
+    "static/js/main.b51730c7.chunk.js"
   ]
 }
