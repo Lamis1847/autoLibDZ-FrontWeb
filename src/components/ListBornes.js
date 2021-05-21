@@ -33,7 +33,7 @@ class ListBornes extends Component{
         .then((res) => {
             let bornes = []
             for (const borne of res.data) {
-                bornes.push([borne['idBorne'],borne['wilaya'],borne['nbPlaces'],borne['nbVehicules'],[borne['longitude'],borne['latitude']],borne['nomBorne']])
+                bornes.push([borne['idBorne'],borne['wilaya'],borne['nbVehicules'],borne['nbPlaces'],[borne['latitude'],borne['longitude']],borne['nomBorne']])
             }
             this.setState({data:bornes});
         })
@@ -146,22 +146,27 @@ class ListBornes extends Component{
         onRowClick: this.onRowSelection
         };
         return(
-            <Container>    
-                <Row>
-                    <Col xs={6} md={8}>
-                        <MUIDataTable
-                            title={"Resultats obtenus"}
-                            data={this.state.data}
-                            columns={columns}
-                            options={options}
-                            />
-                    </Col>
-                    <Col xs={6} md={4}>
-                        <h2>Position sur la carte</h2>
-                       <Map coordonnes={this.state.selected} popup={this.state.popup}></Map>
-                    </Col>
-                </Row>
-           </Container>)
+            <div className="main-content">
+            <div className="mt-40">
+                <Container>    
+                    <Row>
+                        <Col xs={6} md={8}>
+                            <h2>Liste des bornes</h2>
+                            <MUIDataTable
+                                title="Toutes les bornes"
+                                data={this.state.data}
+                                columns={columns}
+                                options={options}
+                                />
+                        </Col>
+                        <Col xs={6} md={4}>
+                            <h2>Position sur la carte</h2>
+                        <Map coordonnes={this.state.selected} popup={this.state.popup}></Map>
+                        </Col>
+                    </Row>
+            </Container>
+            </div>
+           </div>)
             
 }}
 export default ListBornes; 

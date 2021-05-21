@@ -5,8 +5,6 @@ import { Container } from "reactstrap";
 import HistoriqueVehicule from "./components/GestionVehicules/HistoriqueVehicule"
 import DetailsVehicule from "./components/GestionVehicules/DetailsVehicule"
 import ListBornes from "./components/ListBornes.js"
-
-<<<<<<< HEAD
 import {BrowserRouter as Router, Switch, Route} from "react-router-dom"
 
 function App() {
