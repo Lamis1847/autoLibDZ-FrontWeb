@@ -11,7 +11,7 @@ import Navs from './components/GestionUtilisateurs/Tab'
 function App() {
   return (
 
-      <Router basename="/autoLibDZ-FrontWeb">
+      <Router>
         <Sidebar> 
         </Sidebar>
         <Switch>
