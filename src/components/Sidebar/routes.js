@@ -1,3 +1,5 @@
+import ListLocataires from "../GestionUtilisateurs/ListLocataires";
+import Locataire from "../GestionUtilisateurs/Locataire";
 import ListeVehicules from "../GestionVehicules/ListeVehicules"
 
 var routes = [
@@ -35,7 +37,7 @@ var routes = [
     path: "/utilisateurs",
     name: "Gestion utilisateurs",
     icon: "fa fa-user-circle",
-    component: ListeVehicules,
+    component: ListLocataires,
     layout: "",
     api: false
   },
