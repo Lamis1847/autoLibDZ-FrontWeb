@@ -20,8 +20,7 @@ export const DetailsVehicule = () => {
     //Relatif à l'API
     let idVehicule = useParams().id;
 
-    //const myServerBaseURL = "https://autolib-dz.herokuapp.com";
-    const myServerBaseURL = "https://localhost:4000";
+    const myServerBaseURL = "https://autolib-dz.herokuapp.com";
 
     const [vehicule, setVehicule] = useState([]);
 
