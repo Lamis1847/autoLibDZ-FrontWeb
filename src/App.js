@@ -6,7 +6,7 @@ import DetailsVehicule from "./components/GestionVehicules/DetailsVehicule"
 
 //Dashboard
 //import DashboardView from "./components/Dashboard/DashboardView"
-import LocationParSaison from "./components/Dashboard/LocationParSaison"
+import DashboardView from "./components/Dashboard/DashboardView"
 
 import ListLocataires from "./components/GestionUtilisateurs/ListLocataires"
 import {BrowserRouter as Router, Switch, Route} from "react-router-dom"
@@ -21,7 +21,7 @@ function App() {
         </Sidebar>
         <Switch>
           <Route path="/dashboard">
-            <LocationParSaison></LocationParSaison>
+            <DashboardView></DashboardView>
           </Route>
           <Route exact path="/vehicules">
               <ListeVehicules></ListeVehicules>          
