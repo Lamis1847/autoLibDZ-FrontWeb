@@ -5,7 +5,6 @@ import HistoriqueVehicule from "./components/GestionVehicules/HistoriqueVehicule
 import DetailsVehicule from "./components/GestionVehicules/DetailsVehicule"
 
 //Dashboard
-//import DashboardView from "./components/Dashboard/DashboardView"
 import DashboardView from "./components/Dashboard/DashboardView"
 
 import ListLocataires from "./components/GestionUtilisateurs/ListLocataires"
