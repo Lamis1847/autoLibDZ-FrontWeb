@@ -25,6 +25,12 @@ const DashboardView = () => {
         years:[],
         currentYear: 0
     })
+
+    const [abonnementsStats, setAbonnementsStats] = useState({
+        abonnementsParMois : [],
+        years:[],
+        currentYear: 0
+    })
     
     if (window.Chart) {
         parseOptions(Chart, chartOptions());
@@ -32,12 +38,13 @@ const DashboardView = () => {
 
     useEffect(()=>{
         loadLocationsStatsAll();
+        loadAbonnementsStatsAll();
     },[]);
 
     const monthList =["Jan","Feb","Mar","Apr","Mai","Jun","Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-    const api_url="https://autolib-dz.herokuapp.com/api";
-    //const api_url="http://localhost:4000/api";
+    //const api_url="https://autolib-dz.herokuapp.com/api";
+    const api_url="http://localhost:4000/api";
 
     const loadLocationsStats = useCallback(async (year) => {
         try{
@@ -55,6 +62,22 @@ const DashboardView = () => {
         catch(e){}
     })
 
+    const loadAbonnementsStats = useCallback(async (year) => {
+        try{
+            const AbonnementsStatsFromServer = await fetchAbonnementsStats(year)
+            let transform = [0,0,0,0,0,0,0,0,0,0,0,0]
+            AbonnementsStatsFromServer.map((trajet)=>(
+                transform[parseInt(trajet.month)-1]=parseInt(trajet.countAbonnements)
+            ));
+            //setLocationsParMois(transform);
+            setAbonnementsStats((prevState)=>({
+                ...prevState,
+                abonnementsParMois:transform           
+            }))
+        }
+        catch(e){}
+    })
+
     const loadLocationsStatsAll = async () => {
         try{
             const locationsYearsFromServer = await fetchLocationsYears();
@@ -64,7 +87,7 @@ const DashboardView = () => {
             ));
             let yearsTab=[]
             years.forEach((value)=>(
-                yearsTab.push(value)
+                yearsTab.unshift(value)
             ))
             setLocationsStats((prevState)=>({
                 ...prevState.locationsParMois,
@@ -76,9 +99,35 @@ const DashboardView = () => {
         catch(e){}
     }
 
+    const loadAbonnementsStatsAll = async () => {
+        try{
+            const abonnementsYearsFromServer = await fetchAbonnemenetsYears();
+            let years = new Set()
+            abonnementsYearsFromServer.map((object)=>(
+                years.add(parseInt(object.year))
+            ));
+            let yearsTab=[]
+            years.forEach((value)=>(
+                yearsTab.unshift(value)
+            ))
+            setAbonnementsStats((prevState)=>({
+                ...prevState.abonnementsParMois,
+                years:yearsTab,
+                currentYear:yearsTab[0]
+            }))
+            loadAbonnementsStats(yearsTab[0])
+        }
+        catch(e){}
+    }
+
     const changeLocationsYear = async (id)=> {
         setLocationsStats({...locationsStats,currentYear:id})
         loadLocationsStats(id)
+    }
+
+    const changeAbonnementsYear = async (id)=> {
+        setAbonnementsStats({...abonnementsStats,currentYear:id})
+        loadAbonnementsStats(id)
     }
 
     // fetch Locations Stats
@@ -88,14 +137,34 @@ const DashboardView = () => {
             .then(res => {
                 stats = res.data
             })
-        return stats
-            
+        return stats     
+    }
+
+    // fetch Abonnements Stats
+    const fetchAbonnementsStats = async (year) => {
+        let stats = []
+        await axios.get(`${api_url}/abonnement/countByMonth/${year}`)
+            .then(res => {
+                stats = res.data
+            })
+        return stats     
     }
 
     // fetch Location Years
     const fetchLocationsYears = async () => {
         let years = []
         await axios.get(`${api_url}/trajet/getYears`)
+            .then(res => {
+                years = res.data
+            })
+        return years
+            
+    }
+
+    // fetch Abonnements Years
+    const fetchAbonnemenetsYears = async () => {
+        let years = []
+        await axios.get(`${api_url}/abonnement/getYears`)
             .then(res => {
                 years = res.data
             })
@@ -126,12 +195,12 @@ const DashboardView = () => {
                 </Row>
                 <Row className="mt-3">
                     <BarChart
-                        data={locationsStats.locationsParMois}
-                        filters={locationsStats.years}
-                        currFilter={locationsStats.currentYear}
+                        data={abonnementsStats.abonnementsParMois}
+                        filters={abonnementsStats.years}
+                        currFilter={abonnementsStats.currentYear}
                         message={"Nombre d'abonnements par saison :"}
                         labels={monthList}
-                        onChangeFilter={changeLocationsYear}
+                        onChangeFilter={changeAbonnementsYear}
                         col={"12"}
                     />
                 </Row>
