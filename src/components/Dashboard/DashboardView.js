@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback,useLayoutEffect } from "react";
 // javascipt plugin for creating charts
 import Chart from "chart.js";
 // react plugin used to create charts
@@ -15,82 +15,74 @@ import {
 
 import axios from "axios";
 
-import BarChart from './BarChart'
-import { updateStatement } from "typescript";
-import { update } from "lodash";
+import BarChart from './BarChart';
+import StatsCard from './StatsCard';
 
-const DashboardView = ({stats}) => {
+const DashboardView = () => {
 
     const [locationsStats, setLocationsStats] = useState({
         locationsParMois : [],
         years:[],
         currentYear: 0
     })
-
-    const monthList =["Jan","Feb","Mar","Apr","Mai","Jun","Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-
-    //const api_url="https://autolib-dz.herokuapp.com/api";
-    const api_url="http://localhost:4000/api";
+    
+    if (window.Chart) {
+        parseOptions(Chart, chartOptions());
+    }
 
     useEffect(()=>{
-        if (window.Chart) {
-          parseOptions(Chart, chartOptions())
-        }
+        loadLocationsStatsAll();
+    },[]);
 
-        const getLocationsYears = async () => {
-            const locationsYears = await fetchLocationsYears()
+    const monthList =["Jan","Feb","Mar","Apr","Mai","Jun","Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+    const api_url="https://autolib-dz.herokuapp.com/api";
+    //const api_url="http://localhost:4000/api";
+
+    const loadLocationsStats = useCallback(async (year) => {
+        try{
+            const LocationsStatsFromServer = await fetchLocationsStats(year)
+            let transform = [0,0,0,0,0,0,0,0,0,0,0,0]
+            LocationsStatsFromServer.map((trajet)=>(
+                transform[parseInt(trajet.month)-1]=parseInt(trajet.countTrajets)
+            ));
+            //setLocationsParMois(transform);
+            setLocationsStats((prevState)=>({
+                ...prevState,
+                locationsParMois:transform           
+            }))
+        }
+        catch(e){}
+    })
+
+    const loadLocationsStatsAll = async () => {
+        try{
+            const locationsYearsFromServer = await fetchLocationsYears();
             let years = new Set()
-            locationsYears.map((object)=>(
+            locationsYearsFromServer.map((object)=>(
                 years.add(parseInt(object.year))
-            ))
+            ));
             let yearsTab=[]
             years.forEach((value)=>(
                 yearsTab.push(value)
             ))
-            setLocationsStats({
-                ...locationsStats,
-                years:yearsTab
-                
-            })
+            setLocationsStats((prevState)=>({
+                ...prevState.locationsParMois,
+                years:yearsTab,
+                currentYear:yearsTab[0]
+            }))
+            loadLocationsStats(yearsTab[0])
         }
+        catch(e){}
+    }
 
-        const getCurrentYear = async () => {
-            setLocationsStats({
-                ...locationsStats,
-                currentYear:locationsStats.years[0]
-            })
-            console.log(locationsStats.currentYear)
-            console.log(locationsStats.years[0])
-        }
-
-        const getLocationsStats = async () => {
-            const LocationsStatsFromServer = await fetchLocationsStats(locationsStats.currentYear)
-            let transform = [0,0,0,0,0,0,0,0,0,0,0,0]
-            LocationsStatsFromServer.map((trajet)=>(
-                transform[parseInt(trajet.month)-1]=parseInt(trajet.countTrajets)
-            ))
-            setLocationsStats({
-                ...locationsStats,
-                locationsParMois:transform
-                
-            })
-        }
-
-        const updateLocationsStats = async () =>{
-            const preventDefault = event => event.preventDefault();
-            getLocationsYears()
-            getCurrentYear()
-            getLocationsStats()
-        }
-
-        updateLocationsStats();
-        
-
-
-    },[])
+    const changeLocationsYear = async (id)=> {
+        setLocationsStats({...locationsStats,currentYear:id})
+        loadLocationsStats(id)
+    }
 
     // fetch Locations Stats
-    const fetchLocationsStats = useCallback(async (year) => {
+    const fetchLocationsStats = async (year) => {
         let stats = []
         await axios.get(`${api_url}/trajet/countByMonth/${year}`)
             .then(res => {
@@ -98,10 +90,10 @@ const DashboardView = ({stats}) => {
             })
         return stats
             
-    }, [])
+    }
 
     // fetch Location Years
-    const fetchLocationsYears = useCallback(async () => {
+    const fetchLocationsYears = async () => {
         let years = []
         await axios.get(`${api_url}/trajet/getYears`)
             .then(res => {
@@ -109,7 +101,7 @@ const DashboardView = ({stats}) => {
             })
         return years
             
-    }, [])
+    }
       
 
     return(
@@ -117,9 +109,30 @@ const DashboardView = ({stats}) => {
             <Container className="mt-5" fluid>
                 <Row>
                     <BarChart
-                        years={locationsStats.years}
-                        labels={monthList}
                         data={locationsStats.locationsParMois}
+                        filters={locationsStats.years}
+                        currFilter={locationsStats.currentYear}
+                        message={"Les locations effectuées par saison :"}
+                        labels={monthList}
+                        onChangeFilter={changeLocationsYear}
+                        col={"9"}
+                    />
+                    <StatsCard
+                        text={"Taux de défaillance"}
+                        value={98}
+                        percentage={true}
+                        textColor={"danger"}
+                    />
+                </Row>
+                <Row className="mt-3">
+                    <BarChart
+                        data={locationsStats.locationsParMois}
+                        filters={locationsStats.years}
+                        currFilter={locationsStats.currentYear}
+                        message={"Nombre d'abonnements par saison :"}
+                        labels={monthList}
+                        onChangeFilter={changeLocationsYear}
+                        col={"12"}
                     />
                 </Row>
             </Container>
