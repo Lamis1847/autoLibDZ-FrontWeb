@@ -1,5 +1,5 @@
 import React from "react";
-import LocataireService from "../../services/LocataireService";
+import AdminService from "../../services/AdministrateurService";
 
 // reactstrap components
 import {
@@ -25,14 +25,16 @@ class Modals extends React.Component {
     this.onChangePrenom = this.onChangePrenom.bind(this);
     this.onChangeMDP = this.onChangeMDP.bind(this);
     this.onChangeEmail = this.onChangeEmail.bind(this);
-    this.saveLocataire = this.saveLocataire.bind(this);
-    this.newLocataire= this.newLocataire.bind(this);
+    this.onChangeSalaire = this.onChangeSalaire.bind(this);
+    this.saveAdmin = this.saveAdmin.bind(this);
+    this.newAdmin= this.newAdmin.bind(this);
 
     this.state = { 
       nom: "",
       prenom: "", 
       email:"",
       motDePasse:"",
+      salaire:0,
       submitted: false,
       exampleModal: false
     };
@@ -63,41 +65,43 @@ class Modals extends React.Component {
       motDePasse: e.target.value
     });
   }
-  saveLocataire() {
+  onChangeSalaire(e) {
+    this.setState({
+      salaire: e.target.value
+    });
+  }
+  saveAdmin() {
     var data = {
       nom: this.state.nom,
       prenom: this.state.prenom,
       email: this.state.email,
       motDePasse: this.state.motDePasse,
+      salaire: this.state.salaire,
     };
 
-    LocataireService.create(data)
+    AdminService.create(data)
       .then(response => {
         this.setState({
           nom: response.data.nom,
           prenom: response.data.prenom,
           email: response.data.email,
           motDePasse: response.data.motDePasse,
+          salaire: response.data.salaire,
           submitted: true,
         });        
       })
       .catch(e => {
-        return (
-          <Col>
-              <Alert color="danger">
-                  s'il vous plait vous devez saisir correctement toutes les informations avec un email non déja utilisé
-              </Alert>
-           </Col>
-        )
+          console.log(e)
       });
   }
 
-  newLocataire() {
+  newAdmin() {
     this.setState({
       nom: "",
       prenom: "", 
       email:"",
       motDePasse:"",
+      salaire:"",
       submitted: false
     });
   }
@@ -114,7 +118,7 @@ class Modals extends React.Component {
           onClick={() => this.toggleModal("exampleModal")}
         >
           <i className="ni ni-fat-add" />
-          Ajouter un locataire
+          Ajouter un Administrateur
         </Button>  
         <Modal
         backdrop="static" keyboard={false}
@@ -131,7 +135,7 @@ class Modals extends React.Component {
 
            <Col>
               <Alert color="success">
-                  <strong>Susccés!</strong> ! vous avez ajouté un nouveau locataire avec succées 
+                  <strong>Susccés!</strong> ! vous avez ajouté un nouvel administrateur avec succées 
               </Alert>
            </Col>
          </Row>
@@ -159,7 +163,7 @@ class Modals extends React.Component {
             </button>
                   <CardBody className="px-lg-5 py-lg-5">
                     <div className="text-center text-muted mb-4">
-                     <h1>Ajouter un nouveau locataire</h1> 
+                     <h1>Ajouter un nouvel administrateur</h1> 
                     </div>
                     <Form role="form">
                     <FormGroup>
@@ -233,13 +237,30 @@ class Modals extends React.Component {
                           placeholder="Mot de passe" />
                         </InputGroup>
                       </FormGroup>
+                      <FormGroup className="mb-3">
+                        <InputGroup className="input-group-alternative">
+                          <InputGroupAddon addonType="prepend">
+                            <InputGroupText>
+                              <i className="ni ni-email-83" />
+                            </InputGroupText>
+                          </InputGroupAddon>
+                          <Input placeholder="Salaire"
+                           type="number"
+                           className="form-control"
+                           id="salaire"
+                           required
+                           value={this.state.salaire}
+                           onChange={this.onChangeSalaire}
+                           name="salaire"/>
+                        </InputGroup>
+                      </FormGroup>
                      
                       <div className="text-center">
                         <Button
                           className="my-4"
                           color="default"
                           type="button"
-                          onClick={this.saveLocataire}
+                          onClick={this.saveAdmin}
                         >
                           Confirmer l'ajout
                         </Button>

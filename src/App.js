@@ -3,6 +3,11 @@ import Sidebar from "./components/Sidebar/Sidebar"
 import ListeVehicules from "./components/GestionVehicules/ListeVehicules"
 import HistoriqueVehicule from "./components/GestionVehicules/HistoriqueVehicule"
 import DetailsVehicule from "./components/GestionVehicules/DetailsVehicule"
+
+//Dashboard
+import DashboardView from "./components/Dashboard/DashboardView"
+
+import ListLocataires from "./components/GestionUtilisateurs/ListLocataires"
 import ListBornes from "./components/ListBornes.js"
 import {BrowserRouter as Router, Switch, Route} from "react-router-dom"
 import Locataire from './components/GestionUtilisateurs/Locataire';
@@ -15,6 +20,9 @@ function App() {
         <Sidebar> 
         </Sidebar>
         <Switch>
+          <Route path="/dashboard">
+            <DashboardView></DashboardView>
+          </Route>
           <Route exact path="/vehicules">
               <ListeVehicules></ListeVehicules>          
           </Route>

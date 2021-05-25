@@ -1,13 +1,12 @@
-
 import MUIDataTable from "mui-datatables";
-import { Container,Row,Col } from "reactstrap";
+import {Row,Col } from "reactstrap";
 import Menu from '@material-ui/core/Menu';
 import { withStyles } from '@material-ui/core/styles';
 import React,{useEffect,useMemo,useState,useRef,useTable} from "react";
-import LocataireService from "../../services/LocataireService";
+import  OperateurService from "../../services/OperateurService";
 
 import {NavLink} from 'react-router-dom';
-import AddModal from './AddLocataire';
+import AddModal from './AddAdmin';
 import { withRouter } from "react-router-dom";
 import {
   UncontrolledDropdown,
@@ -15,23 +14,23 @@ import {
   DropdownMenu,
   DropdownItem, 
 } from "reactstrap";
-const Confirm=() => {
+const ListOperateurs=() => {
 
-  const [locataires, setLocataires] = useState([]);
-  const LocatairesRef = useRef();
-  LocatairesRef.current = locataires;  
-  const retrieveLocataires = () => {
-    LocataireService.getAll()
+  const [operateurs, setOperateurs] = useState([]);
+  const OperateursRef = useRef();
+  OperateursRef.current =operateurs;  
+  const retrieveOperateurs = () => {
+    OperateurService.getAll()
       .then((response) => {
-        setLocataires(response.data);
+        setOperateurs(response.data);
       })
       .catch((e) => {
         console.log(e);
       });
   };
-  useEffect(retrieveLocataires, []);
-  let listeLocataires = locataires.map(obj => Object.values(obj));
-  const [idLocataire, setIdLocataire] = useState();
+  useEffect(retrieveOperateurs, []);
+  let listeOperateurs =  operateurs.map(obj => Object.values(obj));
+  const [idOperateur, setIdOperateur] = useState();
   const [responsive, setResponsive] = useState("vertical");
   const [tableBodyHeight, setTableBodyHeight] = useState("400px");
   const [tableBodyMaxHeight, setTableBodyMaxHeight] = useState("");
@@ -71,7 +70,7 @@ const Confirm=() => {
 
   const columns = [
     {
-      name: "idLocataire",
+      name: "id",
       label: "id",
       options: {
         filter: false
@@ -106,17 +105,9 @@ const Confirm=() => {
       }
     },
     {
-      name: "Active",
-      label: "Status",
-      options:{
-        customBodyRender: (props) => {
-          return (
-               props? <h5 style={{color:'#2dce89'}}>Actif</h5> : <h5 style={{color:'#f5365c'}}>Bloqué</h5>
-          )
-        }
-      }
-     
-    },
+        name: "salaire",
+        label: "Salaire"
+      },
     { 
     label: "Action",
      options: {
@@ -136,12 +127,12 @@ const Confirm=() => {
                   </DropdownToggle>
                   <DropdownMenu className="dropdown-menu-arrow" right>
                     <DropdownItem>
-                    <NavLink to={"/locataires/" + idLocataire} style={{color:'#FFCB00'}}>
+                    <NavLink to={"/operateurs/" + idOperateur} style={{color:'#FFCB00'}}>
                         Détails
                       </NavLink>
                     </DropdownItem>
                     
-                    <DropdownItem onClick={() => { if (window.confirm('êtes-vous sûr de vouloir supprimer cet locataire?')) deleteLocataire( idLocataire)}}style={{color:"#F5365C"}}>
+                    <DropdownItem onClick={() => { if (window.confirm('êtes-vous sûr de vouloir supprimer cet operateur de maintenanace?')) deleteOperateur( idOperateur)}}style={{color:"#F5365C"}}>
                       Supprimer
                     </DropdownItem>
                   </DropdownMenu>
@@ -165,9 +156,9 @@ const Confirm=() => {
     searchPlaceholder: 'Saisir un nom..',
     isRowSelectable:false,
     onRowClick: (rowData, rowState) => {
-      setIdLocataire(rowData[0]);
+      setIdOperateur(rowData[0]);
       console.log(rowData);
-      console.log(idLocataire);
+      console.log(idOperateur);
     },
    
     onColumnSortChange: (changedColumn, direction) => console.log('changedColumn: ', changedColumn, 'direction: ', direction),
@@ -175,13 +166,13 @@ const Confirm=() => {
     onChangePage: currentPage => console.log('currentPage: ', currentPage)
 
   };
-  const deleteLocataire = (props) => {
-        LocataireService.remove(idLocataire)
+  const deleteOperateur = (props) => {
+        OperateurService.remove(idOperateur)
       .then((response) => {
       
-        let newLocataires = [...LocatairesRef.current];
-        newLocataires.splice(idLocataire, 1);
-        setLocataires(newLocataires);
+        let newOperateurs = [...OperateursRef.current];
+        newOperateurs.splice(idOperateur, 1);
+        setOperateurs(newOperateurs);
       })
       .catch((e) => {
         console.log(e);
@@ -191,20 +182,10 @@ const Confirm=() => {
   
   return (
           <>
-            <Row>
-                <Col>
-               
-                <div style={{paddingBottom:"6px"}}>
-                <AddModal></AddModal>
-                </div>
-              
-                </Col>
-
-            </Row>
             
             <MUIDataTable
-               title="Liste des locataires"
-              data={listeLocataires}
+               title="Liste des operateurs"
+              data={listeOperateurs}
               columns={columns}
               options={options}
             />
@@ -217,4 +198,4 @@ const Confirm=() => {
   
   }
   
-  export default withRouter(Confirm);
+  export default withRouter(ListOperateurs);

@@ -1,7 +1,7 @@
 import http from '../scripts/Network';
 
 const getAll = () => {
-  return http.get("/locataire");
+  return http.get("/locataire/getLocataires");
 };
 const create = (data) => {
   return http.post("/locataire/createLocataire", data);
