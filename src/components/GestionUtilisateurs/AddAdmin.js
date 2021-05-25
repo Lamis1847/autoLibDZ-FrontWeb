@@ -33,7 +33,7 @@ class Modals extends React.Component {
       nom: "",
       prenom: "", 
       email:"",
-      motdepasse:"",
+      motDePasse:"",
       salaire:0,
       submitted: false,
       exampleModal: false
@@ -62,7 +62,7 @@ class Modals extends React.Component {
   }
   onChangeMDP(e) {
     this.setState({
-      motdepasse: e.target.value
+      motDePasse: e.target.value
     });
   }
   onChangeSalaire(e) {
@@ -75,7 +75,7 @@ class Modals extends React.Component {
       nom: this.state.nom,
       prenom: this.state.prenom,
       email: this.state.email,
-      motdepasse: this.state.motdepasse,
+      motDePasse: this.state.motDePasse,
       salaire: this.state.salaire,
     };
 
@@ -85,19 +85,13 @@ class Modals extends React.Component {
           nom: response.data.nom,
           prenom: response.data.prenom,
           email: response.data.email,
-          motdepasse: response.data.motdepasse,
+          motDePasse: response.data.motDePasse,
           salaire: response.data.salaire,
           submitted: true,
         });        
       })
       .catch(e => {
-        return (
-          <Col>
-              <Alert color="danger">
-                  s'il vous plait vous devez saisir correctement toutes les informations avec un email non déja utilisé
-              </Alert>
-           </Col>
-        )
+          console.log(e)
       });
   }
 
@@ -106,7 +100,7 @@ class Modals extends React.Component {
       nom: "",
       prenom: "", 
       email:"",
-      motdepasse:"",
+      motDePasse:"",
       salaire:"",
       submitted: false
     });

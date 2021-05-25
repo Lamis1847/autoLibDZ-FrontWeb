@@ -182,7 +182,16 @@ const ListAdmin=() => {
   
   return (
           <>
-           
+            <Row>
+                <Col>
+               
+                <div style={{paddingBottom:"6px"}}>
+                <AddModal></AddModal>
+                </div>
+              
+                </Col>
+
+            </Row>
             
             <MUIDataTable
                title="Liste des Administrateurs"

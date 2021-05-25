@@ -32,7 +32,7 @@ class Modals extends React.Component {
       nom: "",
       prenom: "", 
       email:"",
-      motdepasse:"",
+      motDePasse:"",
       submitted: false,
       exampleModal: false
     };
@@ -60,7 +60,7 @@ class Modals extends React.Component {
   }
   onChangeMDP(e) {
     this.setState({
-      motdepasse: e.target.value
+      motDePasse: e.target.value
     });
   }
   saveLocataire() {
@@ -68,7 +68,7 @@ class Modals extends React.Component {
       nom: this.state.nom,
       prenom: this.state.prenom,
       email: this.state.email,
-      motdepasse: this.state.motdepasse,
+      motDePasse: this.state.motDePasse,
     };
 
     LocataireService.create(data)
@@ -77,7 +77,7 @@ class Modals extends React.Component {
           nom: response.data.nom,
           prenom: response.data.prenom,
           email: response.data.email,
-          motdepasse: response.data.motdepasse,
+          motDePasse: response.data.motDePasse,
           submitted: true,
         });        
       })
@@ -97,7 +97,7 @@ class Modals extends React.Component {
       nom: "",
       prenom: "", 
       email:"",
-      motdepasse:"",
+      motDePasse:"",
       submitted: false
     });
   }
