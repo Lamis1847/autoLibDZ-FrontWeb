@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback,useLayoutEffect } from "react";
+import React, { useState, useEffect, useCallback,useLayoutEffect,forceUpdate } from "react";
 // javascipt plugin for creating charts
 import Chart from "chart.js";
 // react plugin used to create charts
@@ -23,57 +23,89 @@ const DashboardView = () => {
     const [locationsStats, setLocationsStats] = useState({
         locationsParMois : [],
         years:[],
-        currentYear: 0
+        currentYear: 0,
+        bySeason:false,
+        labels: ["Jan","Feb","Mar","Apr","Mai","Jun","Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
     })
 
     const [abonnementsStats, setAbonnementsStats] = useState({
         abonnementsParMois : [],
         years:[],
-        currentYear: 0
+        currentYear: 0,
+        bySeason:false,
+        labels: ["Jan","Feb","Mar","Apr","Mai","Jun","Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
     })
     
     if (window.Chart) {
         parseOptions(Chart, chartOptions());
     }
 
+
     useEffect(()=>{
         loadLocationsStatsAll();
         loadAbonnementsStatsAll();
     },[]);
 
-    const monthList =["Jan","Feb","Mar","Apr","Mai","Jun","Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    //const api_url="https://autolib-dz.herokuapp.com/api";
+    const api_url="http://localhost:4000/api";
 
-    const api_url="https://autolib-dz.herokuapp.com/api";
-    //const api_url="http://localhost:4000/api";
-
-    const loadLocationsStats = useCallback(async (year) => {
+    const loadLocationsStats = useCallback(async (year,bySeason) => {
         try{
             const LocationsStatsFromServer = await fetchLocationsStats(year)
             let transform = [0,0,0,0,0,0,0,0,0,0,0,0]
             LocationsStatsFromServer.map((trajet)=>(
                 transform[parseInt(trajet.month)-1]=parseInt(trajet.countTrajets)
-            ));
-            //setLocationsParMois(transform);
-            setLocationsStats((prevState)=>({
-                ...prevState,
-                locationsParMois:transform           
-            }))
+            ))
+            if(bySeason){
+                setLocationsStats((prevState)=>({
+                    ...prevState,
+                    bySeason:true,
+                    labels : ["Winter","Spring","Summer","Fall"],
+                    locationsParMois:[transform[0]+transform[1]+transform[2],
+                    transform[3]+transform[4]+transform[5],
+                    transform[6]+transform[7]+transform[8],
+                    transform[9]+transform[10]+transform[11]]
+                }))
+            }
+            else{
+                setLocationsStats((prevState)=>({
+                    ...prevState,
+                    locationsParMois:transform,
+                    bySeason:false,
+                    labels : ["Jan","Feb","Mar","Apr","Mai","Jun","Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]      
+                }))
+            }
+            console.log(locationsStats)
         }
         catch(e){}
     })
 
-    const loadAbonnementsStats = useCallback(async (year) => {
+    const loadAbonnementsStats = useCallback(async (year,bySeason) => {
         try{
             const AbonnementsStatsFromServer = await fetchAbonnementsStats(year)
             let transform = [0,0,0,0,0,0,0,0,0,0,0,0]
             AbonnementsStatsFromServer.map((trajet)=>(
                 transform[parseInt(trajet.month)-1]=parseInt(trajet.countAbonnements)
-            ));
-            //setLocationsParMois(transform);
-            setAbonnementsStats((prevState)=>({
-                ...prevState,
-                abonnementsParMois:transform           
-            }))
+            ))
+            if(bySeason){
+                setAbonnementsStats((prevState)=>({
+                    ...prevState,
+                    bySeason:true,
+                    labels : ["Winter","Spring","Summer","Fall"],
+                    abonnementsParMois:[transform[0]+transform[1]+transform[2],
+                    transform[3]+transform[4]+transform[5],
+                    transform[6]+transform[7]+transform[8],
+                    transform[9]+transform[10]+transform[11]]
+                }))
+            }
+            else{
+                setAbonnementsStats((prevState)=>({
+                    ...prevState,
+                    abonnementsParMois:transform,
+                    bySeason:false,
+                    labels : ["Jan","Feb","Mar","Apr","Mai","Jun","Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]      
+                }))
+            }
         }
         catch(e){}
     })
@@ -90,11 +122,11 @@ const DashboardView = () => {
                 yearsTab.unshift(value)
             ))
             setLocationsStats((prevState)=>({
-                ...prevState.locationsParMois,
+                ...prevState,
                 years:yearsTab,
-                currentYear:yearsTab[0]
+                currentYear:yearsTab[0],
             }))
-            loadLocationsStats(yearsTab[0])
+            loadLocationsStats(yearsTab[0],false)
         }
         catch(e){}
     }
@@ -111,23 +143,44 @@ const DashboardView = () => {
                 yearsTab.unshift(value)
             ))
             setAbonnementsStats((prevState)=>({
-                ...prevState.abonnementsParMois,
+                ...prevState,
                 years:yearsTab,
-                currentYear:yearsTab[0]
+                currentYear:yearsTab[0],
             }))
-            loadAbonnementsStats(yearsTab[0])
+            loadAbonnementsStats(yearsTab[0],false)
         }
         catch(e){}
     }
 
     const changeLocationsYear = async (id)=> {
         setLocationsStats({...locationsStats,currentYear:id})
-        loadLocationsStats(id)
+        await loadLocationsStats(id,locationsStats.bySeason)
     }
 
     const changeAbonnementsYear = async (id)=> {
         setAbonnementsStats({...abonnementsStats,currentYear:id})
-        loadAbonnementsStats(id)
+        await loadAbonnementsStats(id,abonnementsStats.bySeason)
+        
+    }
+
+    const changeLocationsShowBy = async (by) =>{
+        if(by == "season" && !locationsStats.bySeason){
+            loadLocationsStats(locationsStats.currentYear,true)
+        }
+        else
+        if(by=="month" && locationsStats.bySeason){
+            loadLocationsStats(locationsStats.currentYear,false)
+        }
+    }
+
+    const changeAbonnementsShowBy = async (by) =>{
+        if(by == "season" && !abonnementsStats.bySeason){
+            loadAbonnementsStats(abonnementsStats.currentYear,true)
+        }
+        else
+        if(by=="month" && abonnementsStats.bySeason){
+            loadAbonnementsStats(abonnementsStats.currentYear,false)
+        }
     }
 
     // fetch Locations Stats
@@ -181,16 +234,21 @@ const DashboardView = () => {
                         data={locationsStats.locationsParMois}
                         filters={locationsStats.years}
                         currFilter={locationsStats.currentYear}
-                        message={"Les locations effectuées par saison :"}
-                        labels={monthList}
+                        message={"Les locations effectuées par "}
+                        labels={locationsStats.labels}
                         onChangeFilter={changeLocationsYear}
+                        changeShowBy ={changeLocationsShowBy}
+                        bySeason={locationsStats.bySeason}
                         col={"9"}
+                        dark={false}
+                        icon={"fas fa-car"}
                     />
                     <StatsCard
                         text={"Taux de défaillance"}
                         value={98}
                         percentage={true}
                         textColor={"danger"}
+                        icon={"fas fa-car-crash"}
                     />
                 </Row>
                 <Row className="mt-3">
@@ -198,10 +256,14 @@ const DashboardView = () => {
                         data={abonnementsStats.abonnementsParMois}
                         filters={abonnementsStats.years}
                         currFilter={abonnementsStats.currentYear}
-                        message={"Nombre d'abonnements par saison :"}
-                        labels={monthList}
+                        message={"Nombre d'abonnements par "}
+                        labels={abonnementsStats.labels}
                         onChangeFilter={changeAbonnementsYear}
+                        changeShowBy ={changeAbonnementsShowBy}
+                        bySeason={abonnementsStats.bySeason}
                         col={"12"}
+                        dark={true}
+                        icon={"fas fa-user-plus"}
                     />
                 </Row>
             </Container>
