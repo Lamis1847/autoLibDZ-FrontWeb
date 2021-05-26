@@ -12,7 +12,6 @@ import {
 }  from "reactstrap";
 
 import Map from "./Map.js"
-import Register from "./Register.js"
 import AddBorne from "./AddBorne.js"
 const API_All_BORNES= process.env.REACT_APP_GESTION_BORNES_URL+'all';
 const API_DELETE_BORNE = process.env.REACT_APP_GESTION_BORNES_URL+'all';
