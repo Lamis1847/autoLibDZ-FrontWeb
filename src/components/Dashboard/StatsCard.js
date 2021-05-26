@@ -11,7 +11,7 @@ import {
   Col
 } from "reactstrap";
 
-const StatsCard = ({ text , value , percentage , textColor }) => {
+const StatsCard = ({ text , value , percentage , textColor,icon }) => {
 
     return (
         <>
@@ -26,8 +26,8 @@ const StatsCard = ({ text , value , percentage , textColor }) => {
                     <span className={ "h2 font-weight-bold mb-0 text-" + textColor }>{value} {percentage ? "%" : " "}</span>
                   </div>
                   <Col className="col-auto">
-                    <div className="icon icon-shape bg-danger text-white rounded-circle shadow">
-                      <i className="fas fa-chart-bar" />
+                    <div className={"icon icon-shape bg-"+textColor+" text-white rounded-circle shadow"}>
+                      <i className={icon}></i>
                     </div>
                   </Col>
                 </Row>
