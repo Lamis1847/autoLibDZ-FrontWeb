@@ -1,7 +1,14 @@
-*{
-    font-family: Nunito;
+* {
+  font-family: Nunito;
 }
 .leaflet-container {
   width: 100wh;
   height: 100vh;
+}
+a.dropdown-item:active {
+  color: gray;
+  background-color: #e9ecef;
+}
+#ajouterBorne {
+  background-color: #252834;
 }

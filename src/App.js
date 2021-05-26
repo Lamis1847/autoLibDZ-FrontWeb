@@ -3,7 +3,7 @@ import Sidebar from "./components/Sidebar/Sidebar"
 import ListeVehicules from "./components/GestionVehicules/ListeVehicules"
 import HistoriqueVehicule from "./components/GestionVehicules/HistoriqueVehicule"
 import DetailsVehicule from "./components/GestionVehicules/DetailsVehicule"
-import ListBornes from "./components/ListBornes.js"
+import ListBornes from "./components/GestionBornes/ListBornes"
 import {BrowserRouter as Router, Switch, Route} from "react-router-dom"
 import Locataire from './components/GestionUtilisateurs/Locataire';
 import Navs from './components/GestionUtilisateurs/Tab'
