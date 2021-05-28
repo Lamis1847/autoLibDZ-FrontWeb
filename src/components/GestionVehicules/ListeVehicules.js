@@ -205,6 +205,7 @@ export const ListeVehicules = () => {
     print:false,
     viewColumns:false,
     filterType: "dropdown",
+    elevation:0,
     responsive,
     tableBodyHeight,
     tableBodyMaxHeight,
@@ -228,11 +229,14 @@ export const ListeVehicules = () => {
             <div style={{padding:"12px"}}>
               <h1>Liste des véhicules </h1>
             </div>
-            <MUIDataTable
-              data={listeVehicules}
-              columns={columns}
-              options={options}
-            />
+            <div className="shadow card">
+              <MUIDataTable
+                className="card-body"
+                data={listeVehicules}
+                columns={columns}
+                options={options}
+              />
+            </div>
           </Container>
         </div>
       </div>
