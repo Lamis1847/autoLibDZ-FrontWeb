@@ -7,6 +7,7 @@ import ListBornes from "./components/ListBornes.js"
 import {BrowserRouter as Router, Switch, Route} from "react-router-dom"
 import Locataire from './components/GestionUtilisateurs/Locataire';
 import Navs from './components/GestionUtilisateurs/Tab'
+import Admin from './components/GestionUtilisateurs/Admin';
 
 function App() {
   return (
@@ -34,6 +35,7 @@ function App() {
               <Navs></Navs>          
           </Route>
           <Route path="/locataires/:id" component={Locataire}/>
+          <Route path="/administrateurs/:id" component={Admin}/>
         </Switch>
         
       </Router>

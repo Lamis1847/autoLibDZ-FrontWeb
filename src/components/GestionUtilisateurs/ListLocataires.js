@@ -144,6 +144,9 @@ const Confirm=() => {
                     <DropdownItem onClick={() => { if (window.confirm('êtes-vous sûr de vouloir supprimer cet locataire?')) deleteLocataire( idLocataire)}}style={{color:"#F5365C"}}>
                       Supprimer
                     </DropdownItem>
+                    <DropdownItem>
+                      Valider 
+                    </DropdownItem>
                   </DropdownMenu>
                 </UncontrolledDropdown>
             </>

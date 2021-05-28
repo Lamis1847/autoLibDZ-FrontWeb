@@ -36,7 +36,8 @@ class Modals extends React.Component {
       motDePasse:"",
       salaire:0,
       submitted: false,
-      exampleModal: false
+      exampleModal: false,
+      message:''
     };
   }
   toggleModal = state => {
@@ -90,8 +91,8 @@ class Modals extends React.Component {
           submitted: true,
         });        
       })
-      .catch(e => {
-          console.log(e)
+      .catch(err => { 
+        this.setState({message: "assurer que tout les champs sont remplis ainsi que le mot de passe et l'email sont valides!"});
       });
   }
 
@@ -102,7 +103,8 @@ class Modals extends React.Component {
       email:"",
       motDePasse:"",
       salaire:"",
-      submitted: false
+      submitted: false,
+      message:""
     });
   }
   refreshPage() {
@@ -164,6 +166,9 @@ class Modals extends React.Component {
                   <CardBody className="px-lg-5 py-lg-5">
                     <div className="text-center text-muted mb-4">
                      <h1>Ajouter un nouvel administrateur</h1> 
+                    </div>
+                    <div className="text-center">
+                     <p> {this.state.message}</p> 
                     </div>
                     <Form role="form">
                     <FormGroup>
@@ -235,13 +240,18 @@ class Modals extends React.Component {
                             onChange={this.onChangeMDP}
                             name="mdb"
                           placeholder="Mot de passe" />
+    
                         </InputGroup>
+                        <div className="text-center">
+                        <p>le mot de passe doit contenir au moins une majuscule, et au moins 8 caractéres</p>
+                        </div>
+                       
                       </FormGroup>
                       <FormGroup className="mb-3">
                         <InputGroup className="input-group-alternative">
                           <InputGroupAddon addonType="prepend">
                             <InputGroupText>
-                              <i className="ni ni-email-83" />
+                              <i className="ni ni-money-coins" />
                             </InputGroupText>
                           </InputGroupAddon>
                           <Input placeholder="Salaire"
@@ -250,6 +260,7 @@ class Modals extends React.Component {
                            id="salaire"
                            required
                            value={this.state.salaire}
+                           min='0'
                            onChange={this.onChangeSalaire}
                            name="salaire"/>
                         </InputGroup>
