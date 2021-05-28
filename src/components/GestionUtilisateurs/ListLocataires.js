@@ -162,6 +162,7 @@ const Confirm=() => {
     print:false,
     viewColumns:false,
     filterType: "dropdown",
+    elevation:0,
     responsive,
     tableBodyHeight,
     tableBodyMaxHeight,

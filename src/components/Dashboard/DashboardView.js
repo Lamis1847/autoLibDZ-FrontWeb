@@ -1,0 +1,275 @@
+import React, { useState, useEffect, useCallback,useLayoutEffect,forceUpdate } from "react";
+// javascipt plugin for creating charts
+import Chart from "chart.js";
+// react plugin used to create charts
+import { Line, Bar } from "react-chartjs-2";
+// reactstrap components
+import { Card, CardBody,Container,Row,Col } from "reactstrap";
+
+// core components
+import {
+    chartOptions,
+    parseOptions,
+    chartExample2
+  } from "./variables/charts.js";
+
+import axios from "axios";
+
+import BarChart from './BarChart';
+import StatsCard from './StatsCard';
+
+const DashboardView = () => {
+
+    const [locationsStats, setLocationsStats] = useState({
+        locationsParMois : [],
+        years:[],
+        currentYear: 0,
+        bySeason:false,
+        labels: ["Jan","Feb","Mar","Apr","Mai","Jun","Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+    })
+
+    const [abonnementsStats, setAbonnementsStats] = useState({
+        abonnementsParMois : [],
+        years:[],
+        currentYear: 0,
+        bySeason:false,
+        labels: ["Jan","Feb","Mar","Apr","Mai","Jun","Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+    })
+    
+    if (window.Chart) {
+        parseOptions(Chart, chartOptions());
+    }
+
+
+    useEffect(()=>{
+        loadLocationsStatsAll();
+        loadAbonnementsStatsAll();
+    },[]);
+
+    const api_url="https://autolib-dz.herokuapp.com/api";
+    //const api_url="http://localhost:4000/api";
+
+    const loadLocationsStats = useCallback(async (year,bySeason) => {
+        try{
+            const LocationsStatsFromServer = await fetchLocationsStats(year)
+            let transform = [0,0,0,0,0,0,0,0,0,0,0,0]
+            LocationsStatsFromServer.map((trajet)=>(
+                transform[parseInt(trajet.month)-1]=parseInt(trajet.countTrajets)
+            ))
+            if(bySeason){
+                setLocationsStats((prevState)=>({
+                    ...prevState,
+                    bySeason:true,
+                    labels : ["Winter","Spring","Summer","Fall"],
+                    locationsParMois:[transform[0]+transform[1]+transform[2],
+                    transform[3]+transform[4]+transform[5],
+                    transform[6]+transform[7]+transform[8],
+                    transform[9]+transform[10]+transform[11]]
+                }))
+            }
+            else{
+                setLocationsStats((prevState)=>({
+                    ...prevState,
+                    locationsParMois:transform,
+                    bySeason:false,
+                    labels : ["Jan","Feb","Mar","Apr","Mai","Jun","Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]      
+                }))
+            }
+            console.log(locationsStats)
+        }
+        catch(e){}
+    })
+
+    const loadAbonnementsStats = useCallback(async (year,bySeason) => {
+        try{
+            const AbonnementsStatsFromServer = await fetchAbonnementsStats(year)
+            let transform = [0,0,0,0,0,0,0,0,0,0,0,0]
+            AbonnementsStatsFromServer.map((trajet)=>(
+                transform[parseInt(trajet.month)-1]=parseInt(trajet.countAbonnements)
+            ))
+            if(bySeason){
+                setAbonnementsStats((prevState)=>({
+                    ...prevState,
+                    bySeason:true,
+                    labels : ["Winter","Spring","Summer","Fall"],
+                    abonnementsParMois:[transform[0]+transform[1]+transform[2],
+                    transform[3]+transform[4]+transform[5],
+                    transform[6]+transform[7]+transform[8],
+                    transform[9]+transform[10]+transform[11]]
+                }))
+            }
+            else{
+                setAbonnementsStats((prevState)=>({
+                    ...prevState,
+                    abonnementsParMois:transform,
+                    bySeason:false,
+                    labels : ["Jan","Feb","Mar","Apr","Mai","Jun","Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]      
+                }))
+            }
+        }
+        catch(e){}
+    })
+
+    const loadLocationsStatsAll = async () => {
+        try{
+            const locationsYearsFromServer = await fetchLocationsYears();
+            let years = new Set()
+            locationsYearsFromServer.map((object)=>(
+                years.add(parseInt(object.year))
+            ));
+            let yearsTab=[]
+            years.forEach((value)=>(
+                yearsTab.unshift(value)
+            ))
+            setLocationsStats((prevState)=>({
+                ...prevState,
+                years:yearsTab,
+                currentYear:yearsTab[0],
+            }))
+            loadLocationsStats(yearsTab[0],false)
+        }
+        catch(e){}
+    }
+
+    const loadAbonnementsStatsAll = async () => {
+        try{
+            const abonnementsYearsFromServer = await fetchAbonnemenetsYears();
+            let years = new Set()
+            abonnementsYearsFromServer.map((object)=>(
+                years.add(parseInt(object.year))
+            ));
+            let yearsTab=[]
+            years.forEach((value)=>(
+                yearsTab.unshift(value)
+            ))
+            setAbonnementsStats((prevState)=>({
+                ...prevState,
+                years:yearsTab,
+                currentYear:yearsTab[0],
+            }))
+            loadAbonnementsStats(yearsTab[0],false)
+        }
+        catch(e){}
+    }
+
+    const changeLocationsYear = async (id)=> {
+        setLocationsStats({...locationsStats,currentYear:id})
+        await loadLocationsStats(id,locationsStats.bySeason)
+    }
+
+    const changeAbonnementsYear = async (id)=> {
+        setAbonnementsStats({...abonnementsStats,currentYear:id})
+        await loadAbonnementsStats(id,abonnementsStats.bySeason)
+        
+    }
+
+    const changeLocationsShowBy = async (by) =>{
+        if(by == "season" && !locationsStats.bySeason){
+            loadLocationsStats(locationsStats.currentYear,true)
+        }
+        else
+        if(by=="month" && locationsStats.bySeason){
+            loadLocationsStats(locationsStats.currentYear,false)
+        }
+    }
+
+    const changeAbonnementsShowBy = async (by) =>{
+        if(by == "season" && !abonnementsStats.bySeason){
+            loadAbonnementsStats(abonnementsStats.currentYear,true)
+        }
+        else
+        if(by=="month" && abonnementsStats.bySeason){
+            loadAbonnementsStats(abonnementsStats.currentYear,false)
+        }
+    }
+
+    // fetch Locations Stats
+    const fetchLocationsStats = async (year) => {
+        let stats = []
+        await axios.get(`${api_url}/trajet/countByMonth/${year}`)
+            .then(res => {
+                stats = res.data
+            })
+        return stats     
+    }
+
+    // fetch Abonnements Stats
+    const fetchAbonnementsStats = async (year) => {
+        let stats = []
+        await axios.get(`${api_url}/abonnement/countByMonth/${year}`)
+            .then(res => {
+                stats = res.data
+            })
+        return stats     
+    }
+
+    // fetch Location Years
+    const fetchLocationsYears = async () => {
+        let years = []
+        await axios.get(`${api_url}/trajet/getYears`)
+            .then(res => {
+                years = res.data
+            })
+        return years
+            
+    }
+
+    // fetch Abonnements Years
+    const fetchAbonnemenetsYears = async () => {
+        let years = []
+        await axios.get(`${api_url}/abonnement/getYears`)
+            .then(res => {
+                years = res.data
+            })
+        return years
+            
+    }
+      
+
+    return(
+        <div className="main-content">
+            <Container className="mt-5" fluid>
+                <Row>
+                    <BarChart
+                        data={locationsStats.locationsParMois}
+                        filters={locationsStats.years}
+                        currFilter={locationsStats.currentYear}
+                        message={"Les locations effectuées par "}
+                        labels={locationsStats.labels}
+                        onChangeFilter={changeLocationsYear}
+                        changeShowBy ={changeLocationsShowBy}
+                        bySeason={locationsStats.bySeason}
+                        col={"9"}
+                        dark={false}
+                        icon={"fas fa-car"}
+                    />
+                    <StatsCard
+                        text={"Taux de défaillance"}
+                        value={98}
+                        percentage={true}
+                        textColor={"danger"}
+                        icon={"fas fa-car-crash"}
+                    />
+                </Row>
+                <Row className="mt-3">
+                    <BarChart
+                        data={abonnementsStats.abonnementsParMois}
+                        filters={abonnementsStats.years}
+                        currFilter={abonnementsStats.currentYear}
+                        message={"Nombre d'abonnements par "}
+                        labels={abonnementsStats.labels}
+                        onChangeFilter={changeAbonnementsYear}
+                        changeShowBy ={changeAbonnementsShowBy}
+                        bySeason={abonnementsStats.bySeason}
+                        col={"12"}
+                        dark={true}
+                        icon={"fas fa-user-plus"}
+                    />
+                </Row>
+            </Container>
+        </div>
+    )
+
+}
+
+export default DashboardView;
