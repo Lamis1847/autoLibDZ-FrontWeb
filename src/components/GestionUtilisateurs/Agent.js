@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import AdminService from "../../services/AdministrateurService";
+import AgentService from "../../services/AgentService";
 import {
     Button,
     Card,
@@ -14,21 +14,21 @@ import {
   } from "reactstrap";
   
 
-const Admin = props => {
-  const initialAdminState = {
-    idAdministrateur: null,
+const Agent = props => {
+  const initialAgentState = {
+    idAgentMaintenance: null,
     nom: "",
     prenom: "", 
     email:"",
     salaire:0
 };
-  const [currentAdmin, setCurrentAdmin] = useState(initialAdminState);
+  const [currentAgent, setCurrentAgent] = useState(initialAgentState);
   const [message, setMessage] = useState("");
  
-  const getAdmin = idAdministrateur => {
-    AdminService.get(idAdministrateur)
+  const getAgent =idAgentMaintenance => {
+    AgentService.get(idAgentMaintenance)
       .then(response => {
-        setCurrentAdmin(response.data);
+        setCurrentAgent(response.data);
         console.log(response.data);
       })
       .catch(e => {
@@ -39,20 +39,20 @@ const Admin = props => {
   useEffect(() => {
 
     console.log(props.match.params.id);
-    getAdmin(props.match.params.id);
+    getAgent(props.match.params.id);
   }, [props.match.params.id]);
 
 
   const handleInputChange = event => {
     const { name, value } = event.target;
-    setCurrentAdmin({ ...currentAdmin, [name]: value });
+    setCurrentAgent({ ...currentAgent, [name]: value });
   };
-  const updateAdmin = (event) => {
+  const updateAgent= (event) => {
     event.preventDefault();
-    AdminService.update(currentAdmin.idAdministrateur, currentAdmin)
+    AgentService.update(currentAgent.idAgentMaintenance, currentAgent)
       .then(response => {
         console.log(response.data);
-        setMessage("L'administrateur est modifié avec succée!");
+        setMessage("L'agent est modifié avec succée!");
       })
       .catch(e => {
         console.log(e);
@@ -64,14 +64,14 @@ const Admin = props => {
       <div className="mt-40">
         <Container fluid >
           <div style={{padding:"12px"}}>
-            <h1>Modifier un Administrateur </h1>
+            <h1>Modifier un Agent de maintenance </h1>
           </div>
  <div className="modal-body p-0">
- {currentAdmin ? (
+ {currentAgent ? (
 <Card className="bg-secondary shadow border-0">
   <CardBody className="px-lg-5 py-lg-5">
     
-    <Form role="form" onSubmit={updateAdmin}>
+    <Form role="form" onSubmit={updateAgent}>
     <FormGroup>
         <InputGroup className="input-group-alternative">
           <InputGroupAddon addonType="prepend">
@@ -85,7 +85,7 @@ const Admin = props => {
             type="text"
               id="nom"
               name="nom"
-              value={currentAdmin.nom}
+              value={currentAgent.nom}
               onChange={handleInputChange} />
         </InputGroup>
       </FormGroup>
@@ -102,7 +102,7 @@ const Admin = props => {
               className="form-control"
               id="prenom"
               name="prenom"
-              value={currentAdmin.prenom}
+              value={currentAgent.prenom}
               onChange={handleInputChange} />
         </InputGroup>
       </FormGroup>
@@ -119,7 +119,7 @@ const Admin = props => {
               className="form-control"
               id="email"
               name="email"
-              value={currentAdmin.email}
+              value={currentAgent.email}
               onChange={handleInputChange}/>
         </InputGroup>
       </FormGroup>   
@@ -136,7 +136,7 @@ const Admin = props => {
               className="form-control"
               id="salaire"
               name="salaire"
-              value={currentAdmin.salaire}
+              value={currentAgent.salaire}
               onChange={handleInputChange}/>
         </InputGroup>
       </FormGroup>   
@@ -170,4 +170,4 @@ const Admin = props => {
   );
 };
 
-export default Admin;
+export default Agent;

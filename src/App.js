@@ -13,6 +13,7 @@ import {BrowserRouter as Router, Switch, Route} from "react-router-dom"
 import Locataire from './components/GestionUtilisateurs/Locataire';
 import Navs from './components/GestionUtilisateurs/Tab'
 import Admin from './components/GestionUtilisateurs/Admin';
+import Agent from './components/GestionUtilisateurs/Agent';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
       <Router>
         <Sidebar> 
         </Sidebar>
+
         <Switch>
           <Route path="/dashboard">
             <DashboardView></DashboardView>
@@ -44,6 +46,7 @@ function App() {
           </Route>
           <Route path="/locataires/:id" component={Locataire}/>
           <Route path="/administrateurs/:id" component={Admin}/>
+          <Route path="/agents/:id" component={Agent}/>
         </Switch>
         
       </Router>

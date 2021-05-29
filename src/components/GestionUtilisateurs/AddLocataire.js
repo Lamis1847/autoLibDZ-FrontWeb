@@ -64,13 +64,14 @@ class Modals extends React.Component {
       motDePasse: e.target.value
     });
   }
-  saveLocataire() {
+  saveLocataire(event) {
     var data = {
       nom: this.state.nom,
       prenom: this.state.prenom,
       email: this.state.email,
       motDePasse: this.state.motDePasse,
     };
+    event.preventDefault()
 
     LocataireService.create(data)
       .then(response => {
@@ -84,7 +85,7 @@ class Modals extends React.Component {
         });     
       })
       .catch(err => { 
-        this.setState({message: "assurer que tout les champs sont remplis ainsi que l'email est valide et n'est pas utilisé !"});
+        this.setState({message: "l'email est déja utilisé !!"});
       });
   }
 
@@ -161,7 +162,7 @@ class Modals extends React.Component {
                     <div className="text-center">
                      <p> {this.state.message}</p> 
                     </div>
-                    <Form role="form">
+                    <Form role="form" onSubmit={this.saveLocataire}>
                     <FormGroup>
                         <InputGroup className="input-group-alternative">
                           <InputGroupAddon addonType="prepend">
@@ -238,8 +239,7 @@ class Modals extends React.Component {
                         <Button
                           className="my-4"
                           color="default"
-                          type="button"
-                          onClick={this.saveLocataire}
+                          type="submit"
                         >
                           Confirmer l'ajout
                         </Button>
