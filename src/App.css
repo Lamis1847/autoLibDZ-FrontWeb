@@ -1,0 +1,21 @@
+*{
+    font-family: Nunito;
+}
+.leaflet-container {
+  width: 100wh;
+  height: 100vh;
+}
+
+::-webkit-scrollbar {
+  width : 5pt;
+}
+
+::-webkit-scrollbar-track{
+  background:#252834;
+}
+
+::-webkit-scrollbar-thumb{
+  background-color: #868FAC;
+  border-radius: 25pt;
+}
+

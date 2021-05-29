@@ -13,12 +13,10 @@
   --shadow : rgba(36, 36, 36, 0.178);
 }
 
-@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@1,400;1,700&display=swap');
-
 body {
   margin: 0;
   user-select: none;
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Nunito-Regular';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #252834;
@@ -128,4 +126,8 @@ button span {
 
 .ColoredBand{
   background-color: var(--gray2);
+}
+@font-face {
+  font-family: 'Nunito-Regular';
+  src: local('Nunito-Regular'), url(./assets/fonts/Nunito-Regular.ttf) format('truetype');
 }

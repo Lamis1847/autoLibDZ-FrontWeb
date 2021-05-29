@@ -1,5 +1,5 @@
 import React, { useState } from 'react' ;
-import {api, setCookie} from "./scripts/Network.js" ;
+import {api, setCookie} from "../../scripts/Network.js" ;
 
 const Connexion = () => {
     
