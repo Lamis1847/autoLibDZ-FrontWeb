@@ -15,6 +15,7 @@ import {
   DropdownMenu,
   DropdownItem, 
 } from "reactstrap";
+import Valide from "./ValideLocataire";
 const Confirm=() => {
 
   const [locataires, setLocataires] = useState([]);
@@ -196,6 +197,7 @@ const Confirm=() => {
                
                 <div style={{paddingBottom:"6px"}}>
                 <AddModal></AddModal>
+                <Valide></Valide>
                 </div>
               
                 </Col>
