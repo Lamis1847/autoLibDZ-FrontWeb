@@ -14,7 +14,6 @@
     "bootstrap": "4.6.0",
     "chart.js": "2.9.4",
     "classnames": "2.2.6",
-    "dotenv": "^9.0.2",
     "leaflet": "^1.7.1",
     "lodash": "^4.17.21",
     "mdbreact": "^5.0.2",
