@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import LocataireService from "../../services/LocataireService";
+import AgentService from "../../services/AgentService";
 import {
     Button,
     Card,
@@ -14,21 +14,21 @@ import {
   } from "reactstrap";
   
 
-const Locataire = props => {
-  const initialLocataireState = {
-    idLocataire: null,
+const Agent = props => {
+  const initialAgentState = {
+    idAgentMaintenance: null,
     nom: "",
     prenom: "", 
     email:"",
-    Active:"false"
+    salaire:0
 };
-  const [currentLocataire, setCurrentLocataire] = useState(initialLocataireState);
+  const [currentAgent, setCurrentAgent] = useState(initialAgentState);
   const [message, setMessage] = useState("");
  
-  const getLoacatire = idLocataire => {
-    LocataireService.get(idLocataire)
+  const getAgent =idAgentMaintenance => {
+    AgentService.get(idAgentMaintenance)
       .then(response => {
-        setCurrentLocataire(response.data);
+        setCurrentAgent(response.data);
         console.log(response.data);
       })
       .catch(e => {
@@ -39,31 +39,20 @@ const Locataire = props => {
   useEffect(() => {
 
     console.log(props.match.params.id);
-    getLoacatire(props.match.params.id);
+    getAgent(props.match.params.id);
   }, [props.match.params.id]);
 
 
-const updateActive = status => {
-    LocataireService.block(currentLocataire.idLocataire)
-      .then(response => {
-        setCurrentLocataire({ ...currentLocataire, Active: status });
-        console.log(response.data);
-        setMessage("Le status et modifié avec succée!");
-      })
-      .catch(e => {
-        console.log(e);
-      });
-  };
   const handleInputChange = event => {
     const { name, value } = event.target;
-    setCurrentLocataire({ ...currentLocataire, [name]: value });
+    setCurrentAgent({ ...currentAgent, [name]: value });
   };
-  const updateLocataire = (event) => {
+  const updateAgent= (event) => {
     event.preventDefault();
-    LocataireService.update(currentLocataire.idLocataire, currentLocataire)
+    AgentService.update(currentAgent.idAgentMaintenance, currentAgent)
       .then(response => {
         console.log(response.data);
-        setMessage("Le locataire est modifié avec succée!");
+        setMessage("L'agent est modifié avec succée!");
       })
       .catch(e => {
         console.log(e);
@@ -75,14 +64,14 @@ const updateActive = status => {
       <div className="mt-40">
         <Container fluid >
           <div style={{padding:"12px"}}>
-            <h1>Modifier un locataire </h1>
+            <h1>Modifier un Agent de maintenance </h1>
           </div>
  <div className="modal-body p-0">
- {currentLocataire ? (
-<Card className="bg-secondary shadow border-0" >
+ {currentAgent ? (
+<Card className="bg-secondary shadow border-0">
   <CardBody className="px-lg-5 py-lg-5">
     
-    <Form role="form" onSubmit={updateLocataire}>
+    <Form role="form" onSubmit={updateAgent}>
     <FormGroup>
         <InputGroup className="input-group-alternative">
           <InputGroupAddon addonType="prepend">
@@ -96,7 +85,7 @@ const updateActive = status => {
             type="text"
               id="nom"
               name="nom"
-              value={currentLocataire.nom}
+              value={currentAgent.nom}
               onChange={handleInputChange} />
         </InputGroup>
       </FormGroup>
@@ -113,7 +102,7 @@ const updateActive = status => {
               className="form-control"
               id="prenom"
               name="prenom"
-              value={currentLocataire.prenom}
+              value={currentAgent.prenom}
               onChange={handleInputChange} />
         </InputGroup>
       </FormGroup>
@@ -130,31 +119,32 @@ const updateActive = status => {
               className="form-control"
               id="email"
               name="email"
-              value={currentLocataire.email}
+              value={currentAgent.email}
               onChange={handleInputChange}/>
         </InputGroup>
       </FormGroup>   
-      <div className="text-center">
-      <div className="form-group">
-            <label>
-              <strong>Status : </strong>
-            </label>
-            {currentLocataire.Active ? " Actif" : " Bloqué"}
-          </div>
-      {currentLocataire.Active ? (
-          <Button color="danger" type="button"   onClick={() => updateActive(false)}>
-              Bloquer
-            </Button>
-        ) : (
-            <Button color="success" type="button"   onClick={() => updateActive(true)}>
-                Débloquer
-          </Button>
-        )}
-
+      <FormGroup className="mb-3">
+        <InputGroup className="input-group-alternative">
+          <InputGroupAddon addonType="prepend">
+            <InputGroupText>
+              <i className="ni ni-dolar" />
+            </InputGroupText>
+          </InputGroupAddon>
+          <Input 
+           required
+           type="number"
+              className="form-control"
+              id="salaire"
+              name="salaire"
+              value={currentAgent.salaire}
+              onChange={handleInputChange}/>
+        </InputGroup>
+      </FormGroup>   
+      <div className="text-center">   
             <Button color="default" type="submit">
                 Modifier
           </Button>  
-        </div>    
+        </div>     
         <br></br>
         <br></br>
         <div className="text-center">
@@ -180,4 +170,4 @@ const updateActive = status => {
   );
 };
 
-export default Locataire;
+export default Agent;

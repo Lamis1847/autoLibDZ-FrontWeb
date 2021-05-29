@@ -6,7 +6,7 @@ import React,{useEffect,useMemo,useState,useRef,useTable} from "react";
 import  AgentService from "../../services/AgentService";
 
 import {NavLink} from 'react-router-dom';
-import AddModal from './AddAdmin';
+import AddModal from './AddAgent';
 import { withRouter } from "react-router-dom";
 import {
   UncontrolledDropdown,
@@ -17,6 +17,7 @@ import {
 const ListAgents=() => {
 
   const [agents, setAgents] = useState([]);
+  const [rowIndex, setRowIndex] = useState();
   const AgentsRef = useRef();
   AgentsRef.current =agents;  
   const retrieveAgents = () => {
@@ -158,6 +159,7 @@ const ListAgents=() => {
     isRowSelectable:false,
     onRowClick: (rowData, rowState) => {
       setIdAgent(rowData[0]);
+      setRowIndex(rowState.rowIndex);
       console.log(rowData);
       console.log(idAgent);
     },
@@ -172,7 +174,7 @@ const ListAgents=() => {
       .then((response) => {
       
         let newAgents = [...AgentsRef.current];
-        newAgents.splice(idAgent, 1);
+        newAgents.splice(rowIndex, 1);
         setAgents(newAgents);
       })
       .catch((e) => {
@@ -183,7 +185,16 @@ const ListAgents=() => {
   
   return (
           <>
-            
+          <Row>
+                <Col>
+               
+                <div style={{paddingBottom:"6px"}}>
+                <AddModal></AddModal>
+                </div>
+              
+                </Col>
+
+            </Row>
             <MUIDataTable
                title="Liste des agents de maintenance"
               data={listeAgents}
