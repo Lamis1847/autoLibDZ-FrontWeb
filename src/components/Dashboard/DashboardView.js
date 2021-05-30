@@ -20,8 +20,8 @@ import StatsCard from './StatsCard';
 
 const DashboardView = () => {
 
-    const api_url="https://autolib-dz.herokuapp.com/api";
-    //const api_url="http://localhost:4000/api";
+    //const api_url="https://autolib-dz.herokuapp.com/api";
+    const api_url="http://localhost:4000/api";
 
     if (window.Chart) {
         parseOptions(Chart, chartOptions());
@@ -43,9 +43,16 @@ const DashboardView = () => {
         labels: ["Jan","Feb","Mar","Apr","Mai","Jun","Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
     })
 
+    const [tauxDef,setTauxDef] = useState({
+        total: 0 ,
+        enPanne: 0,
+        percent: 0
+    })
+
     useEffect(()=>{
         loadLocationsStatsAll();
         loadAbonnementsStatsAll();
+        loadTauxDef();
     },[]);
 
     // Charger les locations par mois ou par saison
@@ -232,8 +239,33 @@ const DashboardView = () => {
         return years
             
     }
-      
 
+
+    // Charger le taux de deffaillance
+    const loadTauxDef = useCallback(async () => {
+        try{
+            const resultFromServer = await fetchTauxDef()
+            setTauxDef({
+                total: parseInt(resultFromServer[0].countAll),
+                enPanne:parseInt(resultFromServer[1].countHorsService),
+                percent: parseInt((parseInt(resultFromServer[1].countHorsService) / 
+                parseInt(resultFromServer[0].countAll)) * 100)
+            })
+        }
+        catch(e){}
+    })
+    
+    // fetch les données pour taux def
+    const fetchTauxDef = async () => {
+        let stats = []
+        await axios.get(`${api_url}/vehicules/count`)
+            .then(res => {
+                stats = res.data
+            })
+        return stats     
+    }
+
+      
     return(
         <div className="main-content">
             <Container className="mt-5" fluid>
@@ -253,7 +285,7 @@ const DashboardView = () => {
                     />
                     <StatsCard
                         text={"Taux de défaillance"}
-                        value={98}
+                        value={tauxDef.percent}
                         percentage={true}
                         textColor={"danger"}
                         icon={"fas fa-car-crash"}
