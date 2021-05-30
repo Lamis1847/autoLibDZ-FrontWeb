@@ -14,6 +14,8 @@ import Locataire from './components/GestionUtilisateurs/Locataire';
 import Navs from './components/GestionUtilisateurs/Tab'
 import Admin from './components/GestionUtilisateurs/Admin';
 import Agent from './components/GestionUtilisateurs/Agent';
+import Operateur from './components/GestionUtilisateurs/Operateur';
+import Dirigeant from './components/GestionUtilisateurs/Dirigeant';
 
 function App() {
   return (
@@ -47,6 +49,8 @@ function App() {
           <Route path="/locataires/:id" component={Locataire}/>
           <Route path="/administrateurs/:id" component={Admin}/>
           <Route path="/agents/:id" component={Agent}/>
+          <Route path="/operateurs/:id" component={Operateur}/>
+          <Route path="/dirigeants/:id" component={Dirigeant}/>
         </Switch>
         
       </Router>
