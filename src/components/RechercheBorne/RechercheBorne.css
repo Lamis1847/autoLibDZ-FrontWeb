@@ -1,0 +1,55 @@
+body{
+    margin: 0;
+    padding: 0;
+    background-color: #E2ECF1;
+}
+
+Form{
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+
+    margin-right: 3%;
+    padding: 0;
+}
+
+Form:first-child{
+    width: 100%;
+}
+
+.rb-headline{
+    display: flex;
+    flex-direction: row;
+    align-items:center;
+    justify-content:right;
+}
+
+.rb-headline h1{
+    margin-right: 3%;
+}
+
+
+.rb-flex{
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    justify-content: space-between;
+    
+}
+
+Input{
+    margin-left: 2%;
+}
+
+a > img:hover{
+    cursor: pointer;
+}
+
+/** Overriding reactstrap propreties **/
+.custom-btn-default{
+    background-color: #252834;
+    color: #ffffff;
+}
+
