@@ -20,6 +20,13 @@ import StatsCard from './StatsCard';
 
 const DashboardView = () => {
 
+    const api_url="https://autolib-dz.herokuapp.com/api";
+    //const api_url="http://localhost:4000/api";
+
+    if (window.Chart) {
+        parseOptions(Chart, chartOptions());
+    }
+
     const [locationsStats, setLocationsStats] = useState({
         locationsParMois : [],
         years:[],
@@ -35,20 +42,13 @@ const DashboardView = () => {
         bySeason:false,
         labels: ["Jan","Feb","Mar","Apr","Mai","Jun","Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
     })
-    
-    if (window.Chart) {
-        parseOptions(Chart, chartOptions());
-    }
-
 
     useEffect(()=>{
         loadLocationsStatsAll();
         loadAbonnementsStatsAll();
     },[]);
 
-    const api_url="https://autolib-dz.herokuapp.com/api";
-    //const api_url="http://localhost:4000/api";
-
+    // Charger les locations par mois ou par saison
     const loadLocationsStats = useCallback(async (year,bySeason) => {
         try{
             const LocationsStatsFromServer = await fetchLocationsStats(year)
@@ -80,6 +80,7 @@ const DashboardView = () => {
         catch(e){}
     })
 
+    // Charger les abonnements par mois ou par saison
     const loadAbonnementsStats = useCallback(async (year,bySeason) => {
         try{
             const AbonnementsStatsFromServer = await fetchAbonnementsStats(year)
@@ -110,6 +111,8 @@ const DashboardView = () => {
         catch(e){}
     })
 
+
+    // Charger les tous les statistiques pour les locations
     const loadLocationsStatsAll = async () => {
         try{
             const locationsYearsFromServer = await fetchLocationsYears();
@@ -131,6 +134,7 @@ const DashboardView = () => {
         catch(e){}
     }
 
+    // Charger les tous les statistiques pour les abonnements
     const loadAbonnementsStatsAll = async () => {
         try{
             const abonnementsYearsFromServer = await fetchAbonnemenetsYears();
@@ -152,17 +156,20 @@ const DashboardView = () => {
         catch(e){}
     }
 
+    // Changer l'année pour les locations (handle year change)
     const changeLocationsYear = async (id)=> {
         setLocationsStats({...locationsStats,currentYear:id})
         await loadLocationsStats(id,locationsStats.bySeason)
     }
 
+    // Changer l'année pour les abonnements (handle year change)
     const changeAbonnementsYear = async (id)=> {
         setAbonnementsStats({...abonnementsStats,currentYear:id})
         await loadAbonnementsStats(id,abonnementsStats.bySeason)
         
     }
 
+    // Changer le filtre d'affichage pour les locations: affichage par saison ou par mois
     const changeLocationsShowBy = async (by) =>{
         if(by == "season" && !locationsStats.bySeason){
             loadLocationsStats(locationsStats.currentYear,true)
@@ -173,6 +180,7 @@ const DashboardView = () => {
         }
     }
 
+    // Changer le filtre d'affichage pour les abonnements: affichage par saison ou par mois
     const changeAbonnementsShowBy = async (by) =>{
         if(by == "season" && !abonnementsStats.bySeason){
             loadAbonnementsStats(abonnementsStats.currentYear,true)

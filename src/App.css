@@ -1,3 +1,10 @@
+
+@font-face{
+  font-family: Nunito;
+  src: url('assets/fonts/Nunito/Nunito-Light.ttf') format('truetype');
+  font-family: Gotham;
+  src: url('assets/fonts/Gotham-Font/Gotham-Light.otf') format('truetype');
+}
 *{
     font-family: Nunito;
 }
