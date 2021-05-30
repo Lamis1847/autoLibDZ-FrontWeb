@@ -6,7 +6,7 @@ import React,{useEffect,useMemo,useState,useRef,useTable} from "react";
 import  OperateurService from "../../services/OperateurService";
 
 import {NavLink} from 'react-router-dom';
-import AddModal from './AddAdmin';
+import AddModal from './AddOperateur';
 import { withRouter } from "react-router-dom";
 import {
   UncontrolledDropdown,
@@ -31,6 +31,7 @@ const ListOperateurs=() => {
   useEffect(retrieveOperateurs, []);
   let listeOperateurs =  operateurs.map(obj => Object.values(obj));
   const [idOperateur, setIdOperateur] = useState();
+  const [rowIndex, setRowIndex] = useState();
   const [responsive, setResponsive] = useState("vertical");
   const [tableBodyHeight, setTableBodyHeight] = useState("400px");
   const [tableBodyMaxHeight, setTableBodyMaxHeight] = useState("");
@@ -150,6 +151,7 @@ const ListOperateurs=() => {
     print:false,
     viewColumns:false,
     filterType: "dropdown",
+    elevation:0,
     responsive,
     tableBodyHeight,
     tableBodyMaxHeight,
@@ -157,6 +159,7 @@ const ListOperateurs=() => {
     isRowSelectable:false,
     onRowClick: (rowData, rowState) => {
       setIdOperateur(rowData[0]);
+      setRowIndex(rowState.rowIndex);
       console.log(rowData);
       console.log(idOperateur);
     },
@@ -171,7 +174,7 @@ const ListOperateurs=() => {
       .then((response) => {
       
         let newOperateurs = [...OperateursRef.current];
-        newOperateurs.splice(idOperateur, 1);
+        newOperateurs.splice(rowIndex, 1);
         setOperateurs(newOperateurs);
       })
       .catch((e) => {
@@ -182,6 +185,16 @@ const ListOperateurs=() => {
   
   return (
           <>
+          <Row>
+                <Col>
+               
+                <div style={{paddingBottom:"6px"}}>
+                <AddModal></AddModal>
+                </div>
+              
+                </Col>
+
+            </Row>
             
             <MUIDataTable
                title="Liste des operateurs"

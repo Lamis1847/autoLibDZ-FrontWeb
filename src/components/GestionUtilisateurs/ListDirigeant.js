@@ -6,7 +6,7 @@ import React,{useEffect,useMemo,useState,useRef,useTable} from "react";
 import DirigeantService from "../../services/DirigeantService";
 
 import {NavLink} from 'react-router-dom';
-import AddModal from './AddAdmin';
+import AddModal from './AddDirigeant';
 import { withRouter } from "react-router-dom";
 import {
   UncontrolledDropdown,
@@ -31,6 +31,7 @@ const ListDirigeants=() => {
   useEffect(retrieveDirigeants, []);
   let listeDirigeants =  dirigeants.map(obj => Object.values(obj));
   const [idDirigeant, setIdDirigeant] = useState();
+  const [rowIndex, setRowIndex] = useState();
   const [responsive, setResponsive] = useState("vertical");
   const [tableBodyHeight, setTableBodyHeight] = useState("400px");
   const [tableBodyMaxHeight, setTableBodyMaxHeight] = useState("");
@@ -150,6 +151,7 @@ const ListDirigeants=() => {
     print:false,
     viewColumns:false,
     filterType: "dropdown",
+    elevation:0,
     responsive,
     tableBodyHeight,
     tableBodyMaxHeight,
@@ -157,6 +159,7 @@ const ListDirigeants=() => {
     isRowSelectable:false,
     onRowClick: (rowData, rowState) => {
       setIdDirigeant(rowData[0]);
+      setRowIndex(rowState.rowIndex);
       console.log(rowData);
       console.log(idDirigeant);
     },
@@ -171,7 +174,7 @@ const ListDirigeants=() => {
       .then((response) => {
       
         let newDirigeants = [...DirigeantsRef.current];
-        newDirigeants.splice(idDirigeant, 1);
+        newDirigeants.splice(rowIndex, 1);
         setDirigeants(newDirigeants);
       })
       .catch((e) => {
@@ -182,6 +185,16 @@ const ListDirigeants=() => {
   
   return (
           <>
+          <Row>
+                <Col>
+               
+                <div style={{paddingBottom:"6px"}}>
+                <AddModal></AddModal>
+                </div>
+              
+                </Col>
+
+            </Row>
 
             
             <MUIDataTable

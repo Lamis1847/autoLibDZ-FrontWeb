@@ -1,5 +1,5 @@
 import React from "react";
-import AdminService from "../../services/AdministrateurService";
+import DirigeantService from "../../services/DirigeantService";
 
 // reactstrap components
 import {
@@ -26,8 +26,8 @@ class Modals extends React.Component {
     this.onChangeMDP = this.onChangeMDP.bind(this);
     this.onChangeEmail = this.onChangeEmail.bind(this);
     this.onChangeSalaire = this.onChangeSalaire.bind(this);
-    this.saveAdmin = this.saveAdmin.bind(this);
-    this.newAdmin= this.newAdmin.bind(this);
+    this.saveDirigeant = this.saveDirigeant.bind(this);
+    this.newDirigeant= this.newDirigeant.bind(this);
 
     this.state = { 
       nom: "",
@@ -71,7 +71,7 @@ class Modals extends React.Component {
       salaire: e.target.value
     });
   }
-  saveAdmin(event) {
+  saveDirigeant(event) {
     var data = {
       nom: this.state.nom,
       prenom: this.state.prenom,
@@ -81,7 +81,7 @@ class Modals extends React.Component {
     };
     event.preventDefault()
 
-    AdminService.create(data)
+    DirigeantService.create(data)
       .then(response => {
         this.setState({
           nom: response.data.nom,
@@ -97,7 +97,7 @@ class Modals extends React.Component {
       });
   }
 
-  newAdmin() {
+  newDirigeant() {
     this.setState({
       nom: "",
       prenom: "", 
@@ -121,7 +121,7 @@ class Modals extends React.Component {
           onClick={() => this.toggleModal("exampleModal")}
         >
           <i className="ni ni-fat-add" />
-          Ajouter un Administrateur
+          Ajouter un Dirigeant
         </Button>  
         <Modal
         backdrop="static" keyboard={false}
@@ -138,7 +138,7 @@ class Modals extends React.Component {
 
            <Col>
               <Alert color="success">
-                  <strong>Susccés!</strong> ! vous avez ajouté un nouvel administrateur avec succées 
+                  <strong>Susccés!</strong> ! vous avez ajouté un nouveau dirigeant avec succées 
               </Alert>
            </Col>
          </Row>
@@ -166,12 +166,12 @@ class Modals extends React.Component {
             </button>
                   <CardBody className="px-lg-5 py-lg-5">
                     <div className="text-center text-muted mb-4">
-                     <h1>Ajouter un nouvel administrateur</h1> 
+                     <h1>Ajouter un nouvel dirigeant</h1> 
                     </div>
                     <div className="text-center">
                      <p> {this.state.message}</p> 
                     </div>
-                    <Form role="form" onSubmit={this.saveAdmin}>
+                    <Form role="form" onSubmit={this.saveDirigeant}>
                     <FormGroup>
                         <InputGroup className="input-group-alternative">
                           <InputGroupAddon addonType="prepend">

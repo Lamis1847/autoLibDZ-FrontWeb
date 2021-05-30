@@ -31,6 +31,7 @@ const ListAdmin=() => {
   useEffect(retrieveAdministrateurs, []);
   let listeAdministrateurs =  administrateurs.map(obj => Object.values(obj));
   const [idAdministrateur, setIdAdministrateur] = useState();
+  const [rowIndex, setRowIndex] = useState();
   const [responsive, setResponsive] = useState("vertical");
   const [tableBodyHeight, setTableBodyHeight] = useState("400px");
   const [tableBodyMaxHeight, setTableBodyMaxHeight] = useState("");
@@ -150,6 +151,7 @@ const ListAdmin=() => {
     print:false,
     viewColumns:false,
     filterType: "dropdown",
+    elevation:0,
     responsive,
     tableBodyHeight,
     tableBodyMaxHeight,
@@ -157,6 +159,7 @@ const ListAdmin=() => {
     isRowSelectable:false,
     onRowClick: (rowData, rowState) => {
       setIdAdministrateur(rowData[0]);
+      setRowIndex(rowState.rowIndex);
       console.log(rowData);
       console.log(idAdministrateur);
     },
@@ -171,7 +174,7 @@ const ListAdmin=() => {
       .then((response) => {
       
         let newAdministrateurs = [...AdministrateursRef.current];
-        newAdministrateurs.splice(idAdministrateur, 1);
+        newAdministrateurs.splice(rowIndex, 1);
         setAdministrateurs(newAdministrateurs);
       })
       .catch((e) => {
