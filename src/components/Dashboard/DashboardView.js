@@ -10,7 +10,7 @@ import { Card, CardBody,Container,Row,Col } from "reactstrap";
 import {
     chartOptions,
     parseOptions,
-    chartExample2
+    chartExample1
   } from "./variables/charts.js";
 
 import axios from "axios";
@@ -43,6 +43,14 @@ const DashboardView = () => {
         labels: ["Jan","Feb","Mar","Apr","Mai","Jun","Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
     })
 
+    const [transactionsStats, setTransactionsStats] = useState({
+        transactionsParMois : [],
+        years:[],
+        currentYear: 0,
+        bySeason:false,
+        labels: ["Jan","Feb","Mar","Apr","Mai","Jun","Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+    })
+
     const [tauxDef,setTauxDef] = useState({
         total: 0 ,
         enPanne: 0,
@@ -52,6 +60,7 @@ const DashboardView = () => {
     useEffect(()=>{
         loadLocationsStatsAll();
         loadAbonnementsStatsAll();
+        loadTransactionsStatsAll();
         loadTauxDef();
     },[]);
 
@@ -118,6 +127,36 @@ const DashboardView = () => {
         catch(e){}
     })
 
+    // Charger les transactions par mois ou par saison
+    const loadTransactionsStats = useCallback(async (year,bySeason) => {
+        try{
+            const transactionsStatsFromServer = await fetchTransactionsStats(year)
+            let transform = [0,0,0,0,0,0,0,0,0,0,0,0]
+            transactionsStatsFromServer.map((transaction)=>(
+                transform[parseInt(transaction.month)-1]=parseInt(transaction.sumTransactions)
+            ))
+            if(bySeason){
+                setTransactionsStats((prevState)=>({
+                    ...prevState,
+                    bySeason:true,
+                    labels : ["Winter","Spring","Summer","Fall"],
+                    transactionsParMois:[transform[0]+transform[1]+transform[2],
+                    transform[3]+transform[4]+transform[5],
+                    transform[6]+transform[7]+transform[8],
+                    transform[9]+transform[10]+transform[11]]
+                }))
+            }
+            else{
+                setTransactionsStats((prevState)=>({
+                    ...prevState,
+                    transactionsParMois:transform,
+                    bySeason:false,
+                    labels : ["Jan","Feb","Mar","Apr","Mai","Jun","Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]      
+                }))
+            }
+        }
+        catch(e){}
+    })
 
     // Charger les tous les statistiques pour les locations
     const loadLocationsStatsAll = async () => {
@@ -163,6 +202,28 @@ const DashboardView = () => {
         catch(e){}
     }
 
+    // Charger les tous les statistiques pour les abonnements
+    const loadTransactionsStatsAll = async () => {
+        try{
+            const transactionsYearsFromServer = await fetchTransactionsYears();
+            let years = new Set()
+            transactionsYearsFromServer.map((object)=>(
+                years.add(parseInt(object.year))
+            ));
+            let yearsTab=[]
+            years.forEach((value)=>(
+                yearsTab.unshift(value)
+            ))
+            setTransactionsStats((prevState)=>({
+                ...prevState,
+                years:yearsTab,
+                currentYear:yearsTab[0],
+            }))
+            loadTransactionsStats(yearsTab[0],false)
+        }
+        catch(e){}
+    }
+
     // Changer l'année pour les locations (handle year change)
     const changeLocationsYear = async (id)=> {
         setLocationsStats({...locationsStats,currentYear:id})
@@ -173,7 +234,12 @@ const DashboardView = () => {
     const changeAbonnementsYear = async (id)=> {
         setAbonnementsStats({...abonnementsStats,currentYear:id})
         await loadAbonnementsStats(id,abonnementsStats.bySeason)
-        
+    }
+
+    // Changer l'année pour les transactions (handle year change)
+    const changeTransactionsYear = async (id)=> {
+        setTransactionsStats({...transactionsStats,currentYear:id})
+        await loadTransactionsStats(id,transactionsStats.bySeason)
     }
 
     // Changer le filtre d'affichage pour les locations: affichage par saison ou par mois
@@ -198,6 +264,17 @@ const DashboardView = () => {
         }
     }
 
+    // Changer le filtre d'affichage pour les transactions: affichage par saison ou par mois
+    const changeTransactionsShowBy = async (by) =>{
+        if(by == "season" && !transactionsStats.bySeason){
+            loadTransactionsStats(transactionsStats.currentYear,true)
+        }
+        else
+        if(by=="month" && transactionsStats.bySeason){
+            loadTransactionsStats(transactionsStats.currentYear,false)
+        }
+    }
+
     // fetch Locations Stats
     const fetchLocationsStats = async (year) => {
         let stats = []
@@ -212,6 +289,16 @@ const DashboardView = () => {
     const fetchAbonnementsStats = async (year) => {
         let stats = []
         await axios.get(`${api_url}/abonnement/countByMonth/${year}`)
+            .then(res => {
+                stats = res.data
+            })
+        return stats     
+    }
+
+    // fetch transactions Stats
+    const fetchTransactionsStats = async (year) => {
+        let stats = []
+        await axios.get(`${api_url}/transaction/stats/${year}`)
             .then(res => {
                 stats = res.data
             })
@@ -233,6 +320,17 @@ const DashboardView = () => {
     const fetchAbonnemenetsYears = async () => {
         let years = []
         await axios.get(`${api_url}/abonnement/getYears`)
+            .then(res => {
+                years = res.data
+            })
+        return years
+            
+    }
+
+    // fetch Transactions Years
+    const fetchTransactionsYears = async () => {
+        let years = []
+        await axios.get(`${api_url}/transaction/getYears`)
             .then(res => {
                 years = res.data
             })
@@ -282,6 +380,7 @@ const DashboardView = () => {
                         col={"9"}
                         dark={false}
                         icon={"fas fa-car"}
+                        dataSetLabel={"Number"}
                     />
                     <StatsCard
                         text={"Taux de défaillance"}
@@ -304,6 +403,24 @@ const DashboardView = () => {
                         col={"12"}
                         dark={true}
                         icon={"fas fa-user-plus"}
+                        dataSetLabel={"Number"}
+                    />
+                </Row>
+                <Row className="mt-3">
+                    <BarChart
+                        data={transactionsStats.transactionsParMois}
+                        filters={transactionsStats.years}
+                        currFilter={transactionsStats.currentYear}
+                        message={"Somme de transactions par "}
+                        labels={transactionsStats.labels}
+                        onChangeFilter={changeTransactionsYear}
+                        changeShowBy ={changeTransactionsShowBy}
+                        bySeason={transactionsStats.bySeason}
+                        col={"12"}
+                        dark={false}
+                        icon={"fas fa-money-bill-alt"}
+                        line={true}
+                        dataSetLabel={"Sum"}
                     />
                 </Row>
             </Container>

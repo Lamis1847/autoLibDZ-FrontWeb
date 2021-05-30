@@ -26,3 +26,21 @@
   border-radius: 25pt;
 }
 
+.bg-dark{
+  background-color: #252834!important;
+}
+
+.bg-yellow{
+  background-color: #FFCB00!important;
+}
+
+.btn-dark{
+  background-color: #252834!important;
+  color:white!important;
+}
+
+.btn-yellow{
+  background-color: #FFCB00!important;
+  color:white!important;
+}
+

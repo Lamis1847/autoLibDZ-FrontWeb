@@ -101,10 +101,10 @@ class Sidebar extends React.Component {
     }
     return (
       <Navbar
-        className="navbar-vertical fixed-left navbar-light"
+        className="navbar-vertical fixed-left navbar-light bg-dark"
         expand="md"
         id="sidenav-main"
-        style={{"height" : "100%", "backgroundColor" : "#252834"}}
+        style={{"height" : "100%"}}
       >
         <Container fluid>
           {/* Toggler */}
