@@ -10,7 +10,7 @@ import { Card, CardBody,Container,Row,Col } from "reactstrap";
 import {
     chartOptions,
     parseOptions,
-    chartExample2
+    chartExample1
   } from "./variables/charts.js";
 
 import axios from "axios";
@@ -19,6 +19,13 @@ import BarChart from './BarChart';
 import StatsCard from './StatsCard';
 
 const DashboardView = () => {
+
+    //const api_url="https://autolib-dz.herokuapp.com/api";
+    const api_url="http://localhost:4000/api";
+
+    if (window.Chart) {
+        parseOptions(Chart, chartOptions());
+    }
 
     const [locationsStats, setLocationsStats] = useState({
         locationsParMois : [],
@@ -35,20 +42,29 @@ const DashboardView = () => {
         bySeason:false,
         labels: ["Jan","Feb","Mar","Apr","Mai","Jun","Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
     })
-    
-    if (window.Chart) {
-        parseOptions(Chart, chartOptions());
-    }
 
+    const [transactionsStats, setTransactionsStats] = useState({
+        transactionsParMois : [],
+        years:[],
+        currentYear: 0,
+        bySeason:false,
+        labels: ["Jan","Feb","Mar","Apr","Mai","Jun","Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+    })
+
+    const [tauxDef,setTauxDef] = useState({
+        total: 0 ,
+        enPanne: 0,
+        percent: 0
+    })
 
     useEffect(()=>{
         loadLocationsStatsAll();
         loadAbonnementsStatsAll();
+        loadTransactionsStatsAll();
+        loadTauxDef();
     },[]);
 
-    const api_url="https://autolib-dz.herokuapp.com/api";
-    //const api_url="http://localhost:4000/api";
-
+    // Charger les locations par mois ou par saison
     const loadLocationsStats = useCallback(async (year,bySeason) => {
         try{
             const LocationsStatsFromServer = await fetchLocationsStats(year)
@@ -80,6 +96,7 @@ const DashboardView = () => {
         catch(e){}
     })
 
+    // Charger les abonnements par mois ou par saison
     const loadAbonnementsStats = useCallback(async (year,bySeason) => {
         try{
             const AbonnementsStatsFromServer = await fetchAbonnementsStats(year)
@@ -110,6 +127,38 @@ const DashboardView = () => {
         catch(e){}
     })
 
+    // Charger les transactions par mois ou par saison
+    const loadTransactionsStats = useCallback(async (year,bySeason) => {
+        try{
+            const transactionsStatsFromServer = await fetchTransactionsStats(year)
+            let transform = [0,0,0,0,0,0,0,0,0,0,0,0]
+            transactionsStatsFromServer.map((transaction)=>(
+                transform[parseInt(transaction.month)-1]=parseInt(transaction.sumTransactions)
+            ))
+            if(bySeason){
+                setTransactionsStats((prevState)=>({
+                    ...prevState,
+                    bySeason:true,
+                    labels : ["Winter","Spring","Summer","Fall"],
+                    transactionsParMois:[transform[0]+transform[1]+transform[2],
+                    transform[3]+transform[4]+transform[5],
+                    transform[6]+transform[7]+transform[8],
+                    transform[9]+transform[10]+transform[11]]
+                }))
+            }
+            else{
+                setTransactionsStats((prevState)=>({
+                    ...prevState,
+                    transactionsParMois:transform,
+                    bySeason:false,
+                    labels : ["Jan","Feb","Mar","Apr","Mai","Jun","Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]      
+                }))
+            }
+        }
+        catch(e){}
+    })
+
+    // Charger les tous les statistiques pour les locations
     const loadLocationsStatsAll = async () => {
         try{
             const locationsYearsFromServer = await fetchLocationsYears();
@@ -131,6 +180,7 @@ const DashboardView = () => {
         catch(e){}
     }
 
+    // Charger les tous les statistiques pour les abonnements
     const loadAbonnementsStatsAll = async () => {
         try{
             const abonnementsYearsFromServer = await fetchAbonnemenetsYears();
@@ -152,17 +202,47 @@ const DashboardView = () => {
         catch(e){}
     }
 
+    // Charger les tous les statistiques pour les abonnements
+    const loadTransactionsStatsAll = async () => {
+        try{
+            const transactionsYearsFromServer = await fetchTransactionsYears();
+            let years = new Set()
+            transactionsYearsFromServer.map((object)=>(
+                years.add(parseInt(object.year))
+            ));
+            let yearsTab=[]
+            years.forEach((value)=>(
+                yearsTab.unshift(value)
+            ))
+            setTransactionsStats((prevState)=>({
+                ...prevState,
+                years:yearsTab,
+                currentYear:yearsTab[0],
+            }))
+            loadTransactionsStats(yearsTab[0],false)
+        }
+        catch(e){}
+    }
+
+    // Changer l'année pour les locations (handle year change)
     const changeLocationsYear = async (id)=> {
         setLocationsStats({...locationsStats,currentYear:id})
         await loadLocationsStats(id,locationsStats.bySeason)
     }
 
+    // Changer l'année pour les abonnements (handle year change)
     const changeAbonnementsYear = async (id)=> {
         setAbonnementsStats({...abonnementsStats,currentYear:id})
         await loadAbonnementsStats(id,abonnementsStats.bySeason)
-        
     }
 
+    // Changer l'année pour les transactions (handle year change)
+    const changeTransactionsYear = async (id)=> {
+        setTransactionsStats({...transactionsStats,currentYear:id})
+        await loadTransactionsStats(id,transactionsStats.bySeason)
+    }
+
+    // Changer le filtre d'affichage pour les locations: affichage par saison ou par mois
     const changeLocationsShowBy = async (by) =>{
         if(by == "season" && !locationsStats.bySeason){
             loadLocationsStats(locationsStats.currentYear,true)
@@ -173,6 +253,7 @@ const DashboardView = () => {
         }
     }
 
+    // Changer le filtre d'affichage pour les abonnements: affichage par saison ou par mois
     const changeAbonnementsShowBy = async (by) =>{
         if(by == "season" && !abonnementsStats.bySeason){
             loadAbonnementsStats(abonnementsStats.currentYear,true)
@@ -180,6 +261,17 @@ const DashboardView = () => {
         else
         if(by=="month" && abonnementsStats.bySeason){
             loadAbonnementsStats(abonnementsStats.currentYear,false)
+        }
+    }
+
+    // Changer le filtre d'affichage pour les transactions: affichage par saison ou par mois
+    const changeTransactionsShowBy = async (by) =>{
+        if(by == "season" && !transactionsStats.bySeason){
+            loadTransactionsStats(transactionsStats.currentYear,true)
+        }
+        else
+        if(by=="month" && transactionsStats.bySeason){
+            loadTransactionsStats(transactionsStats.currentYear,false)
         }
     }
 
@@ -197,6 +289,16 @@ const DashboardView = () => {
     const fetchAbonnementsStats = async (year) => {
         let stats = []
         await axios.get(`${api_url}/abonnement/countByMonth/${year}`)
+            .then(res => {
+                stats = res.data
+            })
+        return stats     
+    }
+
+    // fetch transactions Stats
+    const fetchTransactionsStats = async (year) => {
+        let stats = []
+        await axios.get(`${api_url}/transaction/stats/${year}`)
             .then(res => {
                 stats = res.data
             })
@@ -224,8 +326,44 @@ const DashboardView = () => {
         return years
             
     }
-      
 
+    // fetch Transactions Years
+    const fetchTransactionsYears = async () => {
+        let years = []
+        await axios.get(`${api_url}/transaction/getYears`)
+            .then(res => {
+                years = res.data
+            })
+        return years
+            
+    }
+
+
+    // Charger le taux de deffaillance
+    const loadTauxDef = useCallback(async () => {
+        try{
+            const resultFromServer = await fetchTauxDef()
+            setTauxDef({
+                total: parseInt(resultFromServer[0].countAll),
+                enPanne:parseInt(resultFromServer[1].countHorsService),
+                percent: parseInt((parseInt(resultFromServer[1].countHorsService) / 
+                parseInt(resultFromServer[0].countAll)) * 100)
+            })
+        }
+        catch(e){}
+    })
+    
+    // fetch les données pour taux def
+    const fetchTauxDef = async () => {
+        let stats = []
+        await axios.get(`${api_url}/vehicules/count`)
+            .then(res => {
+                stats = res.data
+            })
+        return stats     
+    }
+
+      
     return(
         <div className="main-content">
             <Container className="mt-5" fluid>
@@ -242,10 +380,11 @@ const DashboardView = () => {
                         col={"9"}
                         dark={false}
                         icon={"fas fa-car"}
+                        dataSetLabel={"Number"}
                     />
                     <StatsCard
                         text={"Taux de défaillance"}
-                        value={98}
+                        value={tauxDef.percent}
                         percentage={true}
                         textColor={"danger"}
                         icon={"fas fa-car-crash"}
@@ -264,6 +403,24 @@ const DashboardView = () => {
                         col={"12"}
                         dark={true}
                         icon={"fas fa-user-plus"}
+                        dataSetLabel={"Number"}
+                    />
+                </Row>
+                <Row className="mt-3">
+                    <BarChart
+                        data={transactionsStats.transactionsParMois}
+                        filters={transactionsStats.years}
+                        currFilter={transactionsStats.currentYear}
+                        message={"Somme de transactions par "}
+                        labels={transactionsStats.labels}
+                        onChangeFilter={changeTransactionsYear}
+                        changeShowBy ={changeTransactionsShowBy}
+                        bySeason={transactionsStats.bySeason}
+                        col={"12"}
+                        dark={false}
+                        icon={"fas fa-money-bill-alt"}
+                        line={true}
+                        dataSetLabel={"Sum"}
                     />
                 </Row>
             </Container>
