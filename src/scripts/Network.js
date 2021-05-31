@@ -117,3 +117,20 @@ const getCookie = (cname, cookieString) => {
 
 const getParam = (param) =>  _.get(`req.params.${param}`) || _.get( `query.${param}`);
 export { getParam };
+
+
+const isAdminAuthenticated =  () => !!getToken() && verifUser("administrateur")
+
+export { isAdminAuthenticated }
+
+const getToken = () => getCookie("AL_Token",document.cookie)
+
+export { getToken }
+
+const getUser = token =>  JSON.parse(atob(token.split(".")[1]))
+
+export { getUser }
+
+const verifUser = (role) => role == getUser(getToken()).role
+
+export {verifUser}

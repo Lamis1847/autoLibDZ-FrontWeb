@@ -18,11 +18,8 @@ import RealPos from './components/GestionVehicules/RealTimeVehiculePos'
 import {getCookie} from "./scripts/Network.js" ;
 import Operateur from './components/GestionUtilisateurs/Operateur';
 import Dirigeant from './components/GestionUtilisateurs/Dirigeant';
+import {isAdminAuthenticated} from "./scripts/Network"
 
-const isUserAuthenticated =  () => {
-	return !!getCookie("AL_Token",document.cookie)
-	//return jwt.verify(getCookie("AL_Token"), 'secret', (err, decoded) => err ? false : true );
-} 
 
 
 function App() {
@@ -32,8 +29,7 @@ function App() {
 
         <Switch>
 			{
-
-				!isUserAuthenticated() ? 
+				!isAdminAuthenticated() ? 
 			<>
 
 				<Redirect to="/login" /> 
