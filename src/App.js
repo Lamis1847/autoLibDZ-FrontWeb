@@ -14,6 +14,7 @@ import Locataire from './components/GestionUtilisateurs/Locataire';
 import Navs from './components/GestionUtilisateurs/Tab'
 import Admin from './components/GestionUtilisateurs/Admin';
 import Agent from './components/GestionUtilisateurs/Agent';
+import RealPos from './components/GestionVehicules/RealTimeVehiculePos'
 import {getCookie} from "./scripts/Network.js" ;
 
 const isUserAuthenticated =  () => {
@@ -43,7 +44,7 @@ function App() {
 			<>		
 				<Sidebar/>
 				<Route path="/">
-					<DashboardView/>
+					<Redirect to="/dashboard"/>
 				</Route>
 				<Route path="/dashboard">
 					<DashboardView></DashboardView>
@@ -59,6 +60,9 @@ function App() {
 					{...props}
 				/>
 				)} />
+				<Route path="/surveillance">
+					<RealPos id="123"  /> //In Test 
+				</Route>	
 				<Route  path="/bornes">
 					<ListBornes bornes={null}></ListBornes>         
 				</Route>

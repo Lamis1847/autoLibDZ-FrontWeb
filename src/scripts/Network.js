@@ -46,7 +46,6 @@ const getApiFinalEndpoint = (endpoint) =>
 
 const apiDefaultOptions = {
   crossDomain:true,
-  'Access-Control-Allow-Origin': '*',
   resultCondition: (r) => true,
 };
 const api = {
