@@ -16,6 +16,8 @@ import Admin from './components/GestionUtilisateurs/Admin';
 import Agent from './components/GestionUtilisateurs/Agent';
 import RealPos from './components/GestionVehicules/RealTimeVehiculePos'
 import {getCookie} from "./scripts/Network.js" ;
+import Operateur from './components/GestionUtilisateurs/Operateur';
+import Dirigeant from './components/GestionUtilisateurs/Dirigeant';
 
 const isUserAuthenticated =  () => {
 	return !!getCookie("AL_Token",document.cookie)
@@ -72,8 +74,9 @@ function App() {
 				</Route>
 				<Route path="/locataires/:id" component={Locataire}/>
 				<Route path="/administrateurs/:id" component={Admin}/>
-				<Route path="/agents/:id" component={Agent}/>
-              
+				<Route path="/agents/:id" component={Agent}/>	
+				<Route path="/operateurs/:id" component={Operateur}/>
+          		<Route path="/dirigeants/:id" component={Dirigeant}/>	
 			</>
 
 			}
