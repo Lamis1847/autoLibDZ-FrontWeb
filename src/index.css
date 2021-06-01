@@ -62,17 +62,15 @@ h1{
 
 .button.decobutton {
   background-color: var(--black);
-  margin-bottom : 0 ;
-  position: absolute;
-  bottom: 0;
-  left: 0;
+  position:static;
   min-width: 0px;
-  width: 250px;
+  width: 150px;
+  margin-top: 50px;
+  margin-bottom: 50px;
 }
 
 .button.decobutton:hover {
   background-color: var(--red);
-  border-radius: 0px;
 }
 
 .button:focus{
