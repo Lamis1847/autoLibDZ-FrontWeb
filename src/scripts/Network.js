@@ -1,6 +1,13 @@
 import Axios from "axios";
 import _ from "lodash";
 
+export default Axios.create({
+  baseURL: "https://autolib-dz.herokuapp.com/api/",
+  headers: {
+    "Content-type": "application/json"
+  }
+});
+
 /*
     *Pour faire une requete api il faut faire 
     import api from "scripts/Network.js"
@@ -32,13 +39,13 @@ import _ from "lodash";
 */
 
 
-const API_HOST = process.env.API_HOST ;
+const API_HOST =  "https://autolib-dz.herokuapp.com";
 
 const getApiFinalEndpoint = (endpoint) =>
-  endpoint[0] == "/" ? `${API_HOST}${endpoint}` : `${API_HOST}/${endpoint}`;
+  endpoint[0] === "/" ? `${API_HOST}${endpoint}` : `${API_HOST}/${endpoint}`;
 
 const apiDefaultOptions = {
-  withCredentials: true,
+  crossDomain:true,
   resultCondition: (r) => true,
 };
 const api = {
@@ -47,15 +54,10 @@ const api = {
     return new Promise((resolve, reject) => {
       Axios.post(getApiFinalEndpoint(endpoint), data, options)
         .then((suc) => {
-          let result = _.get(suc, "data.result");
           let success = _.get(suc, "data.success");
-          if (
-            result === undefined ||
-            !success ||
-            !options.resultCondition(result)
-          )
-            return reject(suc);
-          return resolve(result);
+          if (success)
+            return resolve(suc.data);
+          return reject(suc);
         })
         .catch(reject);
     });
@@ -65,15 +67,10 @@ const api = {
     return new Promise((resolve, reject) => {
       Axios.get(getApiFinalEndpoint(endpoint), options)
         .then((suc) => {
-          let result = _.get(suc, "data.result");
           let success = _.get(suc, "data.success");
-          if (
-            result === undefined ||
-            !success ||
-            !options.resultCondition(result)
-          )
-            return reject(suc);
-          return resolve(result);
+          if (success)
+            return resolve(suc.data);
+          return reject(suc);
         })
         .catch(reject);
     });
@@ -106,10 +103,10 @@ const getCookie = (cname, cookieString) => {
     let ca = cookieString.split(";");
     for (let i = 0; i < ca.length; i++) {
       let c = ca[i];
-      while (c.charAt(0) == " ") {
+      while (c.charAt(0) === " ") {
         c = c.substring(1);
       }
-      if (c.indexOf(name) == 0) {
+      if (c.indexOf(name) === 0) {
         return c.substring(name.length, c.length);
       }
     }
@@ -120,3 +117,27 @@ const getCookie = (cname, cookieString) => {
 
 const getParam = (param) =>  _.get(`req.params.${param}`) || _.get( `query.${param}`);
 export { getParam };
+
+
+const isAdminAuthenticated =  () => !!getToken() && verifUser("administrateur")
+
+export { isAdminAuthenticated }
+
+const getToken = () => getCookie("AL_Token",document.cookie)
+
+export { getToken }
+
+const getUser = token =>  JSON.parse(atob(token.split(".")[1]))
+
+export { getUser }
+
+const verifUser = (role) => role == getUser(getToken()).role
+
+export {verifUser}
+
+const disconnect = () => {
+  deleteCookie("AL_Token") 
+  window.location.href = "/login" 
+}
+
+export {disconnect}

@@ -1,13 +1,148 @@
+
+:root {
+  --white : white ;
+  --green: #2DCE89;
+  --dark-green: #25ac71;
+  --yellow: #FFCB00;
+  --red : #F5365C ;
+  --white: #ffffff;
+  --black: #252834;
+  --gray: #25283480;
+  --gray2: #E2ECF1;
+  --light-gray: #7c83a286 ;
+  --shadow : rgba(36, 36, 36, 0.178);
+}
+
 body {
   margin: 0;
+  user-select: none;
   font-family: 'Nunito-Regular';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  color: #252834;
+  background-color: white;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+.input , .button {
+  border:none;
+}
+
+h1{
+  font-weight: 700;
+}
+.p{
+  font-weight: 400;
+  opacity: 0.5;
+}
+
+.input  {
+  border: solid 1px var(--light-gray);
+  border-radius: 5px;
+  padding: 10px;
+  min-width: 300px ;
+  color: var(--gray);
+  transition : ease-in 0.3s ;
+}
+.input:focus {
+  border: solid 1px var(--black);
+  color: var(--black);
+}
+
+.button {
+  display: flex;
+  color: white;
+  padding: 10px;
+  min-width: 300px ;
+  width: auto ;
+  background-color: var(--green); 
+  transition : ease-out 0.3s ;
+  box-shadow: 0px 5px 10px var(--shadow) ;
+  border-radius: 5px;
+}
+
+.button.decobutton {
+  background-color: var(--black);
+  margin-bottom : 0 ;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  min-width: 0px;
+  width: 250px;
+}
+
+.button.decobutton:hover {
+  background-color: var(--red);
+  border-radius: 0px;
+}
+
+.button:focus{
+  border: solid 1px var(--dark-green);
+}
+
+.button:hover {
+  background-color: var(--dark-green);
+  border-radius: 5px;
+}
+
+.button span {
+  margin: auto;
+  text-align: center;
+}
+
+
+
+.LoginPage {
+  background-color: white;
+  display : grid ;
+  grid-template-columns: 70% 20% 10%;
+  max-height: 100%;
+  height: 100vh;
+}
+
+.Main{
+  display: flex;
+  flex-direction: column;
+  padding: auto;
+  width: 50% ;
+}
+
+.Main  {
+  margin: auto;
+  margin-left: 40%;
+}
+.Main > * {
+  margin: auto;
+  margin-left: 0;
+  margin-bottom: 20px;
+  width : 400px;
+}
+
+.Main img {
+  max-height: 93px ;
+  max-width: 120px ;
+}
+
+.BlackBand{
+  color: white;
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  background-color: var(--black);
+  padding-left:10%;
+  padding-right:10%;
+}
+
+.BlackBand > * {
+  text-align: center;
+  color: var(--white);
+  margin-left: auto ;
+  margin-right: auto ; 
+  margin-top: 40px ;
+}
+
+
+.ColoredBand{
+  background-color: var(--gray2);
 }
 @font-face {
   font-family: 'Nunito-Regular';

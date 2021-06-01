@@ -103,7 +103,7 @@ export const ConfirmAjout = (props) => {
                 setSuccess(true)
                 console.log(response);
                 window.setTimeout( function(){
-                    window.location = "http://localhost:3000/vehicules";
+                    window.location = "https://autolib-dz.herokuapp.com/vehicules";
                 }, 2000 );
               }, (error) => {
                 setSlide(true)

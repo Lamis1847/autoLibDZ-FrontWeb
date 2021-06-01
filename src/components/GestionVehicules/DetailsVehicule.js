@@ -126,7 +126,7 @@ export const DetailsVehicule = () => {
                 <Container fluid>
                     <Card className={classes.root}>
                     <div style={{padding:"40px"}}>
-                        <img src={vehicule.secureUrl == "" ? car : vehicule.secureUrl} style={{height:"50%", width:"50%", display:"block", marginLeft:"auto", marginRight:"auto"}}> 
+                        <img src={vehicule.secureUrl == (null || "") ? car : vehicule.secureUrl} style={{height:"50%", width:"50%", display:"block", marginLeft:"auto", marginRight:"auto"}}> 
                         </img>
                     </div>
                     <CardContent>
