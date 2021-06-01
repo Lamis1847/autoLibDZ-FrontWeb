@@ -23,19 +23,19 @@ body {
   background-color: white;
 }
 
-input, button {
+.input , .button {
   border:none;
 }
 
 h1{
   font-weight: 700;
 }
-p{
+.p{
   font-weight: 400;
   opacity: 0.5;
 }
 
-input  {
+.input  {
   border: solid 1px var(--light-gray);
   border-radius: 5px;
   padding: 10px;
@@ -43,12 +43,12 @@ input  {
   color: var(--gray);
   transition : ease-in 0.3s ;
 }
-input:focus {
+.input:focus {
   border: solid 1px var(--black);
   color: var(--black);
 }
 
-button {
+.button {
   display: flex;
   color: white;
   padding: 10px;
@@ -60,19 +60,36 @@ button {
   border-radius: 5px;
 }
 
-button:focus{
+.button.decobutton {
+  background-color: var(--black);
+  margin-bottom : 0 ;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  min-width: 0px;
+  width: 250px;
+}
+
+.button.decobutton:hover {
+  background-color: var(--red);
+  border-radius: 0px;
+}
+
+.button:focus{
   border: solid 1px var(--dark-green);
 }
 
-button:hover {
+.button:hover {
   background-color: var(--dark-green);
   border-radius: 5px;
 }
 
-button span {
+.button span {
   margin: auto;
   text-align: center;
 }
+
+
 
 .LoginPage {
   background-color: white;

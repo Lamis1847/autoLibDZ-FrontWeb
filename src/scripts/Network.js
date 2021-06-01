@@ -134,3 +134,10 @@ export { getUser }
 const verifUser = (role) => role == getUser(getToken()).role
 
 export {verifUser}
+
+const disconnect = () => {
+  deleteCookie("AL_Token") 
+  window.location.href = "/login" 
+}
+
+export {disconnect}

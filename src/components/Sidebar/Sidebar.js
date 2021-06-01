@@ -3,7 +3,6 @@ import { NavLink as NavLinkRRD, Link } from "react-router-dom";
 import logo3 from "../../assets/img/brand/logo3.png";
 import { PropTypes } from "prop-types";
 import routes from "./routes"
-
 import {
   Button,
   Card,
@@ -33,6 +32,7 @@ import {
   Row,
   Col
 } from "reactstrap";
+import { disconnect } from "../../scripts/Network";
 
 var ps;
 
@@ -249,6 +249,8 @@ class Sidebar extends React.Component {
             <h6 className="navbar-heading text-muted">Suivi et monitoring</h6>
             {/* links */}
             <Nav navbar>{this.createLinks(routes,"autre")}</Nav>
+            
+            <button className="button decobutton" onClick={disconnect} > <span>Se deconnecter</span> </button>
             
           </Collapse>
         </Container>
