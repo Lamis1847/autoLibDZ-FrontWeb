@@ -1,11 +1,11 @@
 import './App.css';
 import Sidebar from "./components/Sidebar/Sidebar"
 import ListeVehicules from "./components/GestionVehicules/ListeVehicules"
-import { Container } from "reactstrap";
 import HistoriqueVehicule from "./components/GestionVehicules/HistoriqueVehicule"
 import DetailsVehicule from "./components/GestionVehicules/DetailsVehicule"
-
+import AjouterVehicule from "./components/GestionVehicules/AjouterVehicule"
 import {BrowserRouter as Router, Switch, Route} from "react-router-dom"
+import ImageUpload from './components/ImageUpload';
 
 function App() {
   return (
@@ -17,9 +17,10 @@ function App() {
           <Route exact path="/vehicules">
               <ListeVehicules></ListeVehicules>          
           </Route>
-          <Route path="/historique">
-            <HistoriqueVehicule></HistoriqueVehicule>
-          </Route>
+          <Route exact path="/vehicules/historique/:id" component= {props => (
+            <HistoriqueVehicule
+              {...props}/>
+          )} />
           <Route path="/vehicules/:id" component= {props => (
             <DetailsVehicule
               {...props}
@@ -27,11 +28,8 @@ function App() {
           )} />
           
         </Switch>
-        
       </Router>
 
-    
-    
   );
 }
 

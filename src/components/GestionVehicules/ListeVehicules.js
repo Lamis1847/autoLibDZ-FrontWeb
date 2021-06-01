@@ -8,7 +8,19 @@ import Button from '@material-ui/core/Button';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { withStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import axios from "axios";
+import Dialog from '@material-ui/core/Dialog';
+import MuiDialogTitle from '@material-ui/core/DialogTitle';
+import IconButton from '@material-ui/core/IconButton';
+import CloseIcon from '@material-ui/icons/Close';
+import Typography from '@material-ui/core/Typography';
+import Divider from '@material-ui/core/Divider';
+import AjouterVehicule from "./AjouterVehicule";
+import Slide from '@material-ui/core/Slide';
+import { Alert, AlertTitle } from '@material-ui/lab';
+import { duration } from "moment";
 
 export const ListeVehicules = () => {
 
@@ -17,15 +29,61 @@ export const ListeVehicules = () => {
   const myServerBaseURL = "https://autolib-dz.herokuapp.com";
 
   const [vehicules, setVehicules] = useState([]);
+  const [loading, setLoading] = useState(null);
+
 
   const loadVehicules = useCallback(async () => {
+    setLoading(true)
     const response = await axios.get(`${myServerBaseURL}/api/vehicules`);
     const vehicules = response.data;
+    console.log(vehicules);
     setVehicules(vehicules);
+    setLoading(false)
   }, []);
 
   let listeVehicules = vehicules.map(obj => Object.values(obj));
   const [idVehicule, setIdVehicule] = useState();
+  const [slide, setSlide] = useState(null)
+  const [success, setSuccess] = useState(false)
+
+  const successMessage = (
+    <div style={{margin:'20px 0px'}}>
+             {success && (
+                <Slide direction="up" in={slide} mountOnEnter unmountOnExit>
+                <Alert severity="success" onClose={() => {setSlide(false)}}>
+                    <AlertTitle>Succés</AlertTitle>
+                    Le véhicule a été supprimé <strong>avec succés</strong>
+                </Alert>
+                </Slide>
+             ) } { !success && (
+                <Slide direction="up" in={slide} mountOnEnter unmountOnExit timeout={2000}>
+                <Alert severity="error">
+                    <AlertTitle>Erreur!</AlertTitle>
+                    <strong>Erreur lors de la suppression du véhicule</strong>
+                </Alert>
+                </Slide>
+             ) }
+    </div>
+  )
+
+  const onSupprimerVehicule = useCallback( async () => {
+    const response = await axios.delete(`${myServerBaseURL}/api/vehicules/${idVehicule}`)
+                    .then((response) => {
+                        setSlide(true)
+                        setSuccess(true)
+                        console.log("supprimé")
+                        console.log(response);
+                        handleClose()
+                        loadVehicules()
+                      }, (error) => {
+                        setSlide(true)
+                        setSuccess(false)
+                        console.log("erreur")
+                        console.log(error);
+                        handleClose()
+                      });
+  });
+  
   
   const preventDefault = event => event.preventDefault();
 
@@ -34,40 +92,43 @@ export const ListeVehicules = () => {
     loadVehicules();
   }, [loadVehicules]);
 
-  //Lors de l'ajout d'un nouveau véhicule
-  const onCreateNewVehicule = useCallback(
-    async (newVehicule) => {
-      try {
-        await axios.post(`${myServerBaseURL}/vehicules`, {
-          numChassis: newVehicule.numChassis,
-          numImmatriculation: newVehicule.numImmatriculation,
-          modele: newVehicule.modele,
-          marque: newVehicule.marque,
-          couleur: newVehicule.couleur,
-          etat: newVehicule.etat,
-          tempsDeRefroidissement: newVehicule.tempsDeRefroidissement,
-          pressionHuileMoteur: newVehicule.pressionHuileMoteur,
-          chargeBatterie: newVehicule.chargeBatterie,
-          anomalieCircuit: newVehicule.anomalieCircuit,
-          pressionPneus: newVehicule.pressionPneus,
-          niveauMinimumHuile: newVehicule.niveauMinimumHuile,
-          regulateurVitesse: newVehicule.regulateurVitesse,
-          limiteurVitesse: newVehicule.limiteurVitesse,
-          idAgentMaintenance: newVehicule.idAgentMaintenance,
-          idBorne: newVehicule.idBorne,
-        });
-        loadVehicules();
-      } catch (error) {
-        if (error.response.status === 500) {
-          alert("Erreur au niveau du serveur.");
-        } else {
-          alert("Unknown error.");
-        }
-      }
+  const styles = (theme) => ({
+    root: {
+      margin: 0,
+      padding: theme.spacing(2),
     },
-    [loadVehicules]
-  );
+    closeButton: {
+      position: 'absolute',
+      right: theme.spacing(1),
+      top: theme.spacing(1),
+      color: theme.palette.grey[500],
+    },
+  });
 
+  
+  const DialogTitle = withStyles(styles)((props) => {
+    const { children, classes, onClose, ...other } = props;
+    return (
+      <MuiDialogTitle disableTypography className={classes.root} {...other}>
+        <Typography variant="h6">{children}</Typography>
+        {onClose ? (
+          <IconButton aria-label="close" className={classes.closeButton} onClick={onClose}>
+            <CloseIcon />
+          </IconButton>
+        ) : null}
+      </MuiDialogTitle>
+    );
+  });
+  
+
+  const [openAjout, setOpenAjout] = React.useState(false);
+
+  const handleOpenAjout = () => {
+    setOpenAjout(true);
+  };
+  const handleCloseAjout = () => {
+    setOpenAjout(false);
+  };
   // Relatif à la table
 
   const [responsive, setResponsive] = useState("vertical");
@@ -173,7 +234,7 @@ export const ListeVehicules = () => {
                   </MenuItem>
 
                   <MenuItem onClick={handleClose}>
-                      <NavLink to="#" variant="inherit" style={{fontFamily:'Nunito', color:'black'}}>
+                      <NavLink to={"/vehicules/historique/" + idVehicule} variant="inherit" style={{fontFamily:'Nunito', color:'black'}}>
                         Historique
                       </NavLink>
                   </MenuItem>
@@ -184,7 +245,7 @@ export const ListeVehicules = () => {
                       </NavLink>
                   </MenuItem>
 
-                  <MenuItem onClick={handleClose}>
+                  <MenuItem onClick={onSupprimerVehicule}>
                       <NavLink to="#" variant="inherit" style={{fontFamily:'Nunito', color:'#F5365C'}}>
                         Supprimer
                       </NavLink>
@@ -216,7 +277,14 @@ export const ListeVehicules = () => {
     },
     onColumnSortChange: (changedColumn, direction) => console.log('changedColumn: ', changedColumn, 'direction: ', direction),
     onChangeRowsPerPage: numberOfRows => console.log('numberOfRows: ', numberOfRows),
-    onChangePage: currentPage => console.log('currentPage: ', currentPage)
+    onChangePage: currentPage => console.log('currentPage: ', currentPage),
+    textLabels: {
+      body: {
+          noMatch: loading ?
+              <CircularProgress /> :
+              'Aucune donnée trouvée',
+      },
+  },
 
   };
   
@@ -228,12 +296,23 @@ export const ListeVehicules = () => {
             <div style={{padding:"12px"}}>
               <h1>Liste des véhicules </h1>
             </div>
+            <div style={{padding:"12px 12px 20px 12px"}}>
+              <Button variant="contained" onClick={handleOpenAjout} style={{backgroundColor:"#252834", textTransform:"capitalize", color:"white", fontWeight:'bold', width:'150px'}}>
+              + Ajouter
+              </Button>
+              {successMessage}
+            </div>
             <MUIDataTable
               data={listeVehicules}
               columns={columns}
               options={options}
             />
           </Container>
+          <Dialog onClose={handleCloseAjout} aria-labelledby="customized-dialog-title" open={openAjout} fullWidth='true' maxWidth='sm'>
+              <AjouterVehicule
+                handleCloseAjout={handleCloseAjout} 
+              />
+          </Dialog>
         </div>
       </div>
     </React.Fragment>
