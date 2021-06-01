@@ -9,19 +9,23 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { withStyles } from '@material-ui/core/styles';
 import axios from "axios";
+import CircularProgress from '@material-ui/core/CircularProgress';
+
 
 export const ListeVehicules = () => {
 
   //Relatif à l'API
 
   const myServerBaseURL = "https://autolib-dz.herokuapp.com";
+  const [loading, setLoading] = useState(true)
 
   const [vehicules, setVehicules] = useState([]);
 
-  const loadVehicules = useCallback(async () => {
+  const loadVehicules = useCallback(async () => { 
     const response = await axios.get(`${myServerBaseURL}/api/vehicules`);
     const vehicules = response.data;
     setVehicules(vehicules);
+    setLoading(false)
   }, []);
 
   let listeVehicules = vehicules.map(obj => Object.values(obj));
@@ -217,7 +221,14 @@ export const ListeVehicules = () => {
     },
     onColumnSortChange: (changedColumn, direction) => console.log('changedColumn: ', changedColumn, 'direction: ', direction),
     onChangeRowsPerPage: numberOfRows => console.log('numberOfRows: ', numberOfRows),
-    onChangePage: currentPage => console.log('currentPage: ', currentPage)
+    onChangePage: currentPage => console.log('currentPage: ', currentPage),
+    textLabels: {
+      body: {
+          noMatch: loading ?
+          <CircularProgress /> :
+              'Aucune donnée disponible',
+      },
+  },
 
   };
   
