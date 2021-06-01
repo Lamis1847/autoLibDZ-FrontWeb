@@ -1,0 +1,10 @@
+.mb-flex{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content:left;
+}
+
+.mb-flex .mb-block:nth-child(2){
+    margin-left: 10%;
+}
