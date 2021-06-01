@@ -3,6 +3,8 @@ import Sidebar from "./components/Sidebar/Sidebar"
 import ListeVehicules from "./components/GestionVehicules/ListeVehicules"
 import HistoriqueVehicule from "./components/GestionVehicules/HistoriqueVehicule"
 import DetailsVehicule from "./components/GestionVehicules/DetailsVehicule"
+import AjouterVehicule from "./components/GestionVehicules/AjouterVehicule"
+import ImageUpload from './components/ImageUpload';
 import Login from "./components/Auth/Connexion"
 //Dashboard
 import DashboardView from "./components/Dashboard/DashboardView"
@@ -47,13 +49,14 @@ function App() {
 				<Route path="/dashboard">
 					<DashboardView></DashboardView>
 				</Route>
-				<Route path="/vehicules">
+				<Route exact path="/vehicules">
 					<ListeVehicules></ListeVehicules>          
 				</Route>
-				<Route path="/historique">
-				<HistoriqueVehicule></HistoriqueVehicule>
-				</Route>
-				<Route path="/vehicules/:id" component= {props => (
+				<Route exact path="/vehicules/historique/:id" component= {props => (
+					<HistoriqueVehicule
+					{...props}/>
+				)} />
+				<Route exact path="/vehicules/:id" component= {props => (
 				<DetailsVehicule
 					{...props}
 				/>
@@ -78,7 +81,6 @@ function App() {
 			}
 			
         </Switch>
-        
       </Router>
 
   );

@@ -4,17 +4,12 @@ import logo3 from "../../assets/img/brand/logo3.png";
 import { PropTypes } from "prop-types";
 import routes from "./routes"
 import {
-  Button,
-  Card,
-  CardHeader,
-  CardBody,
-  CardTitle,
+
   Collapse,
   DropdownMenu,
   DropdownItem,
   UncontrolledDropdown,
   DropdownToggle,
-  FormGroup,
   Form,
   Input,
   InputGroupAddon,
@@ -26,15 +21,11 @@ import {
   NavItem,
   NavLink,
   Nav,
-  Progress,
-  Table,
   Container,
   Row,
   Col
 } from "reactstrap";
 import { disconnect } from "../../scripts/Network";
-
-var ps;
 
 class Sidebar extends React.Component {
   state = {
