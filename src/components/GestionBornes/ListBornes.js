@@ -120,15 +120,13 @@ class ListBornes extends Component {
     this.setState({ showModal: true, keyModal: this.state.keyModal + 1 % 2 })
   }
 
-  showDeleteModal() {
-    this.setState({ showAlertIrreversible: true, keyModal2: this.state.keyModal2 + 1 % 4 })
-  }
-
   onHideAddBorneModal(success, newBorne) {
     let data = this.state.data
     console.log(newBorne)
-    data.push([newBorne['idBorne'], newBorne['wilaya'], newBorne['nbVehicules'], newBorne['nbPlaces'], [newBorne['latitude'], newBorne['longitude']], newBorne['nomBorne']])
-    this.setState({ showSuccessOperation: success, data: data, keyModal3: this.state.keyModal3 + 1 % 6 })
+    if (success) {
+      data.push([newBorne['idBorne'], newBorne['wilaya'], newBorne['nbVehicules'], newBorne['nbPlaces'], [newBorne['latitude'], newBorne['longitude']], newBorne['nomBorne']])
+      this.setState({ showSuccessOperation: success, data: data, keyModal3: this.state.keyModal3 + 1 % 6 })
+    }
   }
   onOppIrrever(accepted) {
     if (accepted) {
