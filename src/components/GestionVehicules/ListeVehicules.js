@@ -252,9 +252,6 @@ export const ListeVehicules = () => {
         </div>
       </div>
     </React.Fragment>
-    
-      
-   
   )
 }
 
