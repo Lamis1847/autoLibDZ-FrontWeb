@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
 import './RechercheBorne.css';
 import { Collapse, Button, Form, FormGroup, Label, Input, FormText } from 'reactstrap';
+import { Divider } from '@material-ui/core';
 import axios from "axios";
 import rollDown from "./rollDown.svg";
 import rollUp from "./rollUp.svg";
+import ListBornes from '../ListBornes';
 
 
 const API = 'https://autolib-dz.herokuapp.com/api/';
@@ -29,8 +31,10 @@ class RechercheBorne extends Component {
 
             // State of the UI component (open/close)
             collapse: false,
+            bornes: null
         }
 
+        this.bornesForUI = this.bornesForUI.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     };
@@ -113,7 +117,7 @@ class RechercheBorne extends Component {
             MICROSERVICE = API + MICROSERVICES['bornes'] + this.state.id.toString() + '/'
             axios.get(MICROSERVICE)
                 .then((res) => {
-                    console.log(res.data)
+                    this.setState({ bornes: res.data })
                 })
                 .catch(error => {
                     this.errorHandler(error)
@@ -135,7 +139,7 @@ class RechercheBorne extends Component {
                 nbPlacesOp: this.state.qtt,
                 nbPlaces: this.state.placesLibres != '' ? parseInt(this.state.placesLibres) : (this.state.qtt == 'min' ? 0 : 99999)
             }).then((res) => {
-                console.log(res.data)
+                this.setState({ bornes: res.data })
             }).catch(error => {
                 this.errorHandler(error)
             })
@@ -239,11 +243,25 @@ class RechercheBorne extends Component {
         }
     }
 
+    /**
+     * @returns {array} la nouvelle liste des bornes
+     */
+    bornesForUI() {
+        return this.state.bornes
+    }
+
+
     render() {
 
         const styles = {
+            container: {
+
+            },
             collapse: {
-                backgroundColor: "#ffffff"
+                backgroundColor: "#ffffff",
+                marginLeft: "20%",
+                marginBottom: "2%",
+                paddingBottom: "2%",
             },
             form: {
                 backgroundColor: "#ffffff",
@@ -275,14 +293,21 @@ class RechercheBorne extends Component {
                 //marginLeft: "20%"
             },
             header: {
-                paddingRight: "2%"
+                paddingRight: "2%",
+                marginLeft: "20%",
+                fontSize: "1.25rem",
+                color: "#32325d"
+            },
+            list: {
+                paddingLeft: "19%"
             }
+
         }
 
         return (
-            <div className="rb-container" >
+            <div style={styles.container} >
                 <div style={styles.row}>
-                    <h1 style={styles.header}>Rechercher une borne</h1>
+                    <h2 style={styles.header}>Rechercher une borne</h2>
                     <div>
                         <a onClick={(e) => this.onCollapseClick(e)}>
                             <img src={(this.state.collapse) ? rollUp : rollDown}
@@ -364,8 +389,12 @@ class RechercheBorne extends Component {
                             <Button type="submit" className="custom-btn-default" style={styles.button}>LANCER</Button>
                         </FormGroup>
                     </Form>
-                    <em>Remarque : Lorsque vous effectuez une recherche par id, les autres champs sont ignorés.</em>
+                    <em><center>Remarque : Lorsque vous effectuez une recherche par id, les autres champs sont ignorés.</center></em>
                 </Collapse>
+                <Divider style={{ width: "90%" }} />
+                <div style={styles.list}>
+                    <ListBornes bornes={this.state.bornes}></ListBornes>
+                </div>
             </div >
         )
     };

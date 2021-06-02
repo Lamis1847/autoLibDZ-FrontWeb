@@ -21,6 +21,7 @@ import { getCookie } from "./scripts/Network.js";
 import Operateur from './components/GestionUtilisateurs/Operateur';
 import Dirigeant from './components/GestionUtilisateurs/Dirigeant';
 import { isAdminAuthenticated } from "./scripts/Network"
+import RechercheBorne from './components/RechercheBorne/RechercheBorne';
 
 
 
@@ -65,7 +66,7 @@ function App() {
                 <RealPos id="123" /> //In Test 
 				</Route>
               <Route path="/bornes">
-                <ListBornes bornes={null}></ListBornes>
+                <RechercheBorne></RechercheBorne>
               </Route>
 
               <Route path="/utilisateurs">
