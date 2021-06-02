@@ -4,17 +4,12 @@ import logo3 from "../../assets/img/brand/logo3.png";
 import { PropTypes } from "prop-types";
 import routes from "./routes"
 import {
-  Button,
-  Card,
-  CardHeader,
-  CardBody,
-  CardTitle,
+
   Collapse,
   DropdownMenu,
   DropdownItem,
   UncontrolledDropdown,
   DropdownToggle,
-  FormGroup,
   Form,
   Input,
   InputGroupAddon,
@@ -26,15 +21,11 @@ import {
   NavItem,
   NavLink,
   Nav,
-  Progress,
-  Table,
   Container,
   Row,
   Col
 } from "reactstrap";
 import { disconnect } from "../../scripts/Network";
-
-var ps;
 
 class Sidebar extends React.Component {
   state = {
@@ -239,6 +230,7 @@ class Sidebar extends React.Component {
             <h6 className="navbar-heading text-muted">Utilisteurs</h6>
             {/* links */}
             <Nav navbar>{this.createLinks(routes,"utilisateurs")}</Nav>
+            <Nav navbar>{this.createLinks(routes, 'abonnement')}</Nav>
             <hr className="my-3" />
             {/* Heading */}
             <h6 className="navbar-heading text-muted">Suivi et monitoring</h6>
