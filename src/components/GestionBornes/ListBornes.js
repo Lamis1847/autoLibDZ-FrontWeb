@@ -101,8 +101,10 @@ class ListBornes extends Component{
      onHideAddBorneModal(success,newBorne){
          let data = this.state.data
          console.log(newBorne)
+         if(success){
          data.push([newBorne['idBorne'],newBorne['wilaya'],newBorne['nbVehicules'],newBorne['nbPlaces'],[newBorne['latitude'],newBorne['longitude']],newBorne['nomBorne']])
          this.setState({showSuccessOperation:success,data:data,keyModal3: this.state.keyModal3 + 1 % 6})
+         }
      }
      onOppIrrever(accepted){
        if(accepted){
