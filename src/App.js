@@ -12,6 +12,8 @@ import DashboardView from "./components/Dashboard/DashboardView"
 import ListLocataires from "./components/GestionUtilisateurs/ListLocataires"
 import ListBornes from "./components/ListBornes.js"
 import {BrowserRouter as Router, Switch, Route , Redirect, BrowserRouter} from "react-router-dom"
+import ListBornes from "./components/GestionBornes/ListBornes"
+import {BrowserRouter as Router, Switch, Route} from "react-router-dom"
 import Locataire from './components/GestionUtilisateurs/Locataire';
 import Navs from './components/GestionUtilisateurs/Tab'
 import Admin from './components/GestionUtilisateurs/Admin';

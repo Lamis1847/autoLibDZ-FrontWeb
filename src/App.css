@@ -7,6 +7,8 @@
 }
 *{
     font-family: Nunito;
+* {
+  font-family: Nunito;
 }
 .leaflet-container {
   width: 100wh;
@@ -44,3 +46,26 @@
   color:white!important;
 }
 
+a.dropdown-item:active {
+  color: gray;
+  background-color: #e9ecef;
+}
+#ajouterBorne {
+  background-color: #252834;
+}
+.largeDrop {
+  width: 100%;
+}
+.dropdown-toggle {
+  width: 100%;
+}
+#wilaya {
+  text-align: left;
+}
+#commune {
+  text-align: left;
+}
+.largeDrop.dropdown-menu.show {
+  height: 220px;
+  overflow-y: scroll;
+}
