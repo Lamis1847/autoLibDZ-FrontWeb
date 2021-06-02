@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import Form from "react-validation/build/form";
 import Input from "react-validation/build/input";
-import CheckButton from "react-validation/build/button";
-import { Button, Modal, ModalBody, ModalFooter, Row,Col } from "reactstrap";
+import axios from "axios";
+import { Button, Modal, ModalBody, ModalFooter, Row,Col, Dropdown, DropdownToggle, DropdownMenu, DropdownItem,Alert} from "reactstrap";
+import { Select } from '@material-ui/core';
 
-
-
+const API_All_WILAYAS= process.env.REACT_APP_ALGERIA_CITIES_URL;
+const API_ADD_BORNE= process.env.REACT_APP_GESTION_BORNES_URL;
 class AddBorne extends Component{
     constructor(props){
         super(props)
@@ -13,25 +14,59 @@ class AddBorne extends Component{
         this.handleChangeLongitude = this.handleChangeLongitude.bind(this);
         this.handleChangeLatitude = this.handleChangeLatitude.bind(this); 
         this.handleChangeCapacite = this.handleChangeCapacite.bind(this);
-        this.handleChangeWilaya =  this.handleChangeWilaya.bind(this);
-        this.handleChangeCommune = this.handleChangeCommune.bind(this);
+        this.handleChangeNomBorne =  this.handleChangeNomBorne.bind(this);
         this.handleChangeNom = this.handleChangeNom.bind(this);
         this.required = this.required.bind(this);
         this.greaterThanOne = this.greaterThanOne.bind(this);
+        this.toggleDrop =this.toggleDrop.bind(this);
+        this.toggleDrop2=this.toggleDrop2.bind(this);
+        this.createSelectItems =this.createSelectItems.bind(this);
+        this.createCommunes =this.createCommunes.bind(this);
+        this.onDropdownSelected  =this.onDropdownSelected.bind(this);
+        this.onCommuneSelected =this.onCommuneSelected.bind(this);
             this.state = {
                 isOpen: this.props.shown,
                 longitude: 0,
                 latitude: 0,
+                nomBorne:'',
                 wilaya: '',
                 commune: '',
                 nom: '',
                 capacite: 1,
                 isValid: false,
+                dropOpen: false,
+                dropOpen2: false,
+                wilayas: [],
+                communes: [],
+                wilayaSelected:false,
+                showAlertcw:false,
          }
     }
-    setModalOpen(value){
-        this.props.onHide(true);
+    componentDidMount(){   
+      axios.get(API_All_WILAYAS)
+      .then((res) => {
+         this.setState({wilayas:res.data});
+      })
+      .catch(err => {
+        if (err.response) {
+          window.alert(err.response.data)
+        } else if (err.request) {
+          // client never received a response, or request never left
+          window.alert("Pas de réponse ou requête non envoyée ! liste de wilayas n'est pas récupérée !")
+        } else {
+          window.alert("une erreur est survenue ! liste de wilayas n'est pas récupérée ")
+        }}
+        )
+      }
+    setModalOpen(value,isSuccess,newBorne){
+        this.props.onHide(isSuccess,newBorne);
         this.setState({isOpen:value})
+    }
+    toggleDrop(value){
+      this.setState({dropOpen:value})
+    }
+    toggleDrop2(value){
+      this.setState({dropOpen2:value})
     }
     handleChangeLongitude(e){
         this.setState(
@@ -47,17 +82,10 @@ class AddBorne extends Component{
             }
         )
     }
-    handleChangeWilaya(e){
+    handleChangeNomBorne(e){
         this.setState(
             {
-                wilaya: e.target.value,
-            }
-        )
-    }
-    handleChangeCommune(e){
-        this.setState(
-            {
-                commune: e.target.value,
+                nomBorne: e.target.value,
             }
         )
     }
@@ -102,15 +130,39 @@ class AddBorne extends Component{
     this.isValid = true;
     this.form.validateAll();
     if(this.state.isValid){
-        console.log(this.state.wilaya,this.state.longitude)
+        if(this.state.commune=='' || this.state.wilaya==''){
+          this.setState({isValid:false,showAlertcw:true})
+        }
+        else{ 
+         let newBorne = {
+            nomBorne: this.state.nomBorne,
+            wilaya: this.state.wilaya,
+            commune: this.state.commune,
+            latitude: this.state.latitude,
+            longitude: this.state.longitude,
+            nbVehicules: "0",
+            nbPlaces: this.state.capacite,
+          }
+          console.log(newBorne)
+          axios.post(API_ADD_BORNE,newBorne)
+          .then((res) => {
+            this.setModalOpen(false,true,res.data)
+          })
+          .catch(err => {
+            if (err.response) {
+              console.log(err.response.data)
+            } else if (err.request) {
+              // client never received a response, or request never left
+              window.alert("Pas de réponse ou requête non envoyée ! Borne non ajoutée !")
+            } else {
+              window.alert("une erreur est survenue ! Borne non ajoutée ")
+            }}
+            )      
+        }
 
         //TODO: 
         /*
-        -create alerts (small modals)
-        -at this stage you have the information of a new borne despite wilaya and commune
-        -do the request to backend, if added -> close modal with the function of props pass true and the new borne so it can be added to data in listeBornes
-        -for deleting a born: 
-            - create an alert of irreversible operation supprimer show this modal and confirmer of this modal calls the real event of deleting
+        -create alerts for error cases
         */
     }
   }
@@ -118,10 +170,57 @@ class AddBorne extends Component{
   handleChange() {
     this.setState({ isValid: true });
   }
+
+  createSelectItems() {
+    let items = [];       
+    if(!this.state.wilayas.length==0)  {
+    for (let i = 0; i < this.state.wilayas.length; i++) {  
+         items.push(<DropdownItem key={i} value={i} onClick={e => this.onDropdownSelected(e)}>{this.state.wilayas[i].wilaya}</DropdownItem>);   
+    }}
+    return items;
+}  
+
+createCommunes(){
+  let items = [];       
+    if(!this.state.communes.length==0)  {
+    for (let i = 0; i < this.state.communes.length; i++) {  
+         items.push(<DropdownItem key={i} value={i} onClick={e => this.onCommuneSelected(e)}>{this.state.communes[i].commune}</DropdownItem>);   
+    }}
+    return items;
+}
+
+    onDropdownSelected(e) {
+      let wilaya = this.state.wilayas[e.target.value].wilaya
+      if(wilaya!=this.state.wilaya){
+        this.setState({wilaya:wilaya,commune:''})
+      axios.get(API_All_WILAYAS+wilaya+"/commune")
+      .then((res) => {
+         this.setState({communes:res.data,wilayaSelected:true});
+      })
+      .catch(err => {
+        if (err.response) {
+          window.alert(err.response.data)
+        } else if (err.request) {
+          // client never received a response, or request never left
+          window.alert("Pas de réponse ou requête non envoyée ! liste de communes n'est pas récupérée !")
+        } else {
+          window.alert("une erreur est survenue ! liste de communes n'est pas récupérée ")
+        }}
+        )    
+    }
+    }
+     onCommuneSelected(e){
+      let commune = this.state.communes[e.target.value].commune
+      this.setState({commune:commune})
+      if(this.state.showAlertcw){
+        this.setState({showAlertcw:false})
+        this.handleChange();
+      }
+    }
     
 
 
-    render(){      
+    render(){  
     return(
         <Modal toggle={() => this.setModalOpen(!this.state.isOpen)} isOpen={this.state.isOpen}>
         <div className=" modal-header">
@@ -145,6 +244,17 @@ class AddBorne extends Component{
             onChange={this.handleChange.bind(this)}
         >
         <ModalBody>
+        <div className="form-group">
+        <label htmlFor="NomBorne">Nom </label>
+                <Input /* input (I) en majiscule utilise le composant importé depuis react-validation sinon input standard de react*/
+                type="text"
+                className="form-control"
+                name = "NomBorne"
+                value={this.state.nomBorne}
+                onChange={this.handleChangeNomBorne}
+                validations={[this.required]}
+                />
+        </div>
         <div className="form-group">
             <Row>
                 <Col>
@@ -172,16 +282,50 @@ class AddBorne extends Component{
                 </Row>
                </div>
                <div className="form-group">
-                <label htmlFor="wilaya">Wilaya</label>
-                <Input
-                type="text"
-                className="form-control"
-                name = "wilaya"
-                value={this.state.wilaya}
-                onChange={this.handleChangeWilaya}
-                validations={[this.required]}
-                />
-               </div>
+                    <Row>
+                      <Col>
+              <Dropdown className="largeDrop mt-3" isOpen={this.state.dropOpen} toggle={() => {this.toggleDrop(!this.state.dropOpen)}}>
+                        {(this.state.wilaya=='')?
+                        <DropdownToggle id="wilaya" className="largeDrop" caret color="secondary">
+                          Wilaya
+                        </DropdownToggle>
+                        :
+                        <DropdownToggle id="wilaya" className="largeDrop" caret color="secondary">
+                           {this.state.wilaya}
+                        </DropdownToggle>
+                       }
+                        <DropdownMenu className="largeDrop">
+                          {this.createSelectItems()}
+                         </DropdownMenu>
+                           
+              </Dropdown>   
+              </Col>
+              <Col>
+              <Dropdown className="largeDrop mt-3" isOpen={this.state.dropOpen2} toggle={() => {this.toggleDrop2(!this.state.dropOpen2)}} disabled={!this.state.wilayaSelected}>
+                        {(this.state.commune=='')?
+                        <DropdownToggle id="commune" className="largeDrop" caret color="secondary">
+                          Commune
+                        </DropdownToggle>
+                        :
+                        <DropdownToggle id="commune" className="largeDrop" caret color="secondary">
+                           {this.state.commune}
+                        </DropdownToggle>
+                       }
+                        <DropdownMenu className="largeDrop">
+                          {this.createCommunes()}
+                         </DropdownMenu>
+                           
+              </Dropdown>  
+              </Col>  
+              </Row>     
+              <Row>{
+                    (this.state.showAlertcw)?
+                <Alert className="mt-3 center" color="danger">
+                  This is a danger alert — check it out!
+                </Alert>:<></>
+                }
+                </Row>
+                </div> 
                <div className="form-group">
                 <label htmlFor="capacite"> Capacité </label>
                 <Input
@@ -206,7 +350,7 @@ class AddBorne extends Component{
           id="ajouterBorne"
           color="primary"
           type="submit"
-          disabled={this.state.isValid ? "" : "disabled"}
+          disabled={this.state.isValid ? false : true}
           >
             Confirmer
           </Button>

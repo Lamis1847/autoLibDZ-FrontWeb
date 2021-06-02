@@ -13,8 +13,10 @@ import {
 
 import Map from "./Map.js"
 import AddBorne from "./AddBorne.js"
+import CustomAlert from './CustomAlert.js';
+import ResultOperation from './ResultOperation.js'
 const API_All_BORNES= process.env.REACT_APP_GESTION_BORNES_URL+'all';
-const API_DELETE_BORNE = process.env.REACT_APP_GESTION_BORNES_URL+'all';
+const API_DELETE_BORNE = process.env.REACT_APP_GESTION_BORNES_URL;
 
 
 
@@ -26,6 +28,7 @@ class ListBornes extends Component{
         this.onRowsSuprrimer = this.onRowsSuprrimer.bind(this);
         this.onHideAddBorneModal = this.onHideAddBorneModal.bind(this);
         this.showAddBorneModal = this.showAddBorneModal.bind(this);
+        this.onOppIrrever=this.onOppIrrever.bind(this);
             this.state = {
                 selected: [36.7029047,3.1428341],
                 data: [],
@@ -33,6 +36,10 @@ class ListBornes extends Component{
                 showAlertIrreversible: false,
                 showSuccessOperation: false,
                 keyModal:0,  // we change the key of the modal so react re render it with shown state as true 
+                keyModal2:4,
+                keyModal3: 6,
+                rowtodelete:-1,
+                indextodelete:-1
             }
     }
 
@@ -78,18 +85,48 @@ class ListBornes extends Component{
      }
 
      onRowsSuprrimer(rowsDeleted){
-        //const idsToDelete = rowsDeleted.data.map(d => data[d.dataIndex].id); // array of all ids to to be deleted
-        console.log(rowsDeleted);
-  //  console.log(this.state.data[rowsDeleted.data[0].dataIndex])
-        return true
+       this.setState({indextodelete:rowsDeleted})
+        this.setState({rowtodelete:this.state.data[parseInt(rowsDeleted)][0]})
+        this.showDeleteModal()
      }
 
       showAddBorneModal(){
         this.setState({showModal:true,keyModal: this.state.keyModal + 1 % 2})
      }
 
-     onHideAddBorneModal(success){
-         this.setState({showSuccessOperation:success})
+     showDeleteModal(){
+      this.setState({showAlertIrreversible:true,keyModal2: this.state.keyModal2 + 1 % 4})
+     }
+
+     onHideAddBorneModal(success,newBorne){
+         let data = this.state.data
+         console.log(newBorne)
+         data.push([newBorne['idBorne'],newBorne['wilaya'],newBorne['nbVehicules'],newBorne['nbPlaces'],[newBorne['latitude'],newBorne['longitude']],newBorne['nomBorne']])
+         this.setState({showSuccessOperation:success,data:data,keyModal3: this.state.keyModal3 + 1 % 6})
+     }
+     onOppIrrever(accepted){
+       if(accepted){
+           this.deleteBorne()
+       }
+     }
+     deleteBorne(){
+       console.log(this.state.rowtodelete)
+     axios.delete(API_DELETE_BORNE+this.state.rowtodelete)
+      .then((res) => {
+          let bornes = this.state.data;
+          bornes.splice(this.state.indextodelete,1)
+         this.setState({data:bornes,showSuccessOperation:true,keyModal3: this.state.keyModal3 + 1 % 6});
+      })
+      .catch(err => {
+        if (err.response) {
+          console.log(err.response.data)
+        } else if (err.request) {
+          // client never received a response, or request never left
+          window.alert("Pas de réponse ou requête non envoyée !")
+        } else {
+          window.alert("une erreur est survenue !")
+        }}
+        )
      }
 
 
@@ -228,6 +265,8 @@ class ListBornes extends Component{
                         </Col>
                     </Row>
                     <AddBorne key={this.state.keyModal} shown={this.state.showModal} onHide={this.onHideAddBorneModal}></AddBorne>
+                    <CustomAlert key={this.state.keyModal2} shown={this.state.showAlertIrreversible} onHide={this.onOppIrrever} ></CustomAlert>
+                    <ResultOperation key={this.state.keyModal3} shown={this.state.showSuccessOperation}></ResultOperation>
             </Container>
             </div>
            </div>)

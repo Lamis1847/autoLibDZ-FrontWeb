@@ -12,3 +12,19 @@ a.dropdown-item:active {
 #ajouterBorne {
   background-color: #252834;
 }
+.largeDrop {
+  width: 100%;
+}
+.dropdown-toggle {
+  width: 100%;
+}
+#wilaya {
+  text-align: left;
+}
+#commune {
+  text-align: left;
+}
+.largeDrop.dropdown-menu.show {
+  height: 220px;
+  overflow-y: scroll;
+}
