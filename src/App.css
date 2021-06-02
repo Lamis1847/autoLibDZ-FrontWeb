@@ -1,0 +1,46 @@
+
+@font-face{
+  font-family: Nunito;
+  src: url('assets/fonts/Nunito/Nunito-Light.ttf') format('truetype');
+  font-family: Gotham;
+  src: url('assets/fonts/Gotham-Font/Gotham-Light.otf') format('truetype');
+}
+*{
+    font-family: Nunito;
+}
+.leaflet-container {
+  width: 100wh;
+  height: 100vh;
+}
+
+::-webkit-scrollbar {
+  width : 5pt;
+}
+
+::-webkit-scrollbar-track{
+  background:#252834;
+}
+
+::-webkit-scrollbar-thumb{
+  background-color: #868FAC;
+  border-radius: 25pt;
+}
+
+.bg-dark{
+  background-color: #252834!important;
+}
+
+.bg-yellow{
+  background-color: #FFCB00!important;
+}
+
+.btn-dark{
+  background-color: #252834!important;
+  color:white!important;
+}
+
+.btn-yellow{
+  background-color: #FFCB00!important;
+  color:white!important;
+}
+
