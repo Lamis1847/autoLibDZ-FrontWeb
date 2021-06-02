@@ -125,37 +125,24 @@ class Valide extends React.Component{
                                           Visualiser la photo de permis de conduite
                                         </Button>
                                     </div>
-                                    <div className="col-sm-3 my-3">
-                                        <i className="far fa-image fa-2x" />
-                                    </div>
-                                    <div className="col-sm-9 my-3">
-                                        <Button
-                                          onClick={() => this.toggleModal("photoModal")}
-                                        >
-                                          Visualiser la photo de locataire
-                                        </Button>
+                                </div>
+                                    <div className="mt-5 d-flex flex-row-reverse">
+                                          <div className="ml-2">
+                                            <Button className="bg-success"
+                                              onClick={() => this.toggleModal("permisModal")}
+                                            >
+                                              Valider
+                                            </Button>
+                                          </div>
+                                          <div>
+                                            <Button className="bg-danger"
+                                              onClick={() => this.toggleModal("permisModal")}
+                                              >
+                                              Invalider
+                                            </Button>
+                                          </div>
                                     </div>
                                 </div>
-                                <div className="row">
-                                    <div className="col-12">
-                                        <h3>Decision</h3>
-                                    </div>
-                                    <div>
-                                        <Form>
-                                            {/* <FormGroup>
-                                                  <Input 
-                                                    type="radio"
-                                                    className=""
-                                                    id="valide"
-                                                    required
-                                                    value={this.state.valide}
-                                                    name="valide"
-                                                   />
-                                            </FormGroup> */}
-                                        </Form>
-                                    </div>
-                                </div>
-                            </div>
                         </CardBody>
                     </Card>
                 </Modal>

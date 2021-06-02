@@ -19,6 +19,7 @@ import Valide from "./ValideLocataire";
 const Confirm=() => {
 
   const [locataires, setLocataires] = useState([]);
+  const [valid, setValid] = useState(false);
   const LocatairesRef = useRef();
   LocatairesRef.current = locataires;  
   const retrieveLocataires = () => {
@@ -143,10 +144,10 @@ const Confirm=() => {
                       </NavLink>
                     </DropdownItem>
                     
-                    <DropdownItem onClick={() => { if (window.confirm('êtes-vous sûr de vouloir supprimer cet locataire?')) deleteLocataire( idLocataire)}}style={{color:"#F5365C"}}>
+                    <DropdownItem onClick={() => { if (window.confirm('êtes-vous sûr de vouloir supprimer cet locataire?')) deleteLocataire(idLocataire)}}style={{color:"#F5365C"}}>
                       Supprimer
                     </DropdownItem>
-                    <DropdownItem>
+                    <DropdownItem onClick={(idLocataire) => {setValid(true)}}>
                       Valider 
                     </DropdownItem>
                   </DropdownMenu>
@@ -210,7 +211,7 @@ const refreshPage=() => {
                
                 <div style={{paddingBottom:"6px"}}>
                 <AddModal></AddModal>
-                <Valide></Valide>
+                {valid&&<Valide></Valide>}
                 </div>
               
                 </Col>
