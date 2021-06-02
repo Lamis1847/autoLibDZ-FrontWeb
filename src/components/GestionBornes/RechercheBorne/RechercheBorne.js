@@ -278,7 +278,7 @@ class RechercheBorne extends Component {
 
             },
             btnContainer: {
-                marginLeft: "50%"
+                marginLeft: "40%"
             },
             row: {
                 display: "flex",

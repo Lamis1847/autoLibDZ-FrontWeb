@@ -21,7 +21,6 @@ import { getCookie } from "./scripts/Network.js";
 import Operateur from './components/GestionUtilisateurs/Operateur';
 import Dirigeant from './components/GestionUtilisateurs/Dirigeant';
 import { isAdminAuthenticated } from "./scripts/Network"
-
 import RechercheBorne from './components/GestionBornes/RechercheBorne/RechercheBorne'
 
 function App() {
