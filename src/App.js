@@ -43,9 +43,6 @@ function App() {
             :
             <>
               <Sidebar />
-              <Route path="/">
-                <Redirect to="/dashboard" />
-              </Route>
               <Route path="/dashboard">
                 <DashboardView></DashboardView>
               </Route>
