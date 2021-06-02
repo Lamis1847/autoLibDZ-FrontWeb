@@ -230,6 +230,7 @@ class Sidebar extends React.Component {
             <h6 className="navbar-heading text-muted">Utilisteurs</h6>
             {/* links */}
             <Nav navbar>{this.createLinks(routes,"utilisateurs")}</Nav>
+            <Nav navbar>{this.createLinks(routes, 'abonnement')}</Nav>
             <hr className="my-3" />
             {/* Heading */}
             <h6 className="navbar-heading text-muted">Suivi et monitoring</h6>
