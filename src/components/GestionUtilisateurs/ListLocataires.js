@@ -33,6 +33,7 @@ const Confirm=() => {
   useEffect(retrieveLocataires, []);
   let listeLocataires = locataires.map(obj => Object.values(obj));
   const [idLocataire, setIdLocataire] = useState();
+  const [rowIndex, setRowIndex] = useState();
   const [responsive, setResponsive] = useState("vertical");
   const [tableBodyHeight, setTableBodyHeight] = useState("400px");
   const [tableBodyMaxHeight, setTableBodyMaxHeight] = useState("");
@@ -145,6 +146,9 @@ const Confirm=() => {
                     <DropdownItem onClick={() => { if (window.confirm('êtes-vous sûr de vouloir supprimer cet locataire?')) deleteLocataire( idLocataire)}}style={{color:"#F5365C"}}>
                       Supprimer
                     </DropdownItem>
+                    <DropdownItem>
+                      Valider 
+                    </DropdownItem>
                   </DropdownMenu>
                 </UncontrolledDropdown>
             </>
@@ -160,6 +164,7 @@ const Confirm=() => {
     print:false,
     viewColumns:false,
     filterType: "dropdown",
+    elevation:0,
     responsive,
     tableBodyHeight,
     tableBodyMaxHeight,
@@ -167,6 +172,8 @@ const Confirm=() => {
     isRowSelectable:false,
     onRowClick: (rowData, rowState) => {
       setIdLocataire(rowData[0]);
+      setRowIndex(rowState.rowIndex);
+      console.log(rowIndex);
       console.log(rowData);
       console.log(idLocataire);
     },
@@ -176,20 +183,26 @@ const Confirm=() => {
     onChangePage: currentPage => console.log('currentPage: ', currentPage)
 
   };
+  
   const deleteLocataire = (props) => {
         LocataireService.remove(idLocataire)
       .then((response) => {
-      
         let newLocataires = [...LocatairesRef.current];
-        newLocataires.splice(idLocataire, 1);
+        console.log(newLocataires)
+        newLocataires.splice(rowIndex, 1);
         setLocataires(newLocataires);
+        console.log(newLocataires)
       })
       .catch((e) => {
         console.log(e);
       });
-  };
 
+  };
   
+const refreshPage=() => {
+  window.location.reload(false);
+};
+
   return (
           <>
             <Row>

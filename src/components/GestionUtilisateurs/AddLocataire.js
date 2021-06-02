@@ -34,7 +34,8 @@ class Modals extends React.Component {
       email:"",
       motDePasse:"",
       submitted: false,
-      exampleModal: false
+      exampleModal: false,
+      message:""
     };
   }
   toggleModal = state => {
@@ -63,13 +64,14 @@ class Modals extends React.Component {
       motDePasse: e.target.value
     });
   }
-  saveLocataire() {
+  saveLocataire(event) {
     var data = {
       nom: this.state.nom,
       prenom: this.state.prenom,
       email: this.state.email,
       motDePasse: this.state.motDePasse,
     };
+    event.preventDefault()
 
     LocataireService.create(data)
       .then(response => {
@@ -79,16 +81,11 @@ class Modals extends React.Component {
           email: response.data.email,
           motDePasse: response.data.motDePasse,
           submitted: true,
-        });        
+          message: response.data.message
+        });     
       })
-      .catch(e => {
-        return (
-          <Col>
-              <Alert color="danger">
-                  s'il vous plait vous devez saisir correctement toutes les informations avec un email non déja utilisé
-              </Alert>
-           </Col>
-        )
+      .catch(err => { 
+        this.setState({message: "l'email est déja utilisé !!"});
       });
   }
 
@@ -98,7 +95,8 @@ class Modals extends React.Component {
       prenom: "", 
       email:"",
       motDePasse:"",
-      submitted: false
+      submitted: false,
+
     });
   }
   refreshPage() {
@@ -161,7 +159,10 @@ class Modals extends React.Component {
                     <div className="text-center text-muted mb-4">
                      <h1>Ajouter un nouveau locataire</h1> 
                     </div>
-                    <Form role="form">
+                    <div className="text-center">
+                     <p> {this.state.message}</p> 
+                    </div>
+                    <Form role="form" onSubmit={this.saveLocataire}>
                     <FormGroup>
                         <InputGroup className="input-group-alternative">
                           <InputGroupAddon addonType="prepend">
@@ -188,10 +189,10 @@ class Modals extends React.Component {
                             </InputGroupText>
                           </InputGroupAddon>
                           <Input 
+                           required
                             type="text"
                             className="form-control"
                             id="prenom"
-                            required
                             value={this.state.prenom}
                             onChange={this.onChangePrenom}
                             name="prenom"
@@ -238,8 +239,7 @@ class Modals extends React.Component {
                         <Button
                           className="my-4"
                           color="default"
-                          type="button"
-                          onClick={this.saveLocataire}
+                          type="submit"
                         >
                           Confirmer l'ajout
                         </Button>
