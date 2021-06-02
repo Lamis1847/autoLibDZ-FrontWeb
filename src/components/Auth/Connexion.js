@@ -50,13 +50,13 @@ const Connexion = () => {
             <img src="Logo 3.png" alt=""/>
             <h1>Se Connecter</h1>
             <p>Veuillez remplir les champs suivants afin de vous connecter</p>
-            <input type="text" placeholder="Nom d'utilisateur ou e-mail" name="email"  value={email} onChange={onChangeHandler}></input>
-            <input type="password" placeholder="Mot de passe" name="mdp" value={mdp} onChange={onChangeHandler} ></input>
+            <input className="input" type="text" placeholder="Nom d'utilisateur ou e-mail" name="email"  value={email} onChange={onChangeHandler}></input>
+            <input className="input" type="password" placeholder="Mot de passe" name="mdp" value={mdp} onChange={onChangeHandler} ></input>
 
-            <button onClick={Connex}>
+            <button className="button" onClick={Connex}>
                     <span>Suivant</span> 
             </button>
-            <p style={{ color : 'red'}}>{errMsg}</p>
+            <p className="p" style={{ color : 'red'}}>{errMsg}</p>
 
         </div> 
         <div className = "BlackBand" >
