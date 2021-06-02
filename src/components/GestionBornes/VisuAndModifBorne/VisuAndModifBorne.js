@@ -19,7 +19,6 @@ class VisuAndModifBorne extends Component {
             </>
         )
     }
-
 }
 
 export default VisuAndModifBorne;
