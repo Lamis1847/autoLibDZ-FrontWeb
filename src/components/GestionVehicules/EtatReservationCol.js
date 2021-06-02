@@ -15,16 +15,19 @@ export class EtatReservationCol extends Component {
           "green": "#2DCE89",
           "yellow": "#FFCB00",
           "red": "#F5365C",
-          "black": "#000000"
+          "black": "#000000",
+          "orange": "#ff6600"
         }
     
         let backgroundColor = colors.black;
         if (value === "Terminée") {
           backgroundColor = colors.green;
         } else if (value === "En cours") {
-          backgroundColor = colors.yellow;
+          backgroundColor = colors.orange;
         } else if (value === "Annulée") {
           backgroundColor = colors.red;
+        } else if (value == "Active") {
+          backgroundColor = colors.yellow
         }
     
         return (
