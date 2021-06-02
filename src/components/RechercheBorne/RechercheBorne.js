@@ -7,7 +7,7 @@ import rollUp from "./rollUp.svg";
 
 
 const API = 'https://autolib-dz.herokuapp.com/api/';
-const MICROSERVICES = { wilayas: 'bornes/wilaya/', filtres: 'bornes/filter/' }
+const MICROSERVICES = { bornes: 'bornes/', wilayas: 'bornes/wilaya/', filtres: 'bornes/filter/' }
 
 class RechercheBorne extends Component {
     constructor(props) {
@@ -106,29 +106,40 @@ class RechercheBorne extends Component {
     handleSubmit(e) {
         e.preventDefault();
 
+        let MICROSERVICE
         let newProps = []
+        //Cas où l'on a une recherche par l'id (service get borne par id)
+        if (this.state.id != '') {
+            MICROSERVICE = API + MICROSERVICES['bornes'] + this.state.id.toString() + '/'
+            axios.get(MICROSERVICE)
+                .then((res) => {
+                    console.log(res.data)
+                })
+                .catch(error => {
+                    this.errorHandler(error)
+                })
 
-        let MICROSERVICE = API + MICROSERVICES['filtres']
 
-        let capacite = this.checkCapacite(this.state.capacite)
+            //Cas où l'on a une recherche multicritères
+        } else {
+            MICROSERVICE = API + MICROSERVICES['filtres']
 
-        console.log(this.state.id + ' ' + parseInt(capacite[0]) + ' ' + parseInt(capacite[1]) + ' ' + parseInt(this.state.placesLibres))
-        axios.post(MICROSERVICE, {
-            idBorne: this.state.id != '' ? parseInt(this.state.id) : null,
-            wilaya: this.state.wilaya != '' ? this.state.wilaya : null,
-            commune: this.state.commune != '' ? this.state.commune : null,
-            nbVehiculesMin: parseInt(capacite[0]),
-            nbVehiculesMax: parseInt(capacite[1]),
-            nbPlacesOp: this.state.qtt,
-            nbPlaces: this.state.placesLibres != '' ? parseInt(this.state.placesLibres) : (this.state.qtt == 'min' ? 0 : 99999)
-        }).then((res) => {
-            console.log(res.data)
-            this.setToDefault()
-        }).catch(error => {
-            if (error.response.status == 404) {
-                alert("Aucune borne ne correspond à vos critères de recherche")
-            }
-        })
+            let capacite = this.checkCapacite(this.state.capacite)
+
+            axios.post(MICROSERVICE, {
+                //idBorne: this.state.id != '' ? parseInt(this.state.id) : null,
+                wilaya: this.state.wilaya != '' ? this.state.wilaya : null,
+                commune: this.state.commune != '' ? this.state.commune : null,
+                nbVehiculesMin: parseInt(capacite[0]),
+                nbVehiculesMax: parseInt(capacite[1]),
+                nbPlacesOp: this.state.qtt,
+                nbPlaces: this.state.placesLibres != '' ? parseInt(this.state.placesLibres) : (this.state.qtt == 'min' ? 0 : 99999)
+            }).then((res) => {
+                console.log(res.data)
+            }).catch(error => {
+                this.errorHandler(error)
+            })
+        }
     }
 
     /**
@@ -202,11 +213,76 @@ class RechercheBorne extends Component {
         return this.state.collapse;
     }
 
+    /**
+     * affiche un message selon l'erreur qui s'est produite
+     */
+    errorHandler(error) {
+        switch (error.response.status) {
+            case 400:
+                alert("Quelque chose s'est mal déroulé lors de l'opération de recherche, veuillez ré-essayer ultérieurement. Code erreur : 400")
+                break;
+            case 401:
+                alert("Il semble que vous n'êtes plus authentifié. Veuillez vous authentifier pour effectuer cette action. Code erreur : 401")
+                break;
+            case 403:
+                alert("Vous ne disposez pas des privilèges nécessaires pour accéder à cette ressource. Code erreur : 403")
+                break;
+            case 404:
+                alert("Aucun résultat ne correspond à vos critères de recherche. Code erreur : 404")
+                break;
+            case 500:
+                alert("Quelque chose s'est mal déroulé lors de l'opération de recherche, veuillez ré-essayer ultérieurement. Code erreur : 500")
+                break;
+            default:
+                alert("Quelque chose s'est mal déroulé, veuillez contacter le support pour plus d'informations")
+                break;
+        }
+    }
+
     render() {
+
+        const styles = {
+            collapse: {
+                backgroundColor: "#ffffff"
+            },
+            form: {
+                backgroundColor: "#ffffff",
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "flex-start",
+                paddingLeft: "10%",
+                paddingBottom: "0"
+            },
+            button: {
+                backgroundColor: "#252834",
+                color: "#ffffff",
+
+            },
+            btnContainer: {
+                marginLeft: "50%"
+            },
+            row: {
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "baseline",
+                justifyContent: "flex-start"
+            },
+            inputs: {
+                // paddingRight: "80%"
+            },
+            inputsContainer: {
+                //marginLeft: "20%"
+            },
+            header: {
+                paddingRight: "2%"
+            }
+        }
+
         return (
             <div className="rb-container" >
-                <div className="rb-headline">
-                    <h1>Rechercher une borne</h1>
+                <div style={styles.row}>
+                    <h1 style={styles.header}>Rechercher une borne</h1>
                     <div>
                         <a onClick={(e) => this.onCollapseClick(e)}>
                             <img src={(this.state.collapse) ? rollUp : rollDown}
@@ -215,13 +291,13 @@ class RechercheBorne extends Component {
                     </div>
                 </div>
 
-                <Collapse isOpen={this.state.collapse} > {/* Permettre un affichage lors du clic */}
-                    <Form onSubmit={this.handleSubmit}> {/* Conteneur global - display flex */}
-                        <FormGroup className="rb-block"> {/* Conteneur des 2 groupes de 3 select - display block */}
-                            <FormGroup className="rb-flex"> {/* Conteneur des 3 select - display flex */}
-                                <FormGroup className="rb-block"> {/* Conteneur individuel - display block */}
+                <Collapse isOpen={this.state.collapse} style={styles.collapse}> {/* Permettre un affichage lors du clic */}
+                    <Form onSubmit={this.handleSubmit} style={styles.form}> {/* Conteneur global - display flex */}
+                        <FormGroup> {/* Conteneur des 2 groupes de 3 select - display block */}
+                            <FormGroup style={styles.row}> {/* Conteneur des 3 select - display flex */}
+                                <FormGroup style={styles.inputsContainer}> {/* Conteneur individuel - display block */}
                                     <Label for="rb-wilaya">Wilaya</Label>
-                                    <Input type="select" name="wilaya" id="rb-wilaya"
+                                    <Input type="select" name="wilaya" id="rb-wilaya" style={styles.inputs}
                                         value={this.state.wilaya} onChange={this.handleChange}>
                                         <option value="">-</option>
                                         {this.state.wilayas.map((wil) => {
@@ -230,9 +306,9 @@ class RechercheBorne extends Component {
                                     </Input>
                                 </FormGroup>
 
-                                <FormGroup className="rb-block">
+                                <FormGroup style={styles.inputsContainer}>
                                     <Label for="rb-commune">Communes</Label>
-                                    <Input type="select" name="commune" id="rb-commune"
+                                    <Input type="select" name="commune" id="rb-commune" style={styles.inputs}
                                         value={this.state.commune} onChange={this.handleChange}>
                                         <option value="">-</option>
                                         {this.state.communes.map((comm) => {
@@ -241,9 +317,9 @@ class RechercheBorne extends Component {
                                     </Input>
                                 </FormGroup>
 
-                                <FormGroup className="rb-block">
+                                <FormGroup style={styles.inputsContainer}>
                                     <Label for="rb-capacite">Places totales</Label>
-                                    <Input type="select" name="capacite" id="rb-capacite"
+                                    <Input type="select" name="capacite" id="rb-capacite" style={styles.inputs}
                                         value={this.state.capacite} onChange={this.handleChange}>
                                         <option value="">-</option>
                                         <option value="10">Moins de 10</option>
@@ -254,16 +330,16 @@ class RechercheBorne extends Component {
                                 </FormGroup>
                             </FormGroup>
 
-                            <FormGroup className="rb-flex">
-                                <FormGroup className="rb-block">
+                            <FormGroup style={styles.row}>
+                                <FormGroup style={styles.inputsContainer}>
                                     <Label for="rb-qtt">Places libres</Label>
-                                    <FormGroup className="rb-flex">
-                                        <Input type="select" name="qtt" id="rb-qtt"
+                                    <FormGroup style={styles.row}>
+                                        <Input type="select" name="qtt" id="rb-qtt" style={styles.inputs}
                                             value={this.state.qtt} onChange={this.handleChange}>
                                             <option value="min">min</option>
                                             <option value="max">max</option>
                                         </Input>
-                                        <Input type="select" name="placesLibres" id="rb-plibres"
+                                        <Input type="select" name="placesLibres" id="rb-plibres" style={styles.inputs}
                                             value={this.state.placesLibres} onChange={this.handleChange}>
                                             <option value="">-</option>
                                             <option value="5">5</option>
@@ -275,22 +351,20 @@ class RechercheBorne extends Component {
                                     </FormGroup>
                                 </FormGroup>
 
-                                <FormGroup>
+                                <FormGroup style={styles.inputsContainer}>
                                     <Label for="rb-id">id</Label>
-                                    <Input type="text" name="id" id="rb-id" placeholder="Saisissez l'id de la borne"
+                                    <Input type="text" name="id" id="rb-id" placeholder="Saisissez l'id de la borne" style={styles.inputs}
                                         value={this.state.id} onChange={this.handleChange} />
-                                </FormGroup>
-
-                                <FormGroup>
                                 </FormGroup>
                             </FormGroup>
                         </FormGroup>
                         {/*JSON.stringify(this.state)*/}
 
-                        <FormGroup>
-                            <Button type="submit" className="custom-btn-default" color="primary">LANCER</Button>
+                        <FormGroup style={styles.btnContainer}>
+                            <Button type="submit" className="custom-btn-default" style={styles.button}>LANCER</Button>
                         </FormGroup>
                     </Form>
+                    <em>Remarque : Lorsque vous effectuez une recherche par id, les autres champs sont ignorés.</em>
                 </Collapse>
             </div >
         )
