@@ -23,13 +23,34 @@ class Valide extends React.Component{
         this.onChangeValide = this.onChangeValide.bind(this);
         this.state = {
             valide: false,
-            valideModal: false,
+            valideModal: this.props.show,
             photoModal: false,
             permisModal: false,
-            nom: "badreddine",
-            prenom: "zatout",
+            nom: props.data? props.data[1]:"",
+            prenom: props.data? props.data[2]:"",
+            permis: "",
+            numeroPermis: null,
         }
     }
+
+    async componentDidUpdate(prevProps,prevState) {
+      
+      if (prevProps.data !== this.props.data) {
+        this.setState({
+          nom : this.props.data[1],
+          prenom: this.props.data[2]
+        });
+        this.toggleModal("valideModal");
+        let permis = await (await LocataireService.getPermis(this.props.data[0])).data[0];
+        this.setState({
+          permis: permis.secureUrl,
+          numeroPermis: permis.numeroPermis
+        });
+        console.log(permis.secureUrl);
+      }
+    }
+
+    
     toggleModal = state => {
         this.setState({
          [state]: !this.state[state]
@@ -43,15 +64,6 @@ class Valide extends React.Component{
    render(){
        return(
            <>
-                <Button
-                  color="default"
-                  type="button"
-                  size="sm"
-                  onClick={() => this.toggleModal("valideModal")}
-                >
-                  <i className="ni ni-fat-add" />
-                  Valider un locataire
-                </Button> 
                 <Modal
                     backdrop="static" keyboard={false}
                     className="modal-dialog-centered"
@@ -65,7 +77,7 @@ class Valide extends React.Component{
                           className="close"
                           data-dismiss="modal"
                           type="button"
-                          onClick={() => this.toggleModal("valideModal")}
+                          onClick={() => {this.toggleModal("valideModal")}}
                         >
                           <span aria-hidden={true}>×</span>
                         </button>
@@ -116,7 +128,7 @@ class Valide extends React.Component{
                                         <h3>Images forunies par le locataire</h3>
                                     </div>
                                     <div className="col-sm-3 mt-3">
-                                        <i className="far fa-file fa-2x" />
+                                        <i className="far fa-file fa-3x" />
                                     </div>
                                     <div className="col-sm-9 mt-3">
                                         <Button
@@ -128,15 +140,17 @@ class Valide extends React.Component{
                                 </div>
                                     <div className="mt-5 d-flex flex-row-reverse">
                                           <div className="ml-2">
-                                            <Button className="bg-success"
-                                              onClick={() => this.toggleModal("permisModal")}
+                                            <Button
+                                              color="default"
+                                              onClick={() => {LocataireService.validePermis(this.state.numeroPermis);this.toggleModal("valideModal")}}
                                             >
                                               Valider
                                             </Button>
                                           </div>
                                           <div>
-                                            <Button className="bg-danger"
-                                              onClick={() => this.toggleModal("permisModal")}
+                                            <Button
+                                              color="danger"
+                                              onClick={() => {LocataireService.invalidePermis(this.state.numeroPermis);this.toggleModal("valideModal")}}
                                               >
                                               Invalider
                                             </Button>
@@ -145,31 +159,6 @@ class Valide extends React.Component{
                                 </div>
                         </CardBody>
                     </Card>
-                </Modal>
-                <Modal
-                  backdrop="static" keyboard={false}
-                  className="modal-dialog-centered"
-                  isOpen={this.state.photoModal}
-                  toggle={() => this.toggleModal("photoModal")}
-                >
-                  <Card className="bg-secondary shadow border-0">
-                  <button
-                          style={{margin:"3%"}}
-                          aria-label="Close"
-                          className="close"
-                          data-dismiss="modal"
-                          type="button"
-                          onClick={() => this.toggleModal("photoModal")}
-                        >
-                          <span aria-hidden={true}>×</span>
-                  </button>
-                  <CardBody>
-                    <div className="text-center text-muted mb-4">
-                        <h1>Photo de Locataire</h1>
-                    </div>
-                  </CardBody>
-
-                  </Card>
                 </Modal>
                 <Modal
                   backdrop="static" keyboard={false}
@@ -191,6 +180,11 @@ class Valide extends React.Component{
                   <CardBody>
                     <div className="text-center text-muted mb-4">
                         <h1>Permis de Conduite</h1>
+                    </div>
+                    <div>
+                      <center>
+                        <img src={this.state.permis} alt="premis" />
+                      </center>
                     </div>
                   </CardBody>
 
