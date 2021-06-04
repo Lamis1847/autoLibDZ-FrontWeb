@@ -43,9 +43,6 @@ function App() {
             :
             <>
               <Sidebar />
-              <Route path="/">
-                <DashboardView></DashboardView>
-              </Route>
               <Route path="/dashboard">
                 <DashboardView></DashboardView>
               </Route>
