@@ -12,26 +12,28 @@ import { makeStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import axios from "axios";
 import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
+import MuiDialogTitle from '@material-ui/core/DialogTitle';
+import IconButton from '@material-ui/core/IconButton';
+import CloseIcon from '@material-ui/icons/Close';
+import Typography from '@material-ui/core/Typography';
+import Divider from '@material-ui/core/Divider';
+import AjouterVehicule from "./AjouterVehicule";
 import Slide from '@material-ui/core/Slide';
 import { Alert, AlertTitle } from '@material-ui/lab';
-import Typography from '@material-ui/core/Typography';
-import CloseIcon from '@material-ui/icons/Close';
-import IconButton from '@material-ui/core/IconButton';
+import { duration } from "moment";
 
 export const ListeVehicules = () => {
 
   //Relatif à l'API
 
   const myServerBaseURL = "https://autolib-dz.herokuapp.com";
+
   const [vehicules, setVehicules] = useState([]);
   const [loading, setLoading] = useState(null);
 
 
-  const loadVehicules = useCallback(async () => { 
+  const loadVehicules = useCallback(async () => {
+    setLoading(true)
     const response = await axios.get(`${myServerBaseURL}/api/vehicules`);
     const vehicules = response.data;
     console.log(vehicules);
@@ -315,6 +317,9 @@ export const ListeVehicules = () => {
         </div>
       </div>
     </React.Fragment>
+    
+      
+   
   )
 }
 
