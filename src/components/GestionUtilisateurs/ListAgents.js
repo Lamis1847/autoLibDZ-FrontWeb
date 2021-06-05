@@ -74,6 +74,7 @@ const ListAgents=() => {
       name: "id",
       label: "id",
       options: {
+        display: false,
         filter: false
         
       }
@@ -157,6 +158,19 @@ const ListAgents=() => {
     tableBodyMaxHeight,
     searchPlaceholder: 'Saisir un nom..',
     isRowSelectable:false,
+    selectableRows: 'none',
+    textLabels: {
+      body: {
+        noMatch: "Désolé, Aucune donnée trouvée",
+        toolTip: "Trier",
+      },
+      pagination: {
+        next: "Page suivante",
+        previous: "Page précédente",
+        rowsPerPage: "Ligne par page:",
+        displayRows: "/",
+      },
+    },
     onRowClick: (rowData, rowState) => {
       setIdAgent(rowData[0]);
       setRowIndex(rowState.rowIndex);
