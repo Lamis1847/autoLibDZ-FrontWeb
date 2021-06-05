@@ -74,7 +74,8 @@ const ListAdmin=() => {
       name: "idAdministrateur",
       label: "id",
       options: {
-        filter: false
+        filter: false,
+        display: false,
         
       }
     },
@@ -157,6 +158,19 @@ const ListAdmin=() => {
     tableBodyMaxHeight,
     searchPlaceholder: 'Saisir un nom..',
     isRowSelectable:false,
+    selectableRows: 'none',
+    textLabels: {
+      body: {
+        noMatch: "Désolé, Aucune donnée trouvée",
+        toolTip: "Trier",
+      },
+      pagination: {
+        next: "Page suivante",
+        previous: "Page précédente",
+        rowsPerPage: "Ligne par page:",
+        displayRows: "/",
+      },
+    },
     onRowClick: (rowData, rowState) => {
       setIdAdministrateur(rowData[0]);
       setRowIndex(rowState.rowIndex);
