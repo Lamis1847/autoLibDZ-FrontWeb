@@ -18,12 +18,24 @@ const update = (id, data) => {
 const block = (id) => {
   return http.put(`/locataire/block/${id}`);
 };
+const getPermis = (id) => {
+  return http.get(`/identites/locataire/${id}`);
+};
+const validePermis = (numero) =>{
+  return http.put(`/identites/${numero}/valider`);
+};
+const invalidePermis = (numero) =>{
+  return http.put(`/identites/${numero}/invalider`);
+};
 const LocataireService = {
     getAll,
     create,
     remove,
     get,
     update,
-    block
+    block,
+    getPermis,
+    validePermis,
+    invalidePermis
   };
   export default LocataireService;  
