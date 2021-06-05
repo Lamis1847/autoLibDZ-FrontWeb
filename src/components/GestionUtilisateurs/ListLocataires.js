@@ -14,6 +14,7 @@ import {
   DropdownMenu,
   DropdownItem, 
 } from "reactstrap";
+import Valide from "./ValideLocataire";
 const Confirm=() => {
 
   const [locataires, setLocataires] = useState([]);
@@ -225,7 +226,9 @@ const showValidModel =(idLocateur) =>{
 }
 
   return (
-          <>          
+          <>
+         
+
             <MUIDataTable
                title="Liste des locataires"
               data={listeLocataires}
