@@ -1,6 +1,7 @@
 import ListLocataires from "../GestionUtilisateurs/ListLocataires";
 import Locataire from "../GestionUtilisateurs/Locataire";
 import ListeVehicules from "../GestionVehicules/ListeVehicules"
+import Abonnement from '../GestionAbonnement/Abonnement';
 
 var routes = [
   {
@@ -40,6 +41,15 @@ var routes = [
     component: ListLocataires,
     layout: "",
     api: false
+  },
+  {
+    section: 'abonnement',
+    path: '/Abonnement',
+    name: 'Gestion Abonnement',
+    icon: 'fa fa-credit-card',
+    component: Abonnement,
+    layout: '',
+    api: false,
   },
   {
     section: "suivi",

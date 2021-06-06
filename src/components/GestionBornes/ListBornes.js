@@ -29,6 +29,7 @@ class ListBornes extends Component {
     this.onHideAddBorneModal = this.onHideAddBorneModal.bind(this);
     this.showAddBorneModal = this.showAddBorneModal.bind(this);
     this.onOppIrrever = this.onOppIrrever.bind(this);
+    this.showDeleteModal  = this.showDeleteModal.bind(this);
     this.state = {
       selected: [36.7029047, 3.1428341],
       data: [],
@@ -119,6 +120,9 @@ class ListBornes extends Component {
   showAddBorneModal() {
     this.setState({ showModal: true, keyModal: this.state.keyModal + 1 % 2 })
   }
+  showDeleteModal(){
+    this.setState({showAlertIrreversible:true,keyModal2: this.state.keyModal2 + 1 % 4})
+   }
 
   onHideAddBorneModal(success, newBorne) {
     let data = this.state.data

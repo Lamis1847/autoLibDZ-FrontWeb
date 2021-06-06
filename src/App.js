@@ -22,6 +22,7 @@ import Operateur from './components/GestionUtilisateurs/Operateur';
 import Dirigeant from './components/GestionUtilisateurs/Dirigeant';
 import { isAdminAuthenticated } from "./scripts/Network"
 import RechercheBorne from './components/GestionBornes/RechercheBorne/RechercheBorne'
+import Abonnement from './components/GestionAbonnement/Tab'
 
 function App() {
   return (
@@ -42,9 +43,6 @@ function App() {
             :
             <>
               <Sidebar />
-              <Route path="/">
-                <Redirect to="/dashboard" />
-              </Route>
               <Route path="/dashboard">
                 <DashboardView></DashboardView>
               </Route>
@@ -69,6 +67,9 @@ function App() {
 
               <Route path="/utilisateurs">
                 <Navs></Navs>
+              </Route>
+              <Route path="/Abonnement">
+                <Abonnement></Abonnement>
               </Route>
               <Route path="/locataires/:id" component={Locataire} />
               <Route path="/administrateurs/:id" component={Admin} />

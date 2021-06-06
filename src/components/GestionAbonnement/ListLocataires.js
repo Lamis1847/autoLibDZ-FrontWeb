@@ -1,12 +1,13 @@
+
 import MUIDataTable from "mui-datatables";
-import {Row,Col } from "reactstrap";
+import { Container,Row,Col } from "reactstrap";
 import Menu from '@material-ui/core/Menu';
 import { withStyles } from '@material-ui/core/styles';
 import React,{useEffect,useMemo,useState,useRef,useTable} from "react";
-import  AdministrateurService from "../../services/AdministrateurService";
+import LocataireService from "../../services/LocataireService";
 
 import {NavLink} from 'react-router-dom';
-import AddModal from './AddAdmin';
+import AddModal from './AddLocataire';
 import { withRouter } from "react-router-dom";
 import {
   UncontrolledDropdown,
@@ -14,23 +15,23 @@ import {
   DropdownMenu,
   DropdownItem, 
 } from "reactstrap";
-const ListAdmin=() => {
+const Confirm=() => {
 
-  const [administrateurs, setAdministrateurs] = useState([]);
-  const AdministrateursRef = useRef();
-  AdministrateursRef.current =administrateurs;  
-  const retrieveAdministrateurs = () => {
-    AdministrateurService.getAll()
+  const [locataires, setLocataires] = useState([]);
+  const LocatairesRef = useRef();
+  LocatairesRef.current = locataires;  
+  const retrieveLocataires = () => {
+    LocataireService.getAll()
       .then((response) => {
-        setAdministrateurs(response.data);
+        setLocataires(response.data);
       })
       .catch((e) => {
         console.log(e);
       });
   };
-  useEffect(retrieveAdministrateurs, []);
-  let listeAdministrateurs =  administrateurs.map(obj => Object.values(obj));
-  const [idAdministrateur, setIdAdministrateur] = useState();
+  useEffect(retrieveLocataires, []);
+  let listeLocataires = locataires.map(obj => Object.values(obj));
+  const [idLocataire, setIdLocataire] = useState();
   const [rowIndex, setRowIndex] = useState();
   const [responsive, setResponsive] = useState("vertical");
   const [tableBodyHeight, setTableBodyHeight] = useState("400px");
@@ -71,11 +72,10 @@ const ListAdmin=() => {
 
   const columns = [
     {
-      name: "idAdministrateur",
+      name: "idLocataire",
       label: "id",
       options: {
-        filter: false,
-        display: false,
+        filter: false
         
       }
     },
@@ -107,9 +107,17 @@ const ListAdmin=() => {
       }
     },
     {
-        name: "salaire",
-        label: "Salaire"
-      },
+      name: "Active",
+      label: "Status",
+      options:{
+        customBodyRender: (props) => {
+          return (
+               props? <h5 style={{color:'#2dce89'}}>Actif</h5> : <h5 style={{color:'#f5365c'}}>Bloqué</h5>
+          )
+        }
+      }
+     
+    },
     { 
     label: "Action",
      options: {
@@ -129,13 +137,16 @@ const ListAdmin=() => {
                   </DropdownToggle>
                   <DropdownMenu className="dropdown-menu-arrow" right>
                     <DropdownItem>
-                    <NavLink to={"/administrateurs/" + idAdministrateur} style={{color:'#FFCB00'}}>
+                    <NavLink to={"/locataires/" + idLocataire} style={{color:'#FFCB00'}}>
                         Détails
                       </NavLink>
                     </DropdownItem>
                     
-                    <DropdownItem onClick={() => { if (window.confirm('êtes-vous sûr de vouloir supprimer cet administrataire?')) deleteAdministrateur( idAdministrateur)}}style={{color:"#F5365C"}}>
+                    <DropdownItem onClick={() => { if (window.confirm('êtes-vous sûr de vouloir supprimer cet locataire?')) deleteLocataire( idLocataire)}}style={{color:"#F5365C"}}>
                       Supprimer
+                    </DropdownItem>
+                    <DropdownItem>
+                      Valider 
                     </DropdownItem>
                   </DropdownMenu>
                 </UncontrolledDropdown>
@@ -158,24 +169,12 @@ const ListAdmin=() => {
     tableBodyMaxHeight,
     searchPlaceholder: 'Saisir un nom..',
     isRowSelectable:false,
-    selectableRows: 'none',
-    textLabels: {
-      body: {
-        noMatch: "Désolé, Aucune donnée trouvée",
-        toolTip: "Trier",
-      },
-      pagination: {
-        next: "Page suivante",
-        previous: "Page précédente",
-        rowsPerPage: "Ligne par page:",
-        displayRows: "/",
-      },
-    },
     onRowClick: (rowData, rowState) => {
-      setIdAdministrateur(rowData[0]);
+      setIdLocataire(rowData[0]);
       setRowIndex(rowState.rowIndex);
+      console.log(rowIndex);
       console.log(rowData);
-      console.log(idAdministrateur);
+      console.log(idLocataire);
     },
    
     onColumnSortChange: (changedColumn, direction) => console.log('changedColumn: ', changedColumn, 'direction: ', direction),
@@ -183,20 +182,26 @@ const ListAdmin=() => {
     onChangePage: currentPage => console.log('currentPage: ', currentPage)
 
   };
-  const deleteAdministrateur = (props) => {
-        AdministrateurService.remove(idAdministrateur)
+  
+  const deleteLocataire = (props) => {
+        LocataireService.remove(idLocataire)
       .then((response) => {
-      
-        let newAdministrateurs = [...AdministrateursRef.current];
-        newAdministrateurs.splice(rowIndex, 1);
-        setAdministrateurs(newAdministrateurs);
+        let newLocataires = [...LocatairesRef.current];
+        console.log(newLocataires)
+        newLocataires.splice(rowIndex, 1);
+        setLocataires(newLocataires);
+        console.log(newLocataires)
       })
       .catch((e) => {
         console.log(e);
       });
-  };
 
+  };
   
+const refreshPage=() => {
+  window.location.reload(false);
+};
+
   return (
           <>
             <Row>
@@ -211,8 +216,8 @@ const ListAdmin=() => {
             </Row>
             
             <MUIDataTable
-               title="Liste des Administrateurs"
-              data={listeAdministrateurs}
+               title="Liste des locataires"
+              data={listeLocataires}
               columns={columns}
               options={options}
             />
@@ -225,4 +230,4 @@ const ListAdmin=() => {
   
   }
   
-  export default withRouter(ListAdmin);
+  export default withRouter(Confirm);
