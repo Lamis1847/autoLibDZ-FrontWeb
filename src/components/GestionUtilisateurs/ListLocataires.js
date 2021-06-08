@@ -216,16 +216,12 @@ const showValidModel =(idLocateur) =>{
           <>
             <Row>
                 <Col>
-               
                 <div style={{paddingBottom:"6px"}}>
                 <AddModal></AddModal>
                 <Valide data={validData} show={valid} ></Valide>
                 </div>
-              
                 </Col>
-
             </Row>
-            
             <MUIDataTable
                title="Liste des locataires"
               data={listeLocataires}
