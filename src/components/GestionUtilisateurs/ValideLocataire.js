@@ -43,11 +43,12 @@ class Valide extends React.Component{
         });
         this.toggleModal("valideModal");
         let permis = await (await LocataireService.getPermis(this.props.data[0])).data[0];
-        this.setState({
-          permis: permis.secureUrl,
-          numeroPermis: permis.numeroPermis
-        });
-        console.log(permis.secureUrl);
+        if (permis){
+          this.setState({
+            permis: permis.secureUrl,
+            numeroPermis: permis.numeroPermis
+          });
+        }
       }
     }
 
@@ -184,7 +185,7 @@ class Valide extends React.Component{
                     </div>
                     <div>
                       <center>
-                        <img src={this.state.permis} alt="premis" />
+                        <img src={this.state.permis} alt="pas de permis pour le moment" />
                       </center>
                     </div>
                   </CardBody>
