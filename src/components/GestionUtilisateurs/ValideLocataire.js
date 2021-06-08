@@ -1,6 +1,7 @@
 import React from "react";
 import LocataireService from "../../services/LocataireService";
 
+
 // reactstrap components
 import {
   Button,
