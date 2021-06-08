@@ -22,7 +22,7 @@ import Slide from '@material-ui/core/Slide';
 import { Alert, AlertTitle } from '@material-ui/lab';
 import { duration } from "moment";
 
-export const ListeVehicules = () => {
+export const ListeVehicules = props => {
 
   //Relatif à l'API
 
@@ -30,8 +30,6 @@ export const ListeVehicules = () => {
 
   const [vehicules, setVehicules] = useState([]);
   const [loading, setLoading] = useState(null);
-
-
   const loadVehicules = useCallback(async () => {
     setLoading(true)
     const response = await axios.get(`${myServerBaseURL}/api/vehicules`);
@@ -273,6 +271,7 @@ export const ListeVehicules = () => {
     searchPlaceholder: 'Saisir un nom ou un ID..',
     onRowClick: (rowData, rowState) => {
       setIdVehicule(rowData[0]);
+      props.setSel(rowData[0]);
       console.log(rowData);
       console.log(idVehicule);
     },
@@ -294,15 +293,24 @@ export const ListeVehicules = () => {
       <div className="main-content">
         <div className="mt-40">
           <Container fluid>
-            <div style={{padding:"12px"}}>
-              <h1>Liste des véhicules </h1>
-            </div>
-            <div style={{padding:"12px 12px 20px 12px"}}>
-              <Button variant="contained" onClick={handleOpenAjout} style={{backgroundColor:"#252834", textTransform:"capitalize", color:"white", fontWeight:'bold', width:'150px'}}>
-              + Ajouter
-              </Button>
-              {successMessage}
-            </div>
+              
+                <div style={{padding:"12px"}}>
+                <h1>Liste des véhicules </h1>
+              </div>
+            {
+              props.noadd ?
+              null
+              :
+              <>
+              <div style={{padding:"12px 12px 20px 12px"}}>
+                <Button variant="contained" onClick={handleOpenAjout} style={{backgroundColor:"#252834", textTransform:"capitalize", color:"white", fontWeight:'bold', width:'150px'}}>
+                + Ajouter
+                </Button>
+                {successMessage}
+              </div>
+              </>
+            }
+            
             <MUIDataTable
               data={listeVehicules}
               columns={columns}

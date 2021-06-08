@@ -41,6 +41,8 @@ export default Axios.create({
 
 const API_HOST =  "https://autolib-dz.herokuapp.com";
 
+export { API_HOST }
+
 const getApiFinalEndpoint = (endpoint) =>
   endpoint[0] === "/" ? `${API_HOST}${endpoint}` : `${API_HOST}/${endpoint}`;
 
@@ -54,7 +56,7 @@ const api = {
     return new Promise((resolve, reject) => {
       Axios.post(getApiFinalEndpoint(endpoint), data, options)
         .then((suc) => {
-          let success = _.get(suc, "data.success");
+          let success = _.get(suc, "data.success") || (suc.status ===200);
           if (success)
             return resolve(suc.data);
           return reject(suc);
@@ -67,7 +69,7 @@ const api = {
     return new Promise((resolve, reject) => {
       Axios.get(getApiFinalEndpoint(endpoint), options)
         .then((suc) => {
-          let success = _.get(suc, "data.success");
+          let success = _.get(suc, "data.success") || (suc.status ===200);
           if (success)
             return resolve(suc.data);
           return reject(suc);
@@ -116,12 +118,16 @@ const getCookie = (cname, cookieString) => {
 
 
 const getParam = (param) =>  _.get(`req.params.${param}`) || _.get( `query.${param}`);
+
 export { getParam };
 
+const isAuth = () => !!getToken()
 
-const isAdminAuthenticated =  () => !!getToken() && verifUser("administrateur")
+export { isAuth }
 
-export { isAdminAuthenticated }
+const isTypeAuthenticated =  type => !!getToken() && verifUser(type)
+
+export { isTypeAuthenticated }
 
 const getToken = () => getCookie("AL_Token",document.cookie)
 
@@ -131,7 +137,11 @@ const getUser = token =>  JSON.parse(atob(token.split(".")[1]))
 
 export { getUser }
 
-const verifUser = (role) => role == getUser(getToken()).role
+const getUserType =  () => { let tkn = getToken() ; if (!!tkn) return getUser(getToken()).role }
+
+export { getUserType }
+
+const verifUser = (role) => role == getUserType()
 
 export {verifUser}
 
