@@ -233,9 +233,6 @@ const showValidModel =(idLocateur) =>{
               options={options}
             />
           </>
-
-    
-      
    
   )
   
