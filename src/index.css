@@ -172,12 +172,18 @@ h1{
   padding: 40px;
   grid-template-rows: 60px 500px;
   max-height: 500px ;
+  margin-bottom: 50px;
+}
+.sur-mapctn1{
+
+  transition: 0.3s ease;
 }
 
 .sur-mapctn2 {
   display: grid;
   max-height: 500px ;
   height: 200px;
+  transition: 0.3s ease;
 }
 
 .sur-car-info {
@@ -185,7 +191,7 @@ h1{
   height: 80px;
   padding: 20px;
   padding-bottom: 30px ;
-  color: var(--black);
+  color: var(--light-gray);
   border-bottom: solid var(--gray2) 1px;
   animation: refresh 1s ;
 }
@@ -196,8 +202,8 @@ h1{
 }
 
 .sur-car-info .val {
-  color: var(--yellow);
-  animation : colorchange 5s  infinite;
+  color: var(--black);
+  font-weight: bold;
 }
 
 @keyframes refresh {
@@ -249,7 +255,8 @@ h1{
   right: 50px;
   top: 65px ;
   z-index: 75000;
-  width:150px ;
+  width: auto;
+  min-width:150px ;
   height: 800px;
   max-height: 800px;
   overflow-y: auto;
