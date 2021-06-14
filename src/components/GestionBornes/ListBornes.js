@@ -17,6 +17,7 @@ import CustomAlert from './CustomAlert.js';
 import Failure from './Failure.js'
 import ResultOperation from './ResultOperation.js'
 import { getToken } from '../../scripts/Network.js'
+import VisuAndModifBorne from './VisuAndModifBorne/VisuAndModifBorne.js'
 const API_All_BORNES = process.env.REACT_APP_GESTION_BORNES_URL + 'all';
 const API_DELETE_BORNE = process.env.REACT_APP_GESTION_BORNES_URL;
 
@@ -33,6 +34,8 @@ class ListBornes extends Component {
     this.onOppIrrever = this.onOppIrrever.bind(this);
     this.showDeleteModal  = this.showDeleteModal.bind(this);
     this.onRowsDetails = this.onRowsDetails.bind(this);
+    this.showDetailsModal = this.showDetailsModal.bind(this);
+    this.onHideBorneDetailsModal = this.onHideBorneDetailsModal.bind(this);
     this.state = {
       selected: [36.7029047, 3.1428341],
       data: [],
@@ -40,13 +43,16 @@ class ListBornes extends Component {
       showAlertIrreversible: false,
       showSuccessOperation: false,
       showFailure: false,
+      showDetails: false,
       keyModal: 0,  // we change the key of the modal so react re render it with shown state as true 
       keyModal2: 4,
       keyModal3: 6,
       keyModal4: 8,
+      keyModal5: 9,
       rowtodelete: -1,
       indextodelete: -1,
-      indexDetails: -1
+      indexDetails: -1,
+      rowTodetails: -1
     }
   }
 
@@ -126,10 +132,26 @@ class ListBornes extends Component {
     this.showDeleteModal()
   }
   onRowsDetails(rowIndex){
-    this.setState({ indexDetails: rowIndex })
-    console.log(rowIndex);
+    this.setState({ indexDetails: rowIndex})
+    let borne = this.state.data[parseInt(rowIndex)]
+    console.log(borne);
+  //  borne['idBorne'], borne['wilaya'], borne['nbVehicules'], borne['nbPlaces'], [borne['latitude'], borne['longitude']], borne['nomBorne']]
+    let broned = [parseInt(borne[0]), borne[5], borne[1], borne[5], borne[4][0], borne[4][1], borne[2],borne[3],1]
+    console.log(broned);
+    this.setState({ rowTodetails: broned})
+    this.showDetailsModal()
   }
-
+  showDetailsModal(){
+    this.setState({showDetails:true,keyModal5: this.state.keyModal5 + 1 % 2})
+  }
+  onHideBorneDetailsModal(success, newBorne) {
+    let data = this.state.data
+    if (success) {
+     data[this.state.indexDetails] = [newBorne[0], newBorne[2], newBorne[6], newBorne[7], [newBorne[4], newBorne[5]], newBorne[1]]
+    // console.log(newBorne);
+      this.setState({ showSuccessOperation: success, data: data, keyModal3: this.state.keyModal3 + 1 % 6 })
+    }
+  }
   showAddBorneModal() {
     this.setState({ showModal: true, keyModal: this.state.keyModal + 1 % 2 })
   }
@@ -312,6 +334,7 @@ class ListBornes extends Component {
             <CustomAlert key={this.state.keyModal2} shown={this.state.showAlertIrreversible} onHide={this.onOppIrrever} ></CustomAlert>
             <ResultOperation key={this.state.keyModal3} shown={this.state.showSuccessOperation}></ResultOperation>
             <Failure key={this.state.keyModal4} shown={this.state.showFailure}></Failure>
+            <VisuAndModifBorne key={this.state.keyModal5} shown={this.state.showDetails} borne={this.state.rowTodetails} onHide={this.onHideBorneDetailsModal}></VisuAndModifBorne>
           </Container>
         </div>
       </div>)
