@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback,useLayoutEffect,forceUpdate } from "react";
+import React, { useState, useEffect, useCallback} from "react";
 // javascipt plugin for creating charts
 import Chart from "chart.js";
 // react plugin used to create charts
@@ -29,12 +29,15 @@ const DashboardView = () => {
         parseOptions(Chart, chartOptions());
     }
 
+    const month_labels = ["Jan","Fev","Mar","Avr","Mai","Juin","Juil", "Août", "Sep", "Oct", "Nov", "Dec"]
+    const seasons_labels = ["Hiver","Printemps","Eté","Automne"]
+
     const [locationsStats, setLocationsStats] = useState({
         locationsParMois : [],
         years:[],
         currentYear: 0,
         bySeason:false,
-        labels: ["Jan","Feb","Mar","Apr","Mai","Jun","Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+        labels: month_labels
     })
 
     const [abonnementsStats, setAbonnementsStats] = useState({
@@ -42,7 +45,7 @@ const DashboardView = () => {
         years:[],
         currentYear: 0,
         bySeason:false,
-        labels: ["Jan","Feb","Mar","Apr","Mai","Jun","Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+        labels: month_labels
     })
 
     const [transactionsStats, setTransactionsStats] = useState({
@@ -50,7 +53,15 @@ const DashboardView = () => {
         years:[],
         currentYear: 0,
         bySeason:false,
-        labels: ["Jan","Feb","Mar","Apr","Mai","Jun","Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+        labels: month_labels
+    })
+
+    const [bugsStats, setBugsStats] = useState({
+        bugsParMois : [],
+        years:[],
+        currentYear: 0,
+        bySeason:false,
+        labels: month_labels
     })
 
     const [tauxDef,setTauxDef] = useState({
@@ -132,6 +143,7 @@ const DashboardView = () => {
         loadLocationsStatsAll();
         loadAbonnementsStatsAll();
         loadTransactionsStatsAll();
+        loadBugsStatsAll();
         loadTauxDef();
         loadRetardReservations();
     },[]);
@@ -148,7 +160,7 @@ const DashboardView = () => {
                 setLocationsStats((prevState)=>({
                     ...prevState,
                     bySeason:true,
-                    labels : ["Winter","Spring","Summer","Fall"],
+                    labels : seasons_labels,
                     locationsParMois:[transform[0]+transform[1]+transform[2],
                     transform[3]+transform[4]+transform[5],
                     transform[6]+transform[7]+transform[8],
@@ -160,7 +172,7 @@ const DashboardView = () => {
                     ...prevState,
                     locationsParMois:transform,
                     bySeason:false,
-                    labels : ["Jan","Feb","Mar","Apr","Mai","Jun","Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]      
+                    labels : month_labels
                 }))
             }
             console.log(locationsStats)
@@ -173,14 +185,14 @@ const DashboardView = () => {
         try{
             const AbonnementsStatsFromServer = await fetchAbonnementsStats(year)
             let transform = [0,0,0,0,0,0,0,0,0,0,0,0]
-            AbonnementsStatsFromServer.map((trajet)=>(
-                transform[parseInt(trajet.month)-1]=parseInt(trajet.countAbonnements)
+            AbonnementsStatsFromServer.map((abonnement)=>(
+                transform[parseInt(abonnement.month)-1]=parseInt(abonnement.countAbonnements)
             ))
             if(bySeason){
                 setAbonnementsStats((prevState)=>({
                     ...prevState,
                     bySeason:true,
-                    labels : ["Winter","Spring","Summer","Fall"],
+                    labels : seasons_labels,
                     abonnementsParMois:[transform[0]+transform[1]+transform[2],
                     transform[3]+transform[4]+transform[5],
                     transform[6]+transform[7]+transform[8],
@@ -192,7 +204,7 @@ const DashboardView = () => {
                     ...prevState,
                     abonnementsParMois:transform,
                     bySeason:false,
-                    labels : ["Jan","Feb","Mar","Apr","Mai","Jun","Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]      
+                    labels : month_labels    
                 }))
             }
         }
@@ -211,7 +223,7 @@ const DashboardView = () => {
                 setTransactionsStats((prevState)=>({
                     ...prevState,
                     bySeason:true,
-                    labels : ["Winter","Spring","Summer","Fall"],
+                    labels : seasons_labels,
                     transactionsParMois:[transform[0]+transform[1]+transform[2],
                     transform[3]+transform[4]+transform[5],
                     transform[6]+transform[7]+transform[8],
@@ -223,7 +235,38 @@ const DashboardView = () => {
                     ...prevState,
                     transactionsParMois:transform,
                     bySeason:false,
-                    labels : ["Jan","Feb","Mar","Apr","Mai","Jun","Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]      
+                    labels : month_labels     
+                }))
+            }
+        }
+        catch(e){}
+    })
+
+    // Charger les locations par mois ou par saison
+    const loadBugsStats = useCallback(async (year,bySeason) => {
+        try{
+            const BugsStatsFromServer = await fetchBugsStats(year)
+            let transform = [0,0,0,0,0,0,0,0,0,0,0,0]
+            BugsStatsFromServer.map((value)=>(
+                transform[parseInt(value.month)-1]=parseInt(value.countReclamations)
+            ))
+            if(bySeason){
+                setBugsStats((prevState)=>({
+                    ...prevState,
+                    bySeason:true,
+                    labels : seasons_labels,
+                    bugsParMois:[transform[0]+transform[1]+transform[2],
+                    transform[3]+transform[4]+transform[5],
+                    transform[6]+transform[7]+transform[8],
+                    transform[9]+transform[10]+transform[11]]
+                }))
+            }
+            else{
+                setBugsStats((prevState)=>({
+                    ...prevState,
+                    bugsParMois:transform,
+                    bySeason:false,
+                    labels : month_labels
                 }))
             }
         }
@@ -296,6 +339,28 @@ const DashboardView = () => {
         catch(e){}
     }
 
+    // Charger les tous les statistiques pour les locations
+    const loadBugsStatsAll = async () => {
+        try{
+            const bugsYearsFromServer = await fetchBugsYears();
+            let years = new Set()
+            bugsYearsFromServer.map((object)=>(
+                years.add(parseInt(object.year))
+            ));
+            let yearsTab=[]
+            years.forEach((value)=>(
+                yearsTab.unshift(value)
+            ))
+            setBugsStats((prevState)=>({
+                ...prevState,
+                years:yearsTab,
+                currentYear:yearsTab[0],
+            }))
+            loadBugsStats(yearsTab[0],false)
+        }
+        catch(e){}
+    }
+
     // Charger le taux de deffaillance
     const loadTauxDef = useCallback(async () => {
         try{
@@ -355,6 +420,12 @@ const DashboardView = () => {
         await loadTransactionsStats(id,transactionsStats.bySeason)
     }
 
+    // Changer l'année pour les locations (handle year change)
+    const changeBugsYear = async (id)=> {
+        setBugsStats({...bugsStats,currentYear:id})
+        await loadBugsStats(id,bugsStats.bySeason)
+    }
+
     // Changer le filtre d'affichage pour les locations: affichage par saison ou par mois
     const changeLocationsShowBy = async (by) =>{
         if(by == "season" && !locationsStats.bySeason){
@@ -388,6 +459,17 @@ const DashboardView = () => {
         }
     }
 
+    // Changer le filtre d'affichage pour les locations: affichage par saison ou par mois
+    const changeBugsShowBy = async (by) =>{
+        if(by == "season" && !bugsStats.bySeason){
+            loadBugsStats(bugsStats.currentYear,true)
+        }
+        else
+        if(by=="month" && bugsStats.bySeason){
+            loadBugsStats(bugsStats.currentYear,false)
+        }
+    }
+
     // fetch Locations Stats
     const fetchLocationsStats = async (year) => {
         let stats = []
@@ -412,6 +494,16 @@ const DashboardView = () => {
     const fetchTransactionsStats = async (year) => {
         let stats = []
         await axios.get(`${api_url}/transaction/stats/${year}`)
+            .then(res => {
+                stats = res.data
+            })
+        return stats     
+    }
+
+    // fetch Locations Stats
+    const fetchBugsStats = async (year) => {
+        let stats = []
+        await axios.get(`${api_url}/reclamation/countByMonth/${year}`)
             .then(res => {
                 stats = res.data
             })
@@ -444,6 +536,17 @@ const DashboardView = () => {
     const fetchTransactionsYears = async () => {
         let years = []
         await axios.get(`${api_url}/transaction/getYears`)
+            .then(res => {
+                years = res.data
+            })
+        return years
+            
+    }
+
+    // fetch Location Years
+    const fetchBugsYears = async () => {
+        let years = []
+        await axios.get(`${api_url}/reclamation/getYears`)
             .then(res => {
                 years = res.data
             })
@@ -515,23 +618,6 @@ const DashboardView = () => {
                     />
                 </Row>
                 <Row className="mt-3">
-                    <BarChart
-                        data={transactionsStats.transactionsParMois}
-                        filters={transactionsStats.years}
-                        currFilter={transactionsStats.currentYear}
-                        message={"Somme de transactions par "}
-                        labels={transactionsStats.labels}
-                        onChangeFilter={changeTransactionsYear}
-                        changeShowBy ={changeTransactionsShowBy}
-                        bySeason={transactionsStats.bySeason}
-                        col={"12"}
-                        dark={false}
-                        icon={"fas fa-money-bill-alt"}
-                        line={true}
-                        dataSetLabel={"Sum"}
-                    />
-                </Row>
-                <Row className="mt-3">
                     <Col className="mb-5 mb-xl-0">
                         <Card className="shadow">
                             <div className="bg-transparent card-header">
@@ -553,6 +639,40 @@ const DashboardView = () => {
                             </CardBody>     
                         </Card>
                     </Col>   
+                </Row>
+                <Row className="mt-3">
+                    <BarChart
+                        data={transactionsStats.transactionsParMois}
+                        filters={transactionsStats.years}
+                        currFilter={transactionsStats.currentYear}
+                        message={"Somme de transactions par "}
+                        labels={transactionsStats.labels}
+                        onChangeFilter={changeTransactionsYear}
+                        changeShowBy ={changeTransactionsShowBy}
+                        bySeason={transactionsStats.bySeason}
+                        col={"12"}
+                        dark={true}
+                        icon={"fas fa-money-bill-alt"}
+                        line={true}
+                        dataSetLabel={"Sum"}
+                    />
+                </Row>
+                <Row className="mt-3">
+                    <BarChart
+                        data={bugsStats.bugsParMois}
+                        filters={bugsStats.years}
+                        currFilter={bugsStats.currentYear}
+                        message={"Les Bugs par "}
+                        labels={bugsStats.labels}
+                        onChangeFilter={changeBugsYear}
+                        changeShowBy ={changeBugsShowBy}
+                        bySeason={bugsStats.bySeason}
+                        col={"12"}
+                        dark={false}
+                        icon={"fas fa-money-bill-alt"}
+                        line={false}
+                        dataSetLabel={"Bugs"}
+                    />
                 </Row>
             </Container>
         </div>
