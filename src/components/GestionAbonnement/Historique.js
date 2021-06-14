@@ -57,19 +57,6 @@ const Confirm = (props) => {
       });
   };
   useEffect(retrieveLocataires, [props.id]);
-
-  // for (var element in locataires) {
-  //   var dateS = element.dateTransaction;
-  //   var date = new Date(dateS);
-  //   var m = date.getMonth() + 1;
-  //   var y = date.getFullYear();
-  //   var d = date.getDate();
-
-  //   var dateString =
-  //     y + '-' + (m <= 9 ? '0' + m : m) + '-' + (d <= 9 ? '0' + d : d);
-  //   //element.dateTransaction = dateString;
-  //   //  console.log(element);
-  // }
   locataires.forEach(function (item, index, array) {
     var dateS = item.dateTransaction;
     var date = new Date(dateS);
