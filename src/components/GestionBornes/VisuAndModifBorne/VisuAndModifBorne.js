@@ -9,31 +9,26 @@ class VisuAndModifBorne extends Component {
         super(props);
 
         this.state = {
-            isOpen: false,
-            isSuccess: false,
-
+            isOpen: this.props.shown
         }
 
         this.setModalOpen = this.setModalOpen.bind(this)
         this.receiveBorne = this.receiveBorne.bind(this)
     }
 
-    setModalOpen(value, isSuccess, newBorne) {
-        //this.props.onHide(false, newBorne);
+    setModalOpen(value, newBorne) {
+        this.props.onHide(false, newBorne);
         this.setState({ isOpen: value })
     }
 
     receiveBorne(borne, changed = false) {
-        //this.props.onHide(changed, borne);
-        console.log(changed);
-        console.log(borne)
+        this.props.onHide(changed, borne);
     }
 
     render() {
         return (
             <>
-                <Button onClick={() => this.setModalOpen(!this.state.isOpen)}>Click me</Button>
-                <Modal size="lg" toggle={() => this.setModalOpen(!this.state.isOpen)} isOpen={this.state.isOpen}>
+                <Modal size="lg" toggle={() => this.setModalOpen(!this.state.isOpen, this.props.borne)} isOpen={this.state.isOpen}>
                     <div className=" modal-header">
                         <h2 className=" modal-title" id="exampleModalLabel">
                             Visualisation d’une borne
