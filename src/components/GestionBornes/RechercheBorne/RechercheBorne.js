@@ -31,10 +31,9 @@ class RechercheBorne extends Component {
 
             // State of the UI component (open/close)
             collapse: false,
-            bornes: null
+            bornes: null,
+            staticBornes: null
         }
-
-        this.bornesForUI = this.bornesForUI.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     };
@@ -118,6 +117,7 @@ class RechercheBorne extends Component {
             axios.get(MICROSERVICE)
                 .then((res) => {
                     this.setState({ bornes: res.data })
+                    this.setState({ staticBornes: res.data })
                 })
                 .catch(error => {
                     this.errorHandler(error)
@@ -140,6 +140,7 @@ class RechercheBorne extends Component {
                 nbPlaces: this.state.placesLibres != '' ? parseInt(this.state.placesLibres) : (this.state.qtt == 'min' ? 0 : 99999)
             }).then((res) => {
                 this.setState({ bornes: res.data })
+                this.setState({ staticBornes: res.data })
             }).catch(error => {
                 this.errorHandler(error)
             })
@@ -247,14 +248,6 @@ class RechercheBorne extends Component {
             alert("Quelque chose s'est mal déroulé, veuillez contacter le support pour plus d'informations")
         }
     }
-
-    /**
-     * @returns {array} la nouvelle liste des bornes
-     */
-    bornesForUI() {
-        return this.state.bornes
-    }
-
 
     render() {
         return (
@@ -374,7 +367,7 @@ class RechercheBorne extends Component {
                             <Divider variant="inset" style={{ width: "90%" }} />
                         </Row>
                     </Container >
-                    <ListBornes bornes={this.state.bornes}></ListBornes>
+                    <ListBornes bornes={this.state.staticBornes}></ListBornes>
                 </div>
             </>
         )
