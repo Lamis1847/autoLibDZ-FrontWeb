@@ -47,7 +47,7 @@ function App() {
                 <DashboardView></DashboardView>
               </Route>
               <Route exact path="/vehicules">
-                <ListeVehicules></ListeVehicules>
+                <RechercheBorne></RechercheBorne>
               </Route>
               <Route exact path="/vehicules/historique/:id" component={props => (
                 <HistoriqueVehicule
@@ -62,7 +62,7 @@ function App() {
                 <RealPos id="123" /> //In Test 
 				</Route>
               <Route path="/bornes">
-                <RechercheBorne></RechercheBorne>
+                <ListBornes bornes={null}></ListBornes>
               </Route>
 
               <Route path="/utilisateurs">
