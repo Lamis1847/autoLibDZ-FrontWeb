@@ -662,14 +662,14 @@ const DashboardView = () => {
                         data={bugsStats.bugsParMois}
                         filters={bugsStats.years}
                         currFilter={bugsStats.currentYear}
-                        message={"Les Bugs par "}
+                        message={"Les Bugs singalés par "}
                         labels={bugsStats.labels}
                         onChangeFilter={changeBugsYear}
                         changeShowBy ={changeBugsShowBy}
                         bySeason={bugsStats.bySeason}
                         col={"12"}
                         dark={false}
-                        icon={"fas fa-money-bill-alt"}
+                        icon={"fas fa-bug"}
                         line={false}
                         dataSetLabel={"Bugs"}
                     />
