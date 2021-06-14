@@ -69,6 +69,7 @@ const DashboardView = () => {
     const [loadingRetards,setLoadingRetards] = useState(null)
 
     const retardsTabOptions = {
+        selectableRows:false,
         filter: true,
         download:false,
         print:false,
@@ -94,36 +95,36 @@ const DashboardView = () => {
 
     const retardsTabColumns = [
         {
-            name:"ID Reservation",
-            label: "idReservation"
+            label:"ID Reservation",
+            name: "idReservation"
         },
         {
-            name:"ID Locataire",
-            label: "id"
+            label:"ID Locataire",
+            name: "id"
         },
         {
-            name:"Nom Locataire",
-            label: "nom"
+            label:"Nom Locataire",
+            name: "nom"
         },
         {
-            name:"Prenom Locataire",
-            label: "prenom"
+            label:"Prenom Locataire",
+            name: "prenom"
         },
         {
-            name:"numChassis Vehicule",
-            label: "numChassis"
+            label:"numChassis Vehicule",
+            name: "numChassis"
         },
         {
-            name:"Marque Vehicule",
-            label: "marque"
+            label:"Marque Vehicule",
+            name: "marque"
         },
         {
-            name:"Modele Vehicule",
-            label: "modele"
+            label:"Modele Vehicule",
+            name: "modele"
         },
         {
-            name:"DateFin Reservation",
-            label: "dateFin"
+            label:"DateFin Reservation",
+            name: "dateFin"
         }
     ]
 
@@ -497,7 +498,7 @@ const DashboardView = () => {
                         icon={"fas fa-car-crash"}
                     />
                 </Row>
-                <Row className="mt-3">
+                <Row className="mt-5 mt-xl-3">
                     <BarChart
                         data={abonnementsStats.abonnementsParMois}
                         filters={abonnementsStats.years}
@@ -531,7 +532,7 @@ const DashboardView = () => {
                     />
                 </Row>
                 <Row className="mt-3">
-                    <Col className="mb-5 mb-xl-0" xl={8}>
+                    <Col className="mb-5 mb-xl-0">
                         <Card className="shadow">
                             <div className="bg-transparent card-header">
                                 <div className="text-uppercase text-muted">
