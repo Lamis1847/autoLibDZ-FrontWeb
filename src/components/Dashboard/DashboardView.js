@@ -1,10 +1,12 @@
-import React, { useState, useEffect, useCallback,useLayoutEffect,forceUpdate } from "react";
+import React, { useState, useEffect, useCallback} from "react";
 // javascipt plugin for creating charts
 import Chart from "chart.js";
 // react plugin used to create charts
 import { Line, Bar } from "react-chartjs-2";
 // reactstrap components
 import { Card, CardBody,Container,Row,Col } from "reactstrap";
+import CircularProgress from '@material-ui/core/CircularProgress';
+import MUIDataTable from "mui-datatables";
 
 // core components
 import {
@@ -27,12 +29,15 @@ const DashboardView = () => {
         parseOptions(Chart, chartOptions());
     }
 
+    const month_labels = ["Jan","Fev","Mar","Avr","Mai","Juin","Juil", "Août", "Sep", "Oct", "Nov", "Dec"]
+    const seasons_labels = ["Hiver","Printemps","Eté","Automne"]
+
     const [locationsStats, setLocationsStats] = useState({
         locationsParMois : [],
         years:[],
         currentYear: 0,
         bySeason:false,
-        labels: ["Jan","Feb","Mar","Apr","Mai","Jun","Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+        labels: month_labels
     })
 
     const [abonnementsStats, setAbonnementsStats] = useState({
@@ -40,7 +45,7 @@ const DashboardView = () => {
         years:[],
         currentYear: 0,
         bySeason:false,
-        labels: ["Jan","Feb","Mar","Apr","Mai","Jun","Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+        labels: month_labels
     })
 
     const [transactionsStats, setTransactionsStats] = useState({
@@ -48,7 +53,15 @@ const DashboardView = () => {
         years:[],
         currentYear: 0,
         bySeason:false,
-        labels: ["Jan","Feb","Mar","Apr","Mai","Jun","Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+        labels: month_labels
+    })
+
+    const [bugsStats, setBugsStats] = useState({
+        bugsParMois : [],
+        years:[],
+        currentYear: 0,
+        bySeason:false,
+        labels: month_labels
     })
 
     const [tauxDef,setTauxDef] = useState({
@@ -57,11 +70,82 @@ const DashboardView = () => {
         percent: 0
     })
 
+    const [retards,setRetards] = useState({
+        listeResRet: [],
+        responsive: "vertical",
+        bodyHeight:"400px",
+        bodyMaxHeight:"800px"
+    })
+
+    const [loadingRetards,setLoadingRetards] = useState(null)
+
+    const retardsTabOptions = {
+        selectableRows:false,
+        filter: true,
+        download:false,
+        print:false,
+        viewColumns:false,
+        filterType: "dropdown",
+        elevation:0,
+        responsive: retards.responsive,
+        tableBodyHeight:retards.bodyHeight,
+        tableBodyMaxHeight:retards.bodyMaxHeight,
+        searchPlaceholder: 'Saisir un nom ou un ID..',
+        onColumnSortChange: (changedColumn, direction) => console.log('changedColumn: ', changedColumn, 'direction: ', direction),
+        onChangeRowsPerPage: numberOfRows => console.log('numberOfRows: ', numberOfRows),
+        onChangePage: currentPage => console.log('currentPage: ', currentPage),
+        textLabels: {
+          body: {
+              noMatch: loadingRetards ?
+                  <CircularProgress /> :
+                  'Aucune donnée trouvée',
+          },
+      },
+    
+    }
+
+    const retardsTabColumns = [
+        {
+            label:"ID Reservation",
+            name: "idReservation"
+        },
+        {
+            label:"ID Locataire",
+            name: "id"
+        },
+        {
+            label:"Nom Locataire",
+            name: "nom"
+        },
+        {
+            label:"Prenom Locataire",
+            name: "prenom"
+        },
+        {
+            label:"numChassis Vehicule",
+            name: "numChassis"
+        },
+        {
+            label:"Marque Vehicule",
+            name: "marque"
+        },
+        {
+            label:"Modele Vehicule",
+            name: "modele"
+        },
+        {
+            label:"DateFin Reservation",
+            name: "dateFin"
+        }
+    ]
+
     useEffect(()=>{
         loadLocationsStatsAll();
         loadAbonnementsStatsAll();
         loadTransactionsStatsAll();
+        loadBugsStatsAll();
         loadTauxDef();
+        loadRetardReservations();
     },[]);
 
     // Charger les locations par mois ou par saison
@@ -76,7 +160,7 @@ const DashboardView = () => {
                 setLocationsStats((prevState)=>({
                     ...prevState,
                     bySeason:true,
-                    labels : ["Winter","Spring","Summer","Fall"],
+                    labels : seasons_labels,
                     locationsParMois:[transform[0]+transform[1]+transform[2],
                     transform[3]+transform[4]+transform[5],
                     transform[6]+transform[7]+transform[8],
@@ -88,7 +172,7 @@ const DashboardView = () => {
                     ...prevState,
                     locationsParMois:transform,
                     bySeason:false,
-                    labels : ["Jan","Feb","Mar","Apr","Mai","Jun","Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]      
+                    labels : month_labels
                 }))
             }
             console.log(locationsStats)
@@ -101,14 +185,14 @@ const DashboardView = () => {
         try{
             const AbonnementsStatsFromServer = await fetchAbonnementsStats(year)
             let transform = [0,0,0,0,0,0,0,0,0,0,0,0]
-            AbonnementsStatsFromServer.map((trajet)=>(
-                transform[parseInt(trajet.month)-1]=parseInt(trajet.countAbonnements)
+            AbonnementsStatsFromServer.map((abonnement)=>(
+                transform[parseInt(abonnement.month)-1]=parseInt(abonnement.countAbonnements)
             ))
             if(bySeason){
                 setAbonnementsStats((prevState)=>({
                     ...prevState,
                     bySeason:true,
-                    labels : ["Winter","Spring","Summer","Fall"],
+                    labels : seasons_labels,
                     abonnementsParMois:[transform[0]+transform[1]+transform[2],
                     transform[3]+transform[4]+transform[5],
                     transform[6]+transform[7]+transform[8],
@@ -120,7 +204,7 @@ const DashboardView = () => {
                     ...prevState,
                     abonnementsParMois:transform,
                     bySeason:false,
-                    labels : ["Jan","Feb","Mar","Apr","Mai","Jun","Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]      
+                    labels : month_labels    
                 }))
             }
         }
@@ -139,7 +223,7 @@ const DashboardView = () => {
                 setTransactionsStats((prevState)=>({
                     ...prevState,
                     bySeason:true,
-                    labels : ["Winter","Spring","Summer","Fall"],
+                    labels : seasons_labels,
                     transactionsParMois:[transform[0]+transform[1]+transform[2],
                     transform[3]+transform[4]+transform[5],
                     transform[6]+transform[7]+transform[8],
@@ -151,7 +235,38 @@ const DashboardView = () => {
                     ...prevState,
                     transactionsParMois:transform,
                     bySeason:false,
-                    labels : ["Jan","Feb","Mar","Apr","Mai","Jun","Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]      
+                    labels : month_labels     
+                }))
+            }
+        }
+        catch(e){}
+    })
+
+    // Charger les locations par mois ou par saison
+    const loadBugsStats = useCallback(async (year,bySeason) => {
+        try{
+            const BugsStatsFromServer = await fetchBugsStats(year)
+            let transform = [0,0,0,0,0,0,0,0,0,0,0,0]
+            BugsStatsFromServer.map((value)=>(
+                transform[parseInt(value.month)-1]=parseInt(value.countReclamations)
+            ))
+            if(bySeason){
+                setBugsStats((prevState)=>({
+                    ...prevState,
+                    bySeason:true,
+                    labels : seasons_labels,
+                    bugsParMois:[transform[0]+transform[1]+transform[2],
+                    transform[3]+transform[4]+transform[5],
+                    transform[6]+transform[7]+transform[8],
+                    transform[9]+transform[10]+transform[11]]
+                }))
+            }
+            else{
+                setBugsStats((prevState)=>({
+                    ...prevState,
+                    bugsParMois:transform,
+                    bySeason:false,
+                    labels : month_labels
                 }))
             }
         }
@@ -224,6 +339,69 @@ const DashboardView = () => {
         catch(e){}
     }
 
+    // Charger les tous les statistiques pour les locations
+    const loadBugsStatsAll = async () => {
+        try{
+            const bugsYearsFromServer = await fetchBugsYears();
+            let years = new Set()
+            bugsYearsFromServer.map((object)=>(
+                years.add(parseInt(object.year))
+            ));
+            let yearsTab=[]
+            years.forEach((value)=>(
+                yearsTab.unshift(value)
+            ))
+            setBugsStats((prevState)=>({
+                ...prevState,
+                years:yearsTab,
+                currentYear:yearsTab[0],
+            }))
+            loadBugsStats(yearsTab[0],false)
+        }
+        catch(e){}
+    }
+
+    // Charger le taux de deffaillance
+    const loadTauxDef = useCallback(async () => {
+        try{
+            const resultFromServer = await fetchTauxDef()
+            setTauxDef({
+                total: parseInt(resultFromServer[0].countAll),
+                enPanne:parseInt(resultFromServer[1].countHorsService),
+                percent: parseInt((parseInt(resultFromServer[1].countHorsService) / 
+                parseInt(resultFromServer[0].countAll)) * 100)
+            })
+        }
+        catch(e){}
+    })
+
+    // Charger les tous les statistiques pour les retards de remise des vehicules
+    const loadRetardReservations = async () => {
+        try{
+            setLoadingRetards(true)
+            const retardsFromServer = await fetchRetardReservation()
+            let tab = []
+            retardsFromServer.forEach((value)=>{
+                let newTab = []
+                newTab.push(value.reservation.idReservation)
+                newTab.push(value.reservation.locataire.idLocataire)
+                newTab.push(value.reservation.locataire.nom)
+                newTab.push(value.reservation.locataire.prenom)
+                newTab.push(value.reservation.vehicule.numChassis)
+                newTab.push(value.reservation.vehicule.marque)
+                newTab.push(value.reservation.vehicule.modele)
+                newTab.push(value.dateFin)
+                tab.push(newTab)
+            })
+            setRetards((prevState)=>({
+                ...prevState,
+                listeResRet:tab,
+            }))
+            setLoadingRetards(false)
+        }
+        catch(e){}
+    }
+
     // Changer l'année pour les locations (handle year change)
     const changeLocationsYear = async (id)=> {
         setLocationsStats({...locationsStats,currentYear:id})
@@ -240,6 +418,12 @@ const DashboardView = () => {
     const changeTransactionsYear = async (id)=> {
         setTransactionsStats({...transactionsStats,currentYear:id})
         await loadTransactionsStats(id,transactionsStats.bySeason)
+    }
+
+    // Changer l'année pour les locations (handle year change)
+    const changeBugsYear = async (id)=> {
+        setBugsStats({...bugsStats,currentYear:id})
+        await loadBugsStats(id,bugsStats.bySeason)
     }
 
     // Changer le filtre d'affichage pour les locations: affichage par saison ou par mois
@@ -275,6 +459,17 @@ const DashboardView = () => {
         }
     }
 
+    // Changer le filtre d'affichage pour les locations: affichage par saison ou par mois
+    const changeBugsShowBy = async (by) =>{
+        if(by == "season" && !bugsStats.bySeason){
+            loadBugsStats(bugsStats.currentYear,true)
+        }
+        else
+        if(by=="month" && bugsStats.bySeason){
+            loadBugsStats(bugsStats.currentYear,false)
+        }
+    }
+
     // fetch Locations Stats
     const fetchLocationsStats = async (year) => {
         let stats = []
@@ -299,6 +494,16 @@ const DashboardView = () => {
     const fetchTransactionsStats = async (year) => {
         let stats = []
         await axios.get(`${api_url}/transaction/stats/${year}`)
+            .then(res => {
+                stats = res.data
+            })
+        return stats     
+    }
+
+    // fetch Locations Stats
+    const fetchBugsStats = async (year) => {
+        let stats = []
+        await axios.get(`${api_url}/reclamation/countByMonth/${year}`)
             .then(res => {
                 stats = res.data
             })
@@ -338,21 +543,17 @@ const DashboardView = () => {
             
     }
 
-
-    // Charger le taux de deffaillance
-    const loadTauxDef = useCallback(async () => {
-        try{
-            const resultFromServer = await fetchTauxDef()
-            setTauxDef({
-                total: parseInt(resultFromServer[0].countAll),
-                enPanne:parseInt(resultFromServer[1].countHorsService),
-                percent: parseInt((parseInt(resultFromServer[1].countHorsService) / 
-                parseInt(resultFromServer[0].countAll)) * 100)
+    // fetch Location Years
+    const fetchBugsYears = async () => {
+        let years = []
+        await axios.get(`${api_url}/reclamation/getYears`)
+            .then(res => {
+                years = res.data
             })
-        }
-        catch(e){}
-    })
-    
+        return years
+            
+    }
+ 
     // fetch les données pour taux def
     const fetchTauxDef = async () => {
         let stats = []
@@ -363,10 +564,20 @@ const DashboardView = () => {
         return stats     
     }
 
+    // fetch les retard de remise des véhicules
+    const fetchRetardReservation = async () => {
+        let stats = []
+        await axios.get(`${api_url}/reservation/lesRetards`)
+            .then(res => {
+                stats = res.data
+            })
+        return stats     
+    }
+
       
     return(
         <div className="main-content">
-            <Container className="mt-5" fluid>
+            <Container className="mt-5 pb-5" fluid>
                 <Row>
                     <BarChart
                         data={locationsStats.locationsParMois}
@@ -390,7 +601,7 @@ const DashboardView = () => {
                         icon={"fas fa-car-crash"}
                     />
                 </Row>
-                <Row className="mt-3">
+                <Row className="mt-5 mt-xl-3">
                     <BarChart
                         data={abonnementsStats.abonnementsParMois}
                         filters={abonnementsStats.years}
@@ -407,6 +618,29 @@ const DashboardView = () => {
                     />
                 </Row>
                 <Row className="mt-3">
+                    <Col className="mb-5 mb-xl-0">
+                        <Card className="shadow">
+                            <div className="bg-transparent card-header">
+                                <div className="text-uppercase text-muted">
+                                    {/*<h6 className="text-uppercase text-light ls-1 mb-1">
+                                        overview
+                                    </h6>*/}
+                                    <h2 className="mb-0">
+                                        Les retards de remise des vehicules
+                                    </h2>
+                                </div>
+                            </div>
+                            <CardBody>
+                                <MUIDataTable
+                                    data={retards.listeResRet}
+                                    columns={retardsTabColumns}
+                                    options={retardsTabOptions}
+                                />
+                            </CardBody>     
+                        </Card>
+                    </Col>   
+                </Row>
+                <Row className="mt-3">
                     <BarChart
                         data={transactionsStats.transactionsParMois}
                         filters={transactionsStats.years}
@@ -417,10 +651,27 @@ const DashboardView = () => {
                         changeShowBy ={changeTransactionsShowBy}
                         bySeason={transactionsStats.bySeason}
                         col={"12"}
-                        dark={false}
+                        dark={true}
                         icon={"fas fa-money-bill-alt"}
                         line={true}
                         dataSetLabel={"Sum"}
+                    />
+                </Row>
+                <Row className="mt-3">
+                    <BarChart
+                        data={bugsStats.bugsParMois}
+                        filters={bugsStats.years}
+                        currFilter={bugsStats.currentYear}
+                        message={"Les Bugs par "}
+                        labels={bugsStats.labels}
+                        onChangeFilter={changeBugsYear}
+                        changeShowBy ={changeBugsShowBy}
+                        bySeason={bugsStats.bySeason}
+                        col={"12"}
+                        dark={false}
+                        icon={"fas fa-money-bill-alt"}
+                        line={false}
+                        dataSetLabel={"Bugs"}
                     />
                 </Row>
             </Container>
