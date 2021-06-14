@@ -2,7 +2,7 @@ import React from 'react';
 import classnames from 'classnames';
 import { Container } from 'reactstrap';
 import ListAbonnement from './Abonnement';
-
+import http from '../../scripts/Network';
 // reactstrap components
 import {
   Card,
@@ -41,13 +41,7 @@ class Navs extends React.Component {
                 ></Nav>
               </div>
               <Card className='shadow'>
-                <CardBody>
-                  <TabContent activeTab={'tabs' + this.state.tabs}>
-                    <TabPane tabId='tabs1'>
-                      <ListAbonnement></ListAbonnement>
-                    </TabPane>
-                  </TabContent>
-                </CardBody>
+                <ListAbonnement></ListAbonnement>
               </Card>
             </Container>
           </div>

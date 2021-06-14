@@ -9,8 +9,11 @@ import React, {
   useState,
   useRef,
   useTable,
+  props,
 } from 'react';
-import http from '../../scripts/Network';
+
+import { getToken } from '../../scripts/Network';
+
 import AbonnementService from '../../services/AbonnementService';
 import LocataireService from '../../services/LocataireService';
 import AddModal from './RechargerAbonnement';
@@ -25,13 +28,27 @@ import {
   DropdownItem,
 } from 'reactstrap';
 
-const Confirm = () => {
+const Confirm = (props) => {
   var [locataires, setLocataires] = useState([]);
 
   const LocatairesRef = useRef();
   LocatairesRef.current = locataires;
   const retrieveLocataires = () => {
-    LocataireService.getAll()
+    var token = getToken();
+    console.log(token);
+    var data = {
+      modePaiement: 'Rechargement',
+    };
+    axios
+      .post(
+        `https://autolib-dz.herokuapp.com/api/transaction/${props.id}/filter`,
+        data,
+        {
+          headers: {
+            authorization: `Bearer ${token}`,
+          },
+        }
+      )
       .then((response) => {
         setLocataires(response.data);
       })
@@ -39,13 +56,10 @@ const Confirm = () => {
         console.log(e);
       });
   };
-  useEffect(retrieveLocataires, []);
-  locataires = locataires.filter(function (e) {
-    return (e.Active = true);
-  });
-  let listeLocataires = locataires.map((obj) => Object.values(obj));
+  useEffect(retrieveLocataires, [props.id]);
 
-  const [idLocataire, setIdLocataire] = useState();
+  let listeLocataires = locataires.map((obj) => Object.values(obj));
+  console.log(listeLocataires);
   const [responsive, setResponsive] = useState('vertical');
   const [tableBodyHeight, setTableBodyHeight] = useState('400px');
   const [tableBodyMaxHeight, setTableBodyMaxHeight] = useState('');
@@ -81,82 +95,19 @@ const Confirm = () => {
 
   const columns = [
     {
-      name: 'idLocataire',
-      label: 'id',
-      options: {
-        filter: false,
-      },
-    },
-    {
-      name: 'nom',
-      label: 'Nom',
-    },
-    {
-      name: 'prenom',
-      label: 'Prénom',
-    },
-    {
-      name: 'email',
-      label: 'Email',
-    },
-    {
-      name: 'motdepasse',
-      label: 'Mot de passe',
+      name: 'idTransaction',
+      label: 'idTransaction',
       options: {
         display: false,
-        filter: false,
-        customBodyRender: (props) => {
-          return props ? '*******' : '*******';
-        },
       },
     },
     {
-      name: 'Active',
-      label: 'Status',
-      options: {
-        customBodyRender: (props) => {
-          return props ? (
-            <h5 style={{ color: '#2dce89' }}>Actif</h5>
-          ) : (
-            <h5 style={{ color: '#f5365c' }}>Bloqué</h5>
-          );
-        },
-      },
+      name: 'dateTransaction',
+      label: 'Date',
     },
     {
-      label: 'Action',
-      options: {
-        display: false,
-        filter: false,
-        customBodyRender: (props) => {
-          return props ? '*******' : '*******';
-        },
-      },
-    },
-    {
-      name: 'Abonnement',
-      label: 'Abonnement',
-      options: {
-        customBodyRender: (props) => {
-          return props ? (
-            <AddModal id={idLocataire}></AddModal>
-          ) : (
-            <AddModal id={idLocataire}></AddModal>
-          );
-        },
-      },
-    },
-    {
-      label: 'Hystoriques abonnement',
-      options: {
-        customBodyRender: (props) => {
-          return props ? (
-            <Historique id={idLocataire}></Historique>
-          ) : (
-            <Historique id={idLocataire}></Historique>
-          );
-        },
-      },
+      name: 'montant',
+      label: 'montant(DZD)',
     },
   ];
 
@@ -171,9 +122,6 @@ const Confirm = () => {
     tableBodyMaxHeight,
     searchPlaceholder: 'Saisir un nom..',
     isRowSelectable: false,
-    onRowClick: (rowData, rowState) => {
-      setIdLocataire(rowData[0]);
-    },
 
     onColumnSortChange: (changedColumn, direction) =>
       console.log('changedColumn: ', changedColumn, 'direction: ', direction),
@@ -185,7 +133,7 @@ const Confirm = () => {
   return (
     <>
       <MUIDataTable
-        title='Liste des locataires'
+        title='Historique'
         data={listeLocataires}
         columns={columns}
         options={options}

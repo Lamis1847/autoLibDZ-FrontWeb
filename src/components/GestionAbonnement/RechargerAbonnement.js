@@ -2,12 +2,17 @@ import React from 'react';
 //import AbonnementService from '../../services/LocataireService';
 import AbonnementService from '../../services/AbonnementService';
 import http from '../../scripts/Network';
+
+import MUIDataTable from 'mui-datatables';
+import Menu from '@material-ui/core/Menu';
+import { withStyles } from '@material-ui/core/styles';
 // reactstrap components
 import {
   Button,
   Card,
   CardBody,
   CardTitle,
+  Container,
   FormGroup,
   Form,
   Input,
@@ -18,6 +23,7 @@ import {
   Alert,
   Col,
   Row,
+  Spinner,
 } from 'reactstrap';
 import axios from 'axios';
 
@@ -30,28 +36,18 @@ class Recharge extends React.Component {
 
     this.state = {
       Credit: '',
+      newCredit: '',
       submitted: false,
       exampleModal: false,
+      showHideSpinner: true,
     };
-
-    //const myServerBaseURL = 'https://autolib-dz.herokuapp.com';
-    // const [balanceLocataire, setVehicule] = useState([]);
-
-    // const loadVehicule = useCallback(async () => {
-    //   const response = await axios.get(
-    //     `${myServerBaseURL}/api/abonnement/${props.id}`
-    //   );
-
-    //   setVehicule(balanceLocataire);
-    //   console.log(balanceLocataire);
-    // }, []);
-
-    // //Charger la liste des véhicules
-    // useEffect(() => {
-    //   loadVehicule();
-    // }, [loadVehicule]);
   }
+
   componentWillReceiveProps(nextProps) {
+    this.setState({
+      Credit: '',
+      showHideSpinner: true,
+    });
     const id = nextProps.id;
     console.log('ID', id);
     //const id = this.props.id;
@@ -59,45 +55,40 @@ class Recharge extends React.Component {
       .get(`https://autolib-dz.herokuapp.com/api/abonnement/${id}`)
       .then((response) => {
         this.setState({
+          showHideSpinner: false,
           Credit: response.data.balance,
         });
       })
       .catch((err) => {
-        this.setState({ Credit: 'Erreur' });
+        this.setState({ showHideSpinner: false, Credit: 'Erreur' });
       });
   }
   toggleModal = (state) => {
     this.setState({
       [state]: !this.state[state],
-      Credit: '',
+      newCredit: '',
     });
   };
   onChangeCredit(e) {
     this.setState({
-      Credit: e.target.value,
+      newCredit: e.target.value,
     });
   }
 
-  getCredit = () => {
-    AbonnementService.get()
-      .then((response) => {
-        // setBalance(response.data);
-      })
-      .catch((e) => {
-        console.log(e);
-      });
-  };
-  //setBalance(data) {}
-
   saveCredit() {
+    var n = Number(this.state.newCredit);
     var data = {
-      credit: this.state.Credit,
+      id: this.props.id,
+      value: n,
     };
 
-    AbonnementService.recharger(this.props.id, data)
+    axios
+      .post(
+        `https://autolib-dz.herokuapp.com/api/abonnement/rechargez-carte-abonnement/${this.props.id}`,
+        data
+      )
       .then((response) => {
         this.setState({
-          id: response.data.id,
           submitted: true,
         });
       })
@@ -105,8 +96,7 @@ class Recharge extends React.Component {
         return (
           <Col>
             <Alert color='danger'>
-              s'il vous plait vous devez saisir correctement toutes les
-              informations avec un email non déja utilisé
+              Erreur, veuillez réessayer le rechargement de la balance
             </Alert>
           </Col>
         );
@@ -116,6 +106,7 @@ class Recharge extends React.Component {
   newCredit() {
     this.setState({
       Credit: '',
+      newCredit: '',
       submitted: false,
     });
   }
@@ -182,16 +173,45 @@ class Recharge extends React.Component {
                   <CardBody className='px-lg-5 py-lg-5'>
                     <div className='col'>
                       <CardTitle className='text-uppercase text-muted mb-0 text-center'>
-                        Solde
+                        Solde (DZD)
                       </CardTitle>
-                      <span className='h2 font-weight-bold mb-0'>
-                        {this.state.Credit}
+
+                      <span
+                        className='h2 font-weight-bold mb-0 text-center'
+                        style={{
+                          display: 'flex',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                        }}
+                      >
+                        {this.state.showHideSpinner && (
+                          <Spinner color='primary' />
+                        )}
+                        <br /> <br /> {this.state.Credit}
                       </span>
+                      <p className='mt-3 mb-0 text-muted text-sm'>
+                        <span
+                          className='text-nowrap text-center'
+                          style={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                          }}
+                        >
+                          <br /> Recharger &nbsp; &nbsp; <br />{' '}
+                        </span>
+                      </p>
                     </div>
-                    <p className='mt-3 mb-0 text-muted text-sm'>
-                      <span className='text-nowrap text-center'>Recharger</span>
-                    </p>
-                    <Form role='form'>
+
+                    <Form
+                      role='form'
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        paddingTop: '3%',
+                      }}
+                    >
                       <Row>
                         <FormGroup>
                           <Col>
@@ -199,11 +219,11 @@ class Recharge extends React.Component {
                               <Input
                                 type='text'
                                 className='form-control'
-                                id='nom'
+                                id='newCredit'
                                 required
-                                value={this.state.nom}
+                                value={this.state.newCredit}
                                 onChange={this.onChangeCredit}
-                                name='nom'
+                                name='newCredit'
                                 placeholder='Montant'
                               />
                             </InputGroup>
@@ -214,7 +234,7 @@ class Recharge extends React.Component {
                             className='text-center'
                             color='default'
                             type='button'
-                            onClick={this.saveLocataire}
+                            onClick={this.saveCredit}
                           >
                             Confirmer
                           </Button>
