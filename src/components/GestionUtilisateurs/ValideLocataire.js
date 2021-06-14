@@ -1,6 +1,7 @@
 import React from "react";
 import LocataireService from "../../services/LocataireService";
 
+
 // reactstrap components
 import {
   Button,
@@ -29,6 +30,7 @@ class Valide extends React.Component{
             nom: props.data? props.data[1]:"",
             prenom: props.data? props.data[2]:"",
             permis: "",
+            photo: "",
             numeroPermis: null,
         }
     }
@@ -42,11 +44,13 @@ class Valide extends React.Component{
         });
         this.toggleModal("valideModal");
         let permis = await (await LocataireService.getPermis(this.props.data[0])).data[0];
-        this.setState({
-          permis: permis.secureUrl,
-          numeroPermis: permis.numeroPermis
-        });
-        console.log(permis.secureUrl);
+        if (permis){
+          this.setState({
+            permis: permis.secureUrl,
+            numeroPermis: permis.numeroPermis,
+            photo: permis.secureUrlPhotoSelfie
+          });
+        }
       }
     }
 
@@ -137,6 +141,16 @@ class Valide extends React.Component{
                                           Visualiser la photo de permis de conduite
                                         </Button>
                                     </div>
+                                    <div className="col-sm-3 mt-3">
+                                        <i className="fas fa-camera-retro fa-3x" />
+                                    </div>
+                                    <div className="col-sm-9 mt-3">
+                                        <Button
+                                          onClick={() => this.toggleModal("photoModal")}
+                                        >
+                                          Visualiser la photo de locataire
+                                        </Button>
+                                    </div>
                                 </div>
                                     <div className="mt-5 d-flex flex-row-reverse">
                                           <div className="ml-2">
@@ -183,7 +197,37 @@ class Valide extends React.Component{
                     </div>
                     <div>
                       <center>
-                        <img src={this.state.permis} alt="premis" />
+                        <img src={this.state.permis} alt="Pas de permis pour le moment" />
+                      </center>
+                    </div>
+                  </CardBody>
+
+                  </Card>
+                </Modal>
+                <Modal
+                  backdrop="static" keyboard={false}
+                  className="modal-dialog-centered"
+                  isOpen={this.state.photoModal}
+                  toggle={() => this.toggleModal("photoModal")}
+                >
+                  <Card className="bg-secondary shadow border-0">
+                  <button
+                          style={{margin:"3%"}}
+                          aria-label="Close"
+                          className="close"
+                          data-dismiss="modal"
+                          type="button"
+                          onClick={() => this.toggleModal("photoModal")}
+                        >
+                          <span aria-hidden={true}>×</span>
+                  </button>
+                  <CardBody>
+                    <div className="text-center text-muted mb-4">
+                        <h1>Photo de Locataire</h1>
+                    </div>
+                    <div>
+                      <center>
+                        <img src={this.state.photo} alt="Pas de photo pour le moment" />
                       </center>
                     </div>
                   </CardBody>

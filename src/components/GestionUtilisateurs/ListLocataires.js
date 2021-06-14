@@ -7,7 +7,6 @@ import React,{useEffect,useMemo,useState,useRef,useTable} from "react";
 import LocataireService from "../../services/LocataireService";
 
 import {NavLink} from 'react-router-dom';
-import AddModal from './AddLocataire';
 import { withRouter } from "react-router-dom";
 import {
   UncontrolledDropdown,
@@ -79,7 +78,8 @@ const Confirm=() => {
       name: "idLocataire",
       label: "id",
       options: {
-        filter: false
+        filter: false,
+        display: false,
         
       }
     },
@@ -162,6 +162,7 @@ const Confirm=() => {
   ];
   
   const options = {
+    selectableRows: 'none',
     filter: true,
     download:false,
     print:false,
@@ -173,6 +174,18 @@ const Confirm=() => {
     tableBodyMaxHeight,
     searchPlaceholder: 'Saisir un nom..',
     isRowSelectable:false,
+    textLabels: {
+      body: {
+        noMatch: "Désolé, Aucune donnée trouvée",
+        toolTip: "Trier",
+      },
+      pagination: {
+        next: "Page suivante",
+        previous: "Page précédente",
+        rowsPerPage: "Ligne par page:",
+        displayRows: "/",
+      },
+    },
     onRowClick: (rowData, rowState) => {
       setIdLocataire(rowData[0]);
       setRowIndex(rowState.rowIndex);
@@ -214,18 +227,14 @@ const showValidModel =(idLocateur) =>{
 
   return (
           <>
+
             <Row>
                 <Col>
-               
                 <div style={{paddingBottom:"6px"}}>
-                <AddModal></AddModal>
                 <Valide data={validData} show={valid} ></Valide>
                 </div>
-              
                 </Col>
-
             </Row>
-            
             <MUIDataTable
                title="Liste des locataires"
               data={listeLocataires}
@@ -233,9 +242,6 @@ const showValidModel =(idLocateur) =>{
               options={options}
             />
           </>
-
-    
-      
    
   )
   
