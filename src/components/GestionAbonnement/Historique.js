@@ -35,7 +35,7 @@ const Confirm = (props) => {
   LocatairesRef.current = locataires;
   const retrieveLocataires = () => {
     var token = getToken();
-    console.log(token);
+
     var data = {
       modePaiement: 'Rechargement',
     };
@@ -58,8 +58,30 @@ const Confirm = (props) => {
   };
   useEffect(retrieveLocataires, [props.id]);
 
+  // for (var element in locataires) {
+  //   var dateS = element.dateTransaction;
+  //   var date = new Date(dateS);
+  //   var m = date.getMonth() + 1;
+  //   var y = date.getFullYear();
+  //   var d = date.getDate();
+
+  //   var dateString =
+  //     y + '-' + (m <= 9 ? '0' + m : m) + '-' + (d <= 9 ? '0' + d : d);
+  //   //element.dateTransaction = dateString;
+  //   //  console.log(element);
+  // }
+  locataires.forEach(function (item, index, array) {
+    var dateS = item.dateTransaction;
+    var date = new Date(dateS);
+    var m = date.getMonth() + 1;
+    var y = date.getFullYear();
+    var d = date.getDate();
+
+    var dateString =
+      y + '-' + (m <= 9 ? '0' + m : m) + '-' + (d <= 9 ? '0' + d : d);
+    item.dateTransaction = dateString;
+  });
   let listeLocataires = locataires.map((obj) => Object.values(obj));
-  console.log(listeLocataires);
   const [responsive, setResponsive] = useState('vertical');
   const [tableBodyHeight, setTableBodyHeight] = useState('400px');
   const [tableBodyMaxHeight, setTableBodyMaxHeight] = useState('');

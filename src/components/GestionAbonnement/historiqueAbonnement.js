@@ -100,11 +100,6 @@ class Recharge extends React.Component {
                   <span aria-hidden={true}>×</span>
                 </button>
                 <CardBody className='px-lg-5 py-lg-5'>
-                  <div className='col'>
-                    <CardTitle className='text-uppercase text-muted mb-0 text-center'>
-                      Historique
-                    </CardTitle>
-                  </div>
                   <Historique id={this.state.id}></Historique>
                 </CardBody>
               </Card>

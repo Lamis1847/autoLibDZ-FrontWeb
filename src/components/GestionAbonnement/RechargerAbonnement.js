@@ -6,6 +6,7 @@ import http from '../../scripts/Network';
 import MUIDataTable from 'mui-datatables';
 import Menu from '@material-ui/core/Menu';
 import { withStyles } from '@material-ui/core/styles';
+import { getToken } from '../../scripts/Network';
 // reactstrap components
 import {
   Button,
@@ -44,15 +45,20 @@ class Recharge extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
+    var token = getToken();
     this.setState({
       Credit: '',
       showHideSpinner: true,
     });
     const id = nextProps.id;
-    console.log('ID', id);
+
     //const id = this.props.id;
     axios
-      .get(`https://autolib-dz.herokuapp.com/api/abonnement/${id}`)
+      .get(`https://autolib-dz.herokuapp.com/api/abonnement/${id}`, {
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      })
       .then((response) => {
         this.setState({
           showHideSpinner: false,
@@ -76,6 +82,8 @@ class Recharge extends React.Component {
   }
 
   saveCredit() {
+    var token = getToken();
+
     var n = Number(this.state.newCredit);
     var data = {
       id: this.props.id,
@@ -85,12 +93,44 @@ class Recharge extends React.Component {
     axios
       .post(
         `https://autolib-dz.herokuapp.com/api/abonnement/rechargez-carte-abonnement/${this.props.id}`,
-        data
+        data,
+        {
+          headers: {
+            authorization: `Bearer ${token}`,
+          },
+        }
       )
       .then((response) => {
         this.setState({
           submitted: true,
         });
+        var date = new Date(); //
+
+        var d = date.getDate();
+        var m = date.getMonth() + 1;
+        var y = date.getFullYear();
+
+        var dateString =
+          y + '-' + (m <= 9 ? '0' + m : m) + '-' + (d <= 9 ? '0' + d : d);
+
+        var data2 = {
+          idLocataire: this.props.id,
+          montant: n,
+          modePaiement: 'Rechargement',
+          dateTransaction: dateString,
+        };
+        axios
+          .post(`https://autolib-dz.herokuapp.com/api/transaction`, data2, {
+            headers: {
+              authorization: `Bearer ${token}`,
+            },
+          })
+          .then((response) => {
+            console.log('done saving transaction');
+          })
+          .catch((err) => {
+            console.log('error saving transaction');
+          });
       })
       .catch((e) => {
         return (
@@ -124,7 +164,7 @@ class Recharge extends React.Component {
             this.toggleModal('exampleModal');
           }}
         >
-          <u>Abonnement {'>'}</u>
+          <u>Abonnement{'>'}</u>
         </Button>
         <Modal
           backdrop='static'
