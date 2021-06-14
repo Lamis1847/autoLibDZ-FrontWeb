@@ -8,7 +8,7 @@ const update = (id, data) => {
 };
 
 const recharger = (id, data) => {
-  return http.put(`/abonnement/rechargez-carte-abonnement/${id}`, data);
+  return http.post(`/abonnement/rechargez-carte-abonnement/${id}`, data);
 };
 
 const AbonnementService = {
