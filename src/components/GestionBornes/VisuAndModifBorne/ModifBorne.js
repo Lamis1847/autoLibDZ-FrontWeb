@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Switch from '@material-ui/core/Switch';
 import Divider from '@material-ui/core/Divider';
-import { Form, FormGroup, Input, Label, Button } from 'reactstrap';
+import { Container, Row, Col, Form, FormGroup, Input, Label, Button } from 'reactstrap';
 import './VisuAndModifBorne.css'
 import LoopOutlinedIcon from '@material-ui/icons/LoopOutlined';
 import axios from "axios";
@@ -75,8 +75,8 @@ class ModifBorne extends Component {
                 commune: this.state.commune != this.props.borne[3] ? this.state.commune : this.props.borne[3],
                 nbVehicules: this.state.capacite != this.props.borne[6] ? this.state.capacite : this.props.borne[6]
             }).then((res) => {
-                console.log(res)
-                //Reste à faire : Afficher message de succès
+                let borne = [this.props.borne[0], this.state.nomBorne, this.state.wilaya, this.state.commune, parseFloat(this.state.latitude), parseFloat(this.state.longitude), parseInt(this.state.capacite, 10), this.props.borne[7], this.props.borne[8]]
+                this.props.receiveBorne(borne, true)
             }).catch((error) => {
                 switch (error.response.status) {
                     case 400:
@@ -107,78 +107,110 @@ class ModifBorne extends Component {
     }
 
     render() {
-
-        const styles = {
-            layout: {
-                paddingLeft: '5%'
-            },
-            inputs: {
-                marginLeft: '2%',
-                width: '80%'
-            },
-            splitInputs: {
-                width: "82%",
-                marginLeft: '6%'
-            },
-            button: {
-                backgroundColor: '#252834',
-                color: '#ffffff',
-                marginTop: "5%",
-                marginLeft: "56%"
-            }
-        }
-
         return (
-            <div>
-                <Form style={styles.layout} onSubmit={this.handleSubmit}>
-                    <FormGroup className="mb-flex">
-                        <Label for="mb-checked">Mode modification</Label>
-                        <Switch name="checked" id="mb-checked" checked={this.state.checked} onChange={this.handleChange} style={{ paddingLeft: '10%' }}></Switch>
-                    </FormGroup>
-                    <Divider variant="middle" style={{ width: '80%' }} />
-                    <br />
-                    <FormGroup className="mb-block">
-                        <Label for="mb-id">Identifiant</Label>
-                        <Input type="text" name="id" id="mb-id" value={this.props.borne[0]} disabled="true" style={styles.inputs} > {this.props.borne[0]} </Input>
-                    </FormGroup>
-                    <FormGroup className="mb-block">
-                        <Label for="mb-nom">Nom borne</Label>
-                        <Input type="text" name="nomBorne" id="mb-nom" value={this.state.nomBorne} disabled={!this.state.checked} onChange={this.handleChange} style={styles.inputs} />
-                    </FormGroup>
-                    <FormGroup className="mb-flex">
-                        <FormGroup className="mb-block">
-                            <Label for="mb-lat">Latitude</Label>
-                            <Input type="text" name="latitude" id="mb-lat" value={this.state.latitude} disabled={!this.state.checked} onChange={this.handleChange} style={styles.splitInputs} />
-                        </FormGroup>
-                        <FormGroup className="mb-block">
-                            <Label for="mb-long">Longitude</Label>
-                            <Input type="text" name="longitude" id="mb-long" value={this.state.longitude} disabled={!this.state.checked} onChange={this.handleChange} style={styles.splitInputs} />
-                        </FormGroup>
-                    </FormGroup>
-                    <FormGroup className="mb-block">
-                        <Label for="mb-wilaya">Wilaya</Label>
-                        <Input type="text" name="wilaya" id="mb-wilaya" value={this.state.wilaya} disabled={!this.state.checked} onChange={this.handleChange} style={styles.inputs} />
-                    </FormGroup>
-                    <FormGroup className="mb-block">
-                        <Label for="mb-commune">Commune</Label>
-                        <Input type="text" name="commune" id="mb-commune" value={this.state.commune} disabled={!this.state.checked} onChange={this.handleChange} style={styles.inputs} />
-                    </FormGroup>
-                    <FormGroup className="mb-block">
-                        <Label for="mb-capacite">Places totales</Label>
-                        <Input type="text" name="capacite" id="mb-capacite" value={this.state.capacite} disabled={!this.state.checked} onChange={this.handleChange} style={styles.inputs} />
-                    </FormGroup>
-                    <FormGroup className="mb-block">
-                        <div>
-                            <Label for="mb-placesLibres">Places libres</Label>
-                            <LoopOutlinedIcon onClick={this.loadPlacesLibres} />
-                        </div>
-                        <Input type="text" name="placesLibres" id="mb-placesLibres" value={this.props.borne[7]} disabled="true" style={styles.inputs} > {this.props.borne[7]} </Input>
-                    </FormGroup>
+            <Container fluid={true} style={{ backGroundColor: 'white', border: '1px solid #d5d5d5' }}>
+                <Form onSubmit={this.handleSubmit} >
                     <FormGroup>
-                        <Button type="submit" style={styles.button} id="submitButton" disabled={this.state.disabled}>Sauvegarder</Button>
+                        <Row>
+                            <Col xs={8}>
+                                <Label for="mb-checked">Mode modification</Label>
+                            </Col>
+                            <Col xs={2}>
+                                <Switch name="checked" id="mb-checked" checked={this.state.checked} onChange={this.handleChange} ></Switch>
+                            </Col>
+                        </Row>
+                    </FormGroup>
+
+                    <Row>
+                        <Col xs={12}>
+                            <Divider variant="left" />
+                        </Col>
+                    </Row>
+                    <br />
+
+                    <FormGroup>
+                        <Row>
+                            <Col xs={12}>
+                                <Label for="mb-id">Identifiant</Label>
+                                <Input type="text" name="id" id="mb-id" value={this.props.borne[0]} disabled="true"  > {this.props.borne[0]} </Input>
+                            </Col>
+                        </Row>
+                    </FormGroup>
+
+                    <FormGroup>
+                        <Row>
+                            <Col xs={12}>
+                                <Label for="mb-nom">Nom borne</Label>
+                                <Input type="text" name="nomBorne" id="mb-nom" value={this.state.nomBorne} disabled={!this.state.checked} onChange={this.handleChange} />
+                            </Col>
+                        </Row>
+                    </FormGroup>
+
+                    <FormGroup >
+                        <Row>
+                            <Col xs={6}>
+                                <FormGroup>
+                                    <Label for="mb-lat">Latitude</Label>
+                                    <Input type="text" name="latitude" id="mb-lat" value={this.state.latitude} disabled={!this.state.checked} onChange={this.handleChange} />
+                                </FormGroup>
+                            </Col>
+                            <Col xs={6}>
+                                <FormGroup>
+                                    <Label for="mb-long">Longitude</Label>
+                                    <Input type="text" name="longitude" id="mb-long" value={this.state.longitude} disabled={!this.state.checked} onChange={this.handleChange} />
+                                </FormGroup>
+                            </Col>
+                        </Row>
+                    </FormGroup>
+
+                    <FormGroup>
+                        <Row>
+                            <Col xs={12}>
+                                <Label for="mb-wilaya">Wilaya</Label>
+                                <Input type="text" name="wilaya" id="mb-wilaya" value={this.state.wilaya} disabled={!this.state.checked} onChange={this.handleChange} />
+                            </Col>
+                        </Row>
+                    </FormGroup>
+
+                    <FormGroup>
+                        <Row>
+                            <Col xs={12}>
+                                <Label for="mb-commune">Commune</Label>
+                                <Input type="text" name="commune" id="mb-commune" value={this.state.commune} disabled={!this.state.checked} onChange={this.handleChange} />
+                            </Col>
+                        </Row>
+                    </FormGroup>
+
+                    <FormGroup>
+                        <Row>
+                            <Col xs={12}>
+                                <Label for="mb-capacite">Places totales</Label>
+                                <Input type="text" name="capacite" id="mb-capacite" value={this.state.capacite} disabled={!this.state.checked} onChange={this.handleChange} />
+                            </Col>
+                        </Row>
+                    </FormGroup>
+
+                    <FormGroup>
+                        <Row>
+                            <Col xs={12}>
+                                <Label for="mb-placesLibres" style={{ paddingRight: '5%' }}>Places libres</Label>
+                                <LoopOutlinedIcon onClick={this.loadPlacesLibres} />
+                                <Input type="text" name="placesLibres" id="mb-placesLibres" value={this.props.borne[7]} disabled="true" > {this.props.borne[7]} </Input>
+                            </Col>
+                        </Row>
+                    </FormGroup>
+
+                    <FormGroup>
+                        <Row>
+                            <Col xs={4}></Col>
+                            <Col xs={4}>
+                                <Button type="submit" id="submitButton" style={{ backgroundColor: '#252834', color: '#ffffff' }} disabled={this.state.disabled}>Sauvegarder</Button>
+                            </Col>
+                            <Col xs={4}></Col>
+                        </Row>
                     </FormGroup>
                 </Form>
-            </div >
+            </Container >
         )
     };
 }

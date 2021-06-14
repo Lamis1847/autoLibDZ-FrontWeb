@@ -1,10 +1,5 @@
-.mb-flex{
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content:left;
+a:hover{
+    transform: scale(1.1);
+    transition: .2s;
 }
 
-.mb-flex .mb-block:nth-child(2){
-    margin-left: 10%;
-}
