@@ -5,6 +5,8 @@ import Chart from "chart.js";
 import { Line, Bar } from "react-chartjs-2";
 // reactstrap components
 import { Card, CardBody,Container,Row,Col } from "reactstrap";
+import CircularProgress from '@material-ui/core/CircularProgress';
+import MUIDataTable from "mui-datatables";
 
 // core components
 import {
@@ -20,8 +22,8 @@ import StatsCard from './StatsCard';
 
 const DashboardView = () => {
 
-    const api_url="https://autolib-dz.herokuapp.com/api";
-    //const api_url="http://localhost:4000/api";
+    //const api_url="https://autolib-dz.herokuapp.com/api";
+    const api_url="http://localhost:4000/api";
 
     if (window.Chart) {
         parseOptions(Chart, chartOptions());
@@ -57,11 +59,80 @@ const DashboardView = () => {
         percent: 0
     })
 
+    const [retards,setRetards] = useState({
+        listeResRet: [],
+        responsive: "vertical",
+        bodyHeight:"400px",
+        bodyMaxHeight:"800px"
+    })
+
+    const [loadingRetards,setLoadingRetards] = useState(null)
+
+    const retardsTabOptions = {
+        filter: true,
+        download:false,
+        print:false,
+        viewColumns:false,
+        filterType: "dropdown",
+        elevation:0,
+        responsive: retards.responsive,
+        tableBodyHeight:retards.bodyHeight,
+        tableBodyMaxHeight:retards.bodyMaxHeight,
+        searchPlaceholder: 'Saisir un nom ou un ID..',
+        onColumnSortChange: (changedColumn, direction) => console.log('changedColumn: ', changedColumn, 'direction: ', direction),
+        onChangeRowsPerPage: numberOfRows => console.log('numberOfRows: ', numberOfRows),
+        onChangePage: currentPage => console.log('currentPage: ', currentPage),
+        textLabels: {
+          body: {
+              noMatch: loadingRetards ?
+                  <CircularProgress /> :
+                  'Aucune donnée trouvée',
+          },
+      },
+    
+    }
+
+    const retardsTabColumns = [
+        {
+            name:"ID Reservation",
+            label: "idReservation"
+        },
+        {
+            name:"ID Locataire",
+            label: "id"
+        },
+        {
+            name:"Nom Locataire",
+            label: "nom"
+        },
+        {
+            name:"Prenom Locataire",
+            label: "prenom"
+        },
+        {
+            name:"numChassis Vehicule",
+            label: "numChassis"
+        },
+        {
+            name:"Marque Vehicule",
+            label: "marque"
+        },
+        {
+            name:"Modele Vehicule",
+            label: "modele"
+        },
+        {
+            name:"DateFin Reservation",
+            label: "dateFin"
+        }
+    ]
+
     useEffect(()=>{
         loadLocationsStatsAll();
         loadAbonnementsStatsAll();
         loadTransactionsStatsAll();
         loadTauxDef();
+        loadRetardReservations();
     },[]);
 
     // Charger les locations par mois ou par saison
@@ -224,6 +295,47 @@ const DashboardView = () => {
         catch(e){}
     }
 
+    // Charger le taux de deffaillance
+    const loadTauxDef = useCallback(async () => {
+        try{
+            const resultFromServer = await fetchTauxDef()
+            setTauxDef({
+                total: parseInt(resultFromServer[0].countAll),
+                enPanne:parseInt(resultFromServer[1].countHorsService),
+                percent: parseInt((parseInt(resultFromServer[1].countHorsService) / 
+                parseInt(resultFromServer[0].countAll)) * 100)
+            })
+        }
+        catch(e){}
+    })
+
+    // Charger les tous les statistiques pour les retards de remise des vehicules
+    const loadRetardReservations = async () => {
+        try{
+            setLoadingRetards(true)
+            const retardsFromServer = await fetchRetardReservation()
+            let tab = []
+            retardsFromServer.forEach((value)=>{
+                let newTab = []
+                newTab.push(value.reservation.idReservation)
+                newTab.push(value.reservation.locataire.idLocataire)
+                newTab.push(value.reservation.locataire.nom)
+                newTab.push(value.reservation.locataire.prenom)
+                newTab.push(value.reservation.vehicule.numChassis)
+                newTab.push(value.reservation.vehicule.marque)
+                newTab.push(value.reservation.vehicule.modele)
+                newTab.push(value.dateFin)
+                tab.push(newTab)
+            })
+            setRetards((prevState)=>({
+                ...prevState,
+                listeResRet:tab,
+            }))
+            setLoadingRetards(false)
+        }
+        catch(e){}
+    }
+
     // Changer l'année pour les locations (handle year change)
     const changeLocationsYear = async (id)=> {
         setLocationsStats({...locationsStats,currentYear:id})
@@ -337,22 +449,7 @@ const DashboardView = () => {
         return years
             
     }
-
-
-    // Charger le taux de deffaillance
-    const loadTauxDef = useCallback(async () => {
-        try{
-            const resultFromServer = await fetchTauxDef()
-            setTauxDef({
-                total: parseInt(resultFromServer[0].countAll),
-                enPanne:parseInt(resultFromServer[1].countHorsService),
-                percent: parseInt((parseInt(resultFromServer[1].countHorsService) / 
-                parseInt(resultFromServer[0].countAll)) * 100)
-            })
-        }
-        catch(e){}
-    })
-    
+ 
     // fetch les données pour taux def
     const fetchTauxDef = async () => {
         let stats = []
@@ -363,10 +460,20 @@ const DashboardView = () => {
         return stats     
     }
 
+    // fetch les retard de remise des véhicules
+    const fetchRetardReservation = async () => {
+        let stats = []
+        await axios.get(`${api_url}/reservation/lesRetards`)
+            .then(res => {
+                stats = res.data
+            })
+        return stats     
+    }
+
       
     return(
         <div className="main-content">
-            <Container className="mt-5" fluid>
+            <Container className="mt-5 pb-5" fluid>
                 <Row>
                     <BarChart
                         data={locationsStats.locationsParMois}
@@ -422,6 +529,29 @@ const DashboardView = () => {
                         line={true}
                         dataSetLabel={"Sum"}
                     />
+                </Row>
+                <Row className="mt-3">
+                    <Col className="mb-5 mb-xl-0" xl={8}>
+                        <Card className="shadow">
+                            <div className="bg-transparent card-header">
+                                <div className="text-uppercase text-muted">
+                                    {/*<h6 className="text-uppercase text-light ls-1 mb-1">
+                                        overview
+                                    </h6>*/}
+                                    <h2 className="mb-0">
+                                        Les retards de remise des vehicules
+                                    </h2>
+                                </div>
+                            </div>
+                            <CardBody>
+                                <MUIDataTable
+                                    data={retards.listeResRet}
+                                    columns={retardsTabColumns}
+                                    options={retardsTabOptions}
+                                />
+                            </CardBody>     
+                        </Card>
+                    </Col>   
                 </Row>
             </Container>
         </div>
