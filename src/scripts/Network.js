@@ -46,13 +46,19 @@ export { API_HOST }
 const getApiFinalEndpoint = (endpoint) =>
   endpoint[0] === "/" ? `${API_HOST}${endpoint}` : `${API_HOST}/${endpoint}`;
 
-const apiDefaultOptions = {
-  crossDomain:true,
+const getheaders = () => { return {
+    authorization : `Basic ${getToken()}` || ""
+}};
+
+const apiDefaultOptions = () => { return {
+  headers: getheaders(),
+  crossDomain : true,
   resultCondition: (r) => true,
-};
+}};
+
 const api = {
   post: (endpoint, data = {}, options) => {
-    options = Object.assign(_.cloneDeep(apiDefaultOptions), options);
+    options = Object.assign(_.cloneDeep(apiDefaultOptions()), options);
     return new Promise((resolve, reject) => {
       Axios.post(getApiFinalEndpoint(endpoint), data, options)
         .then((suc) => {
@@ -65,9 +71,22 @@ const api = {
     });
   },
   get: (endpoint, options) => {
-    options = Object.assign(_.cloneDeep(apiDefaultOptions), options);
+    options = Object.assign(_.cloneDeep(apiDefaultOptions()), options);
     return new Promise((resolve, reject) => {
       Axios.get(getApiFinalEndpoint(endpoint), options)
+        .then((suc) => {
+          let success = _.get(suc, "data.success") || (suc.status ===200);
+          if (success)
+            return resolve(suc.data);
+          return reject(suc);
+        })
+        .catch(reject);
+    });
+  },
+  delete: (endpoint, options) => {
+    options = Object.assign(_.cloneDeep(apiDefaultOptions()), options);
+    return new Promise((resolve, reject) => {
+      Axios.delete(getApiFinalEndpoint(endpoint), options)
         .then((suc) => {
           let success = _.get(suc, "data.success") || (suc.status ===200);
           if (success)
@@ -82,11 +101,11 @@ export { api };
 
 
 const setCookie = (cname, cvalue, exdays = 365) => {
-    if (_.isNil(cvalue)) return;
-    let d = new Date();
-    d.setTime(d.getTime() + exdays * 24 * 60 * 60 * 1000);
-    let expires = "expires=" + d.toUTCString();
-    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+  if (_.isNil(cvalue)) return;
+  let d = new Date();
+  d.setTime(d.getTime() + exdays * 24 * 60 * 60 * 1000);
+  let expires = "expires=" + d.toUTCString();
+  document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
 };
 export { setCookie };
 
@@ -113,8 +132,8 @@ const getCookie = (cname, cookieString) => {
       }
     }
     return undefined;
-  };
-  export { getCookie };
+};  
+export { getCookie };
 
 
 const getParam = (param) =>  _.get(`req.params.${param}`) || _.get( `query.${param}`);
