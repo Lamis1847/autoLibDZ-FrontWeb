@@ -15,8 +15,8 @@ const StatsCard = ({ text , value , percentage , textColor,icon }) => {
 
     return (
         <>
-          <div style={{ width: "18rem" }}>
-            <Card className="card-stats mb-4 mb-lg-0">
+          <Col style={{ width: "18rem" }}>
+            <Card className="card-stats mb-5 mb-lg-0">
               <CardBody>
                 <Row>
                   <div className="col">
@@ -40,7 +40,7 @@ const StatsCard = ({ text , value , percentage , textColor,icon }) => {
                 </p>*/}
               </CardBody>
             </Card>
-          </div>
+          </Col>
         </>
     );
 }
