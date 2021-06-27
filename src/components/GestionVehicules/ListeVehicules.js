@@ -10,7 +10,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import { withStyles } from '@material-ui/core/styles';
 import { makeStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import axios from "axios";
+import {api} from "../../scripts/Network"
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogTitle from '@material-ui/core/DialogTitle';
@@ -22,7 +22,7 @@ import Slide from '@material-ui/core/Slide';
 import { Alert, AlertTitle } from '@material-ui/lab';
 import { duration } from "moment";
 
-export const ListeVehicules = () => {
+export const ListeVehicules = props => {
 
   //Relatif à l'API
 
@@ -48,11 +48,12 @@ export const ListeVehicules = () => {
 
   const loadVehicules = useCallback(async () => {
     setLoading(true)
-    const response = await axios.get(`${myServerBaseURL}/api/vehicules`);
-    const vehicules = response.data;
-    console.log(vehicules);
-    setVehicules(vehicules);
-    setLoading(false)
+    api.get(`/api/vehicules`).then( res => {
+      const vehicules = res;
+      console.log(vehicules);
+      setVehicules(vehicules);
+      setLoading(false)
+    })
   }, []);
 
   const onSupprimerVehicule = useCallback( async () => {
@@ -112,7 +113,6 @@ export const ListeVehicules = () => {
                 <Slide direction="up" in={slideSupp} mountOnEnter unmountOnExit>
                 <Alert severity="success" onClose={() => {
                     setSlideSupp(false)
-                    //setTimeout(handleCloseSupprimer(), 4000)
                     }}>
                     <AlertTitle>Succés</AlertTitle>
                     Le véhicule a été supprimé <strong>avec succés</strong>
@@ -130,7 +130,6 @@ export const ListeVehicules = () => {
   )
 
   const supprimerDialogue = (
-    // <Slide direction="up" in={slide} mountOnEnter unmountOnExit>
     <div>
         <Dialog
             open={supprimer}
@@ -227,7 +226,7 @@ const bloquerSuccessMessage = (
               <Slide direction="up" in={slideBloquer} mountOnEnter unmountOnExit>
               <Alert severity="success" onClose={() => {
                   setSlide(false)
-                  //setTimeout(handleCloseSupprimer(), 4000)
+                  setTimeout(handleCloseSupprimer(), 2000)
                   }}>
                   <AlertTitle>Succés</AlertTitle>
                   Le véhicule a été bloqué <strong>avec succés</strong>
@@ -245,7 +244,6 @@ const bloquerSuccessMessage = (
 )
 
 const bloquerDialogue = (
-  // <Slide direction="up" in={slide} mountOnEnter unmountOnExit>
   <div>
       <Dialog
           open={bloquer}
@@ -402,6 +400,9 @@ const bloquerDialogue = (
         filter: false,
         customBodyRender: (value, tableMeta, updateValue) => {
           return (
+            props.noadd ?
+            null
+            :
             <div>
               <Button aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick}>
                 <MenuIcon />
@@ -477,14 +478,23 @@ const bloquerDialogue = (
       <div className="main-content">
         <div className="mt-40">
           <Container fluid>
-            <div style={{padding:"12px"}}>
-              <h1>Liste des véhicules </h1>
-            </div>
-            <div style={{padding:"12px 12px 20px 12px"}}>
-              <Button variant="contained" onClick={handleOpenAjout} style={{backgroundColor:"#252834", textTransform:"capitalize", color:"white", fontWeight:'bold', width:'150px'}}>
-              + Ajouter
-              </Button>
-            </div>
+                <div style={{padding:"12px"}}>
+                <h1>Liste des véhicules </h1>
+              </div>
+            {
+              props.noadd ?
+              null
+              :
+              <>
+              <div style={{padding:"12px 12px 20px 12px"}}>
+                <Button variant="contained" onClick={handleOpenAjout} style={{backgroundColor:"#252834", textTransform:"capitalize", color:"white", fontWeight:'bold', width:'150px'}}>
+                + Ajouter
+                </Button>
+                {successMessage}
+              </div>
+              </>
+            }
+            
             <MUIDataTable
               data={listeVehicules}
               columns={columns}

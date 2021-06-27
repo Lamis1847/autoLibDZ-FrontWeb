@@ -74,6 +74,7 @@ const ListDirigeants=() => {
       name: "id",
       label: "id",
       options: {
+        display: false,
         filter: false
         
       }
@@ -157,6 +158,19 @@ const ListDirigeants=() => {
     tableBodyMaxHeight,
     searchPlaceholder: 'Saisir un nom..',
     isRowSelectable:false,
+    selectableRows: 'none',
+    textLabels: {
+      body: {
+        noMatch: "Désolé, Aucune donnée trouvée",
+        toolTip: "Trier",
+      },
+      pagination: {
+        next: "Page suivante",
+        previous: "Page précédente",
+        rowsPerPage: "Ligne par page:",
+        displayRows: "/",
+      },
+    },
     onRowClick: (rowData, rowState) => {
       setIdDirigeant(rowData[0]);
       setRowIndex(rowState.rowIndex);

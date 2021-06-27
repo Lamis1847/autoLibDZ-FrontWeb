@@ -7,7 +7,6 @@ import React,{useEffect,useMemo,useState,useRef,useTable} from "react";
 import LocataireService from "../../services/LocataireService";
 
 import {NavLink} from 'react-router-dom';
-import AddModal from './AddLocataire';
 import { withRouter } from "react-router-dom";
 import {
   UncontrolledDropdown,
@@ -15,9 +14,11 @@ import {
   DropdownMenu,
   DropdownItem, 
 } from "reactstrap";
+import Valide from "./ValideLocataire";
 const Confirm=() => {
 
   const [locataires, setLocataires] = useState([]);
+  const [valid, setValid] = useState(false);
   const LocatairesRef = useRef();
   LocatairesRef.current = locataires;  
   const retrieveLocataires = () => {
@@ -33,6 +34,8 @@ const Confirm=() => {
   let listeLocataires = locataires.map(obj => Object.values(obj));
   const [idLocataire, setIdLocataire] = useState();
   const [rowIndex, setRowIndex] = useState();
+  const [rowData, setRowData] = useState();
+  const [validData, setValidData] = useState();
   const [responsive, setResponsive] = useState("vertical");
   const [tableBodyHeight, setTableBodyHeight] = useState("400px");
   const [tableBodyMaxHeight, setTableBodyMaxHeight] = useState("");
@@ -75,7 +78,8 @@ const Confirm=() => {
       name: "idLocataire",
       label: "id",
       options: {
-        filter: false
+        filter: false,
+        display: false,
         
       }
     },
@@ -142,10 +146,10 @@ const Confirm=() => {
                       </NavLink>
                     </DropdownItem>
                     
-                    <DropdownItem onClick={() => { if (window.confirm('êtes-vous sûr de vouloir supprimer cet locataire?')) deleteLocataire( idLocataire)}}style={{color:"#F5365C"}}>
+                    <DropdownItem onClick={() => { if (window.confirm('êtes-vous sûr de vouloir supprimer cet locataire?')) deleteLocataire(idLocataire)}}style={{color:"#F5365C"}}>
                       Supprimer
                     </DropdownItem>
-                    <DropdownItem>
+                    <DropdownItem onClick={(idLocataire) => {setValid(true);setValidData(rowData)}}>
                       Valider 
                     </DropdownItem>
                   </DropdownMenu>
@@ -158,6 +162,7 @@ const Confirm=() => {
   ];
   
   const options = {
+    selectableRows: 'none',
     filter: true,
     download:false,
     print:false,
@@ -169,12 +174,25 @@ const Confirm=() => {
     tableBodyMaxHeight,
     searchPlaceholder: 'Saisir un nom..',
     isRowSelectable:false,
+    textLabels: {
+      body: {
+        noMatch: "Désolé, Aucune donnée trouvée",
+        toolTip: "Trier",
+      },
+      pagination: {
+        next: "Page suivante",
+        previous: "Page précédente",
+        rowsPerPage: "Ligne par page:",
+        displayRows: "/",
+      },
+    },
     onRowClick: (rowData, rowState) => {
       setIdLocataire(rowData[0]);
       setRowIndex(rowState.rowIndex);
-      console.log(rowIndex);
-      console.log(rowData);
-      console.log(idLocataire);
+      setRowData(rowData);
+      // console.log(rowIndex);
+      // console.log(rowData);
+      // console.log(idLocataire);
     },
    
     onColumnSortChange: (changedColumn, direction) => console.log('changedColumn: ', changedColumn, 'direction: ', direction),
@@ -201,20 +219,22 @@ const Confirm=() => {
 const refreshPage=() => {
   window.location.reload(false);
 };
+const showValidModel =(idLocateur) =>{
+  console.clear();
+  console.log("id =>" ,idLocateur);
+  
+}
 
   return (
           <>
+
             <Row>
                 <Col>
-               
                 <div style={{paddingBottom:"6px"}}>
-                <AddModal></AddModal>
+                <Valide data={validData} show={valid} ></Valide>
                 </div>
-              
                 </Col>
-
             </Row>
-            
             <MUIDataTable
                title="Liste des locataires"
               data={listeLocataires}
@@ -222,9 +242,6 @@ const refreshPage=() => {
               options={options}
             />
           </>
-
-    
-      
    
   )
   

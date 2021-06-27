@@ -1,8 +1,34 @@
 import ListLocataires from "../GestionUtilisateurs/ListLocataires";
 import Locataire from "../GestionUtilisateurs/Locataire";
 import ListeVehicules from "../GestionVehicules/ListeVehicules"
+import Abonnement from '../GestionAbonnement/Abonnement';
+import { getUserType} from '../../scripts/Network'
 
-var routes = [
+
+var DirigeantRoutes = [
+  {
+    section: "",
+    path: "/dashboard",
+    name: "Dashboard",
+    icon: "fa fa-desktop",
+    component: ListeVehicules,
+    layout: "",
+    api: false
+  }
+]
+
+var OperateurRoutes = [{
+  section: 'abonnement',
+  path: '/Abonnement',
+  name: 'Gestion Abonnement',
+  icon: 'fa fa-credit-card',
+  component: Abonnement,
+  layout: '',
+  api: false,
+}
+]
+
+var AdminRoutes = [
   {
     section: "",
     path: "/dashboard",
@@ -42,6 +68,15 @@ var routes = [
     api: false
   },
   {
+    section: 'abonnement',
+    path: '/Abonnement',
+    name: 'Gestion Abonnement',
+    icon: 'fa fa-credit-card',
+    component: Abonnement,
+    layout: '',
+    api: false,
+  },
+  {
     section: "suivi",
     path: "/surveillance",
     name: "Surveillance",
@@ -70,4 +105,12 @@ var routes = [
   },
   
 ];
+
+var routes = []
+switch(getUserType()){
+ case "administrateur" : routes = AdminRoutes; break ;
+ case "dirigeant" : routes = DirigeantRoutes; break ;
+ case "operateur" : routes = OperateurRoutes; break ;
+}
+
 export default routes;
