@@ -146,9 +146,6 @@ const Confirm=() => {
                       </NavLink>
                     </DropdownItem>
                     
-                    <DropdownItem onClick={() => { if (window.confirm('êtes-vous sûr de vouloir supprimer cet locataire?')) deleteLocataire(idLocataire)}}style={{color:"#F5365C"}}>
-                      Supprimer
-                    </DropdownItem>
                     <DropdownItem onClick={(idLocataire) => {setValid(true);setValidData(rowData)}}>
                       Valider 
                     </DropdownItem>
@@ -190,9 +187,9 @@ const Confirm=() => {
       setIdLocataire(rowData[0]);
       setRowIndex(rowState.rowIndex);
       setRowData(rowData);
-      // console.log(rowIndex);
-      // console.log(rowData);
-      // console.log(idLocataire);
+      console.log(rowIndex);
+  console.log(listeLocataires);
+      console.log(idLocataire);
     },
    
     onColumnSortChange: (changedColumn, direction) => console.log('changedColumn: ', changedColumn, 'direction: ', direction),

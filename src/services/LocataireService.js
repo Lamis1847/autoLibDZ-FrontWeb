@@ -7,7 +7,7 @@ const create = (data) => {
   return http.post("/locataire/createLocataire", data);
 };
 const remove = (id) => {
-  return http.delete(`/locataire/${id}`);
+  return http.put(`/locataire/delete/${id}`);
 };
 const get = (id) => {
   return http.get(`/locataire/${id}`);
