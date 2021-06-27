@@ -15,6 +15,10 @@ import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import Slide from '@material-ui/core/Slide';
 import { Alert, AlertTitle } from '@material-ui/lab';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import { Typography } from '@material-ui/core';
 
 export const DetailsVehicule = () => {
 
@@ -24,16 +28,110 @@ export const DetailsVehicule = () => {
     const myServerBaseURL = "https://autolib-dz.herokuapp.com";
 
     const [vehicule, setVehicule] = useState([]);
+    const [borne, setBorne] = useState(null);
+    const [agent, setAgent] = useState(null);
 
     const loadVehicule = useCallback(async () => {
-        const response = await axios.get(`${myServerBaseURL}/api/vehicules/${idVehicule}`);
-        const vehicule = response.data;
+        const response1 = await axios.get(`${myServerBaseURL}/api/vehicules/${idVehicule}`);
+        const vehicule = response1.data;
         setVehicule(vehicule);
         console.log(vehicule)
+        if(vehicule.idBorne != null){
+            const response2 = await axios.get(`${myServerBaseURL}/api/bornes/${vehicule.idBorne}`);
+            const borne = response2.data;
+            setBorne(borne);
+            console.log(borne)
+        }
+        if(vehicule.idAgentMaintenance != null) {
+            const response3 = await axios.get(`${myServerBaseURL}/api/agent/${vehicule.idAgentMaintenance}`);
+            const agent = response3.data;
+            setAgent(agent);
+            console.log(agent)
+        }
+        
     }, []);
+
+    const onSupprimerVehicule = useCallback( async () => {
+        const response = await axios.put(`${myServerBaseURL}/api/vehicules/${idVehicule}`, {
+            numChassis: vehicule.numChassis,
+            numImmatriculation: vehicule.numImmatriculation,
+            modele: vehicule.modele,
+            marque: vehicule.marque,
+            couleur: vehicule.couleur,
+            etat: "supprime",
+            tempsDeRefroidissement: vehicule.tempsDeRefroidissement,
+            pressionHuileMoteur: vehicule.pressionHuileMoteur,
+            chargeBatterie: vehicule.chargeBatterie,
+            anomalieCircuit: vehicule.anomalieCircuit,
+            pressionPneus: vehicule.pressionPneus,
+            niveauMinimumHuile: vehicule.niveauMinimumHuile,
+            regulateurVitesse: vehicule.regulateurVitesse,
+            limiteurVitesse: vehicule.limiteurVitesse,
+            idAgentMaintenance: vehicule.idAgentMaintenance,
+            idBorne: vehicule.idBorne,
+            idCloudinary: vehicule.idCloudinary,
+            secureUrl: vehicule.secureUrl,
+            id: vehicule.id
+                        })
+                        .then((response) => {
+                            handleCloseSupprimer()
+                            setSlide(true)
+                            setSuccess(true)
+                            console.log("supprimé")
+                            console.log(response);
+                            window.setTimeout( function(){
+                                window.location = "http://localhost:3000/vehicules";
+                            }, 3000 );
+                            }, (error) => {
+                            setSlide(true)
+                            setSuccess(false)
+                            console.log("erreur")
+                            console.log(error);
+                            });
+        });
     
-    const [slide, setSlide] = useState(null)
+    const [slideSupp, setSlideSupp] = useState(null)
     const [success, setSuccess] = useState(false)
+    const [supprimer, setSupprimer] = useState(null)
+    const [slide, setSlide] = useState(null)
+
+    const handleOpenSupprimer = () => {
+        setSupprimer(true)
+    }
+
+    const handleCloseSupprimer = () => {
+        setSupprimer(false)
+    }
+
+    const supprimerDialogue = (
+        <div>
+            <Dialog
+                open={supprimer}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+            <DialogTitle style={{fontFamily:'Nunito-Regular', padding:'12px', margin:"8px", fontWeight:'bold', boxShadow:'none'}}>
+                <Typography style={{fontWeight:'bold', fontSize:'22px', fontFamily:'Nunito-Regular'}}>
+                Supprimer définitivement
+                </Typography>
+            </DialogTitle>
+                <Typography style={{fontFamily:'Nunito-Regular', fontSize:'18px', padding:'14px 20px', boxShadow:'none'}}>
+                Attention ! vous aller effectuer une operation irréversible
+                <br></br>
+                assurez-vous bien de cette étape avant de continuer
+                </Typography>  
+                <DialogActions>
+                <Button onClick={onSupprimerVehicule} style={{textTransform:"capitalize", color:"#F5365C", fontFamily:'Nunito-Regular', margin:"12px 20px", fontWeight:"bold"}}>
+                    Confirmer
+                </Button>
+                <Button onClick={handleCloseSupprimer} style={{textTransform:"capitalize", backgroundColor:"#252834", color:"white", fontFamily:'Nunito-Regular', padding:"6px 12px", margin:"12px 20px"}}>
+                    Annuler
+                </Button>
+                </DialogActions>                  
+                
+            </Dialog>
+        </div>
+    )
 
     const successMessage = (
     <div style={{margin:'20px 0px'}}>
@@ -54,30 +152,11 @@ export const DetailsVehicule = () => {
                 ) }
     </div>
     )
-    
-    const onSupprimerVehicule = useCallback( async () => {
-    const response = await axios.delete(`${myServerBaseURL}/api/vehicules/${idVehicule}`)
-                    .then((response) => {
-                        setSlide(true)
-                        setSuccess(true)
-                        console.log("supprimé")
-                        console.log(response);
-                        window.setTimeout( function(){
-                            window.location = "http://localhost:3000/vehicules";
-                        }, 3000 );
-                        }, (error) => {
-                        setSlide(true)
-                        setSuccess(false)
-                        console.log("erreur")
-                        console.log(error);
-                        });
-    });
 
-    //Charger la liste des véhicules
+    //Charger le véhicule
     useEffect(() => {
         loadVehicule();
     }, [loadVehicule]);
-
 
     // Relatif aux components
     const useStyles = makeStyles((theme) => ({
@@ -92,21 +171,6 @@ export const DetailsVehicule = () => {
         },
         
       })); 
-      
-    const StyledButton = withStyles({
-        root: {
-          background: '#2DCE89',
-          borderRadius: 4,
-          border: 0,
-          color: 'white',
-          height: 40,
-          padding: '0 30px',
-          boxShadow: '0 3px 5px 2px rgba(255, 105, 135, .3)',
-        },
-        label: {
-          textTransform: 'capitalize',
-        },
-      })(Button);
 
     const classes = useStyles();
 
@@ -116,9 +180,6 @@ export const DetailsVehicule = () => {
         "red": "#F5365C",
         "black": "#000000"
       }
-    
-    const buttonColor = vehicule.etat == 'hors service' ? colors.green : colors.yellow;
-    const buttonText = vehicule.etat == 'hors service' ? 'Activer' : 'Bloquer'
 
     return (
         <div className="main-content">
@@ -205,6 +266,16 @@ export const DetailsVehicule = () => {
                                         </div>
                                     }
                                     />
+                                </ListItem>
+                                <Divider/>
+                                <ListItem alignItems="flex-start">
+                                    <ListItemText
+                                    primary={
+                                        <div style={{textAlign:'center'}}>
+                                            <h3>Borne : {borne ? borne.nomBorne : "Ce véhicule n'est affecté à aucune borne"}</h3>
+                                        </div>
+                                    }
+                                    />
                                 </ListItem>                                
                                 </List>
                                 </div>
@@ -263,6 +334,16 @@ export const DetailsVehicule = () => {
                                 }
                                 />
                                 </ListItem>
+                                <Divider/>
+                                <ListItem alignItems="flex-start">
+                                <ListItemText
+                                primary={
+                                    <div style={{textAlign:'center'}}>
+                                        <h3>Agent de maintenance : {agent ? (agent.nom + " " + agent.prenom) : "Aucun agent n'est affecté à ce véhicule"}</h3>
+                                    </div>
+                                }
+                                />
+                                </ListItem>
                                 </List>
                             </div>
                         </div>
@@ -278,14 +359,14 @@ export const DetailsVehicule = () => {
                             </button>
                             </div>
                             <div>
-                            <button onClick={onSupprimerVehicule} style={{padding:'0 30px', backgroundColor:'#F5365C', borderRadius:'4px', color:'white', fontWeight:'bold', height: 40, border:0}}>
+                            <button onClick={handleOpenSupprimer} style={{padding:'0 30px', backgroundColor:'#F5365C', borderRadius:'4px', color:'white', fontWeight:'bold', height: 40, border:0}}>
                                     Supprimer
                             </button>
                             </div>
                         </div>
                         </CardContent>
-                        
                         </Card>
+                        {supprimerDialogue}
                     </Container>
             </div>
         </div>

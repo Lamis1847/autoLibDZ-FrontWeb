@@ -38,8 +38,6 @@ export const AjoutThirdStep = (props) => {
         console.log(agents);
     }, []);
     
-    let listeBornes = bornes.map(obj => Object.values(obj));
-
     useEffect(() => {
         loadBornes();
         loadAgents();
@@ -102,16 +100,16 @@ export const AjoutThirdStep = (props) => {
                 aria-labelledby="alert-dialog-title"
                 aria-describedby="alert-dialog-description"
             >
-                <Typography style={{fontFamily:'Nunito-Regular', fontSize:'18px', padding:'20px', fontWeight:'600', boxShadow:'none'}}>
+                <Typography style={{fontFamily:'Nunito-Regular', fontSize:'18px', padding:'14px 20px', boxShadow:'none'}}>
                     Voulez-vous vraiment annuler l'ajout d'un nouveau véhicule? 
                     <br></br>
                     Toutes les informations saisies seront perdues.
                 </Typography>                    
                 <DialogActions>
-                <Button onClick={handleCloseAjout} style={{textTransform:"capitalize", backgroundColor:"#2DCE89", color:"white", fontFamily:'Nunito-Regular'}} variant="contained">
+                <Button onClick={handleCloseAjout} style={{textTransform:"capitalize", color:"#F5365C", fontFamily:'Nunito-Regular', margin:"12px 20px", fontWeight:"bold"}}>
                     Oui
                 </Button>
-                <Button onClick={handleCloseAnnuler} style={{textTransform:"capitalize", backgroundColor:"#F5365C", color:"white", fontFamily:'Nunito-Regular'}} variant="contained">
+                <Button onClick={handleCloseAnnuler} style={{textTransform:"capitalize", backgroundColor:"#252834", color:"white", fontFamily:'Nunito-Regular', padding:"6px 12px", margin:"12px 20px"}}>
                     Non
                 </Button>
                 </DialogActions>

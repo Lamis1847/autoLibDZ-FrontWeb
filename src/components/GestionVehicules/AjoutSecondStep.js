@@ -15,6 +15,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import "../../assets/css/font.css"
 import { Typography } from '@material-ui/core';
+import Tooltip from '@material-ui/core/Tooltip';
 
 export const AjoutSecondStep = (props) => {
     
@@ -86,16 +87,16 @@ export const AjoutSecondStep = (props) => {
                 aria-labelledby="alert-dialog-title"
                 aria-describedby="alert-dialog-description"
             >
-                <Typography style={{fontFamily:'Nunito-Regular', fontSize:'18px', padding:'20px', fontWeight:'600', boxShadow:'none'}}>
+                <Typography style={{fontFamily:'Nunito-Regular', fontSize:'18px', padding:'14px 20px', boxShadow:'none'}}>
                     Voulez-vous vraiment annuler l'ajout d'un nouveau véhicule? 
                     <br></br>
                     Toutes les informations saisies seront perdues.
                 </Typography>                    
                 <DialogActions>
-                <Button onClick={handleCloseAjout} style={{textTransform:"capitalize", backgroundColor:"#2DCE89", color:"white", fontFamily:'Nunito-Regular'}} variant="contained">
+                <Button onClick={handleCloseAjout} style={{textTransform:"capitalize", color:"#F5365C", fontFamily:'Nunito-Regular', margin:"12px 20px", fontWeight:"bold"}}>
                     Oui
                 </Button>
-                <Button onClick={handleCloseAnnuler} style={{textTransform:"capitalize", backgroundColor:"#F5365C", color:"white", fontFamily:'Nunito-Regular'}} variant="contained">
+                <Button onClick={handleCloseAnnuler} style={{textTransform:"capitalize", backgroundColor:"#252834", color:"white", fontFamily:'Nunito-Regular', padding:"6px 12px", margin:"12px 20px"}}>
                     Non
                 </Button>
                 </DialogActions>
@@ -117,6 +118,7 @@ export const AjoutSecondStep = (props) => {
                 <h4 style={{opacity:'0.5'}}>caractéristiques du véhicule</h4>
                 </div>
                 <div className="flex-container" style={{padding:"5px 40px", display: "flex", flexWrap:'wrap', gap:'30px', justifyContent:'center', alignItems:'center'}}>
+                <Tooltip title="Température du liquide de refroidissement dans le moteur" arrow style={{fontFamily:"Nunito-Regular"}}>
                 <TextField
                 required
                 error={errors.tempsDeRefroidissement === "" ? false : ""}
@@ -129,11 +131,12 @@ export const AjoutSecondStep = (props) => {
                 onChange={handleChange('tempsDeRefroidissement')}
                 defaultValue={values.tempsDeRefroidissement}
                 />
+                </Tooltip>
                 <TextField
                 required
                 error={errors.pressionHuileMoteur === "" ? false : ""}
                 id="pressionHuileMoteur"
-                label="Pression huile moteur"
+                label="Pression d'huile du moteur"
                 placeholder="23"
                 variant="outlined"
                 fullWidth='true'
@@ -148,7 +151,7 @@ export const AjoutSecondStep = (props) => {
                 required
                 error={errors.chargeBatterie === "" ? false : ""}
                 id="chargeBatterie"
-                label="Charge batterie"
+                label="Charge de la batterie"
                 placeholder="20000"
                 variant="outlined"
                 fullWidth='true'
@@ -160,7 +163,7 @@ export const AjoutSecondStep = (props) => {
                 required
                 error={errors.pressionPneus === "" ? false : ""}
                 id="pressionPneus"
-                label="Pression pneus"
+                label="Pression des pneus"
                 placeholder="23"
                 variant="outlined"
                 fullWidth='true'
@@ -186,7 +189,7 @@ export const AjoutSecondStep = (props) => {
                 required
                 error={errors.niveauMinimumHuile === "" ? false : ""}
                 id="niveauMinimumHuile"
-                label="Niveau minimum huile"
+                label="Niveau minimum d'huile"
                 placeholder="23"
                 variant="outlined"
                 fullWidth='true'

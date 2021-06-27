@@ -12,12 +12,12 @@ import { makeStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import axios from "axios";
 import Dialog from '@material-ui/core/Dialog';
-import MuiDialogTitle from '@material-ui/core/DialogTitle';
-import IconButton from '@material-ui/core/IconButton';
-import CloseIcon from '@material-ui/icons/Close';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogTitle from '@material-ui/core/DialogTitle';
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
 import AjouterVehicule from "./AjouterVehicule";
+import ModifierVehicule from "./ModifierVehicule";
 import Slide from '@material-ui/core/Slide';
 import { Alert, AlertTitle } from '@material-ui/lab';
 import { duration } from "moment";
@@ -29,7 +29,21 @@ export const ListeVehicules = () => {
   const myServerBaseURL = "https://autolib-dz.herokuapp.com";
 
   const [vehicules, setVehicules] = useState([]);
+  const [vehicule, setVehicule] = useState(null);
   const [loading, setLoading] = useState(null);
+  const [supprimer, setSupprimer] = useState(null)
+  const [success, setSuccess] = useState(false)
+
+  const handleOpenSupprimer = () => {
+    setSupprimer(true)
+    handleClose()
+    //setSlideSupp(true)
+  }
+
+  const handleCloseSupprimer = () => {
+      setSupprimer(false)
+      // setSlideSupp(false)
+  }
 
 
   const loadVehicules = useCallback(async () => {
@@ -41,22 +55,71 @@ export const ListeVehicules = () => {
     setLoading(false)
   }, []);
 
-  let listeVehicules = vehicules.map(obj => Object.values(obj));
-  const [idVehicule, setIdVehicule] = useState();
-  const [slide, setSlide] = useState(null)
-  const [success, setSuccess] = useState(false)
+  const onSupprimerVehicule = useCallback( async () => {
+    const response = await axios.put(`${myServerBaseURL}/api/vehicules/${idVehicule}`, {
+        numChassis: vehicule.numChassis,
+        numImmatriculation: vehicule.numImmatriculation,
+        modele: vehicule.modele,
+        marque: vehicule.marque,
+        couleur: vehicule.couleur,
+        etat: "supprime",
+        tempsDeRefroidissement: vehicule.tempsDeRefroidissement,
+        pressionHuileMoteur: vehicule.pressionHuileMoteur,
+        chargeBatterie: vehicule.chargeBatterie,
+        anomalieCircuit: vehicule.anomalieCircuit,
+        pressionPneus: vehicule.pressionPneus,
+        niveauMinimumHuile: vehicule.niveauMinimumHuile,
+        regulateurVitesse: vehicule.regulateurVitesse,
+        limiteurVitesse: vehicule.limiteurVitesse,
+        idAgentMaintenance: vehicule.idAgentMaintenance,
+        idBorne: vehicule.idBorne,
+        idCloudinary: vehicule.idCloudinary,
+        secureUrl: vehicule.secureUrl,
+        id: vehicule.id
+                    })
+                    .then((response) => {
+                        setSlideSupp(true)
+                        setSuppSuccess(true)
+                        console.log("supprimé")
+                        console.log(response);
+                        window.setTimeout( function(){
+                            handleCloseSupprimer()
+                            setSuppSuccess(null)
+                            //window.location = "http://localhost:3000/vehicules";
+                        }, 2000 );
+                        }, (error) => {
+                        setSlideSupp(true)
+                        setSuppSuccess(false)
+                        console.log("erreur")
+                        console.log(error);
+                        window.setTimeout( function(){
+                          handleCloseSupprimer()
+                          setSuppSuccess(null)
+                          //window.location = "http://localhost:3000/vehicules";
+                        }, 2000 );
+                        });
+  });
 
-  const successMessage = (
-    <div style={{margin:'20px 0px'}}>
-             {success && (
-                <Slide direction="up" in={slide} mountOnEnter unmountOnExit>
-                <Alert severity="success" onClose={() => {setSlide(false)}}>
+  let listeVehicules = vehicules.map(obj => Object.values(obj));
+  const [idVehicule, setIdVehicule] = useState(null);
+  const [slide, setSlide] = useState(null)
+  const [slideSupp, setSlideSupp] = useState(null)
+  const [suppSuccess, setSuppSuccess] = useState(null)
+
+  const suppSuccessMessage = (
+    <div style={{margin:'20px 0px', padding:'12px'}}>
+             {(suppSuccess == true) && (
+                <Slide direction="up" in={slideSupp} mountOnEnter unmountOnExit>
+                <Alert severity="success" onClose={() => {
+                    setSlideSupp(false)
+                    //setTimeout(handleCloseSupprimer(), 4000)
+                    }}>
                     <AlertTitle>Succés</AlertTitle>
                     Le véhicule a été supprimé <strong>avec succés</strong>
                 </Alert>
                 </Slide>
-             ) } { !success && (
-                <Slide direction="up" in={slide} mountOnEnter unmountOnExit timeout={2000}>
+             ) } { (suppSuccess == false) && (
+                <Slide direction="up" in={slideSupp} mountOnEnter unmountOnExit>
                 <Alert severity="error">
                     <AlertTitle>Erreur!</AlertTitle>
                     <strong>Erreur lors de la suppression du véhicule</strong>
@@ -66,24 +129,151 @@ export const ListeVehicules = () => {
     </div>
   )
 
-  const onSupprimerVehicule = useCallback( async () => {
-    const response = await axios.delete(`${myServerBaseURL}/api/vehicules/${idVehicule}`)
-                    .then((response) => {
-                        setSlide(true)
-                        setSuccess(true)
-                        console.log("supprimé")
-                        console.log(response);
-                        handleClose()
-                        loadVehicules()
+  const supprimerDialogue = (
+    // <Slide direction="up" in={slide} mountOnEnter unmountOnExit>
+    <div>
+        <Dialog
+            open={supprimer}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+        >
+        <DialogTitle style={{fontFamily:'Nunito-Regular', padding:'12px', margin:"8px", fontWeight:'bold', boxShadow:'none'}}>
+            <Typography style={{fontWeight:'bold', fontSize:'22px', fontFamily:'Nunito-Regular'}}>
+            Supprimer définitivement
+            </Typography>
+        </DialogTitle>
+            <Typography style={{fontFamily:'Nunito-Regular', fontSize:'18px', padding:'14px 20px', boxShadow:'none'}}>
+            Attention ! vous aller effectuer une operation irréversible
+            <br></br>
+            assurez-vous bien de cette étape avant de continuer
+            </Typography>  
+            <DialogActions>
+            <Button onClick={onSupprimerVehicule} style={{textTransform:"capitalize", color:"#F5365C", fontFamily:'Nunito-Regular', margin:"12px 20px", fontWeight:"bold"}}>
+                Confirmer
+            </Button>
+            <Button onClick={handleCloseSupprimer} style={{textTransform:"capitalize", backgroundColor:"#252834", color:"white", fontFamily:'Nunito-Regular', padding:"6px 12px", margin:"12px 20px"}}>
+                Annuler
+            </Button>
+            </DialogActions>                  
+            {suppSuccess ? suppSuccessMessage : <br></br>}
+        </Dialog>
+    </div>
+    // </Slide>
+)
+
+const [slideBloquer, setSlideBloquer] = useState(null)
+const [bloquerSuccess, setBloquerSuccess] = useState(null)
+const [bloquer, setBloquer] = useState(null)
+
+  const handleOpenBloquer = () => {
+    setBloquer(true)
+    handleClose()
+    //setSlideSupp(true)
+  }
+
+  const handleCloseBloquer = () => {
+      setBloquer(false)
+      // setSlideSupp(false)
+  }
+
+const onBloquerVehicule = useCallback( async () => {
+  const response = await axios.put(`${myServerBaseURL}/api/vehicules/${idVehicule}`, {
+      numChassis: vehicule.numChassis,
+      numImmatriculation: vehicule.numImmatriculation,
+      modele: vehicule.modele,
+      marque: vehicule.marque,
+      couleur: vehicule.couleur,
+      etat: "hors service",
+      tempsDeRefroidissement: vehicule.tempsDeRefroidissement,
+      pressionHuileMoteur: vehicule.pressionHuileMoteur,
+      chargeBatterie: vehicule.chargeBatterie,
+      anomalieCircuit: vehicule.anomalieCircuit,
+      pressionPneus: vehicule.pressionPneus,
+      niveauMinimumHuile: vehicule.niveauMinimumHuile,
+      regulateurVitesse: vehicule.regulateurVitesse,
+      limiteurVitesse: vehicule.limiteurVitesse,
+      idAgentMaintenance: vehicule.idAgentMaintenance,
+      idBorne: vehicule.idBorne,
+      idCloudinary: vehicule.idCloudinary,
+      secureUrl: vehicule.secureUrl,
+      id: vehicule.id
+                  })
+                  .then((response) => {
+                      setSlideBloquer(true)
+                      setBloquerSuccess(true)
+                      console.log("bloqué")
+                      console.log(response);
+                      window.setTimeout( function(){
+                          handleCloseBloquer()
+                          setBloquerSuccess(null)
+                          //window.location = "http://localhost:3000/vehicules";
+                      }, 2000 );
                       }, (error) => {
-                        setSlide(true)
-                        setSuccess(false)
-                        console.log("erreur")
-                        console.log(error);
-                        handleClose()
+                      setSlideBloquer(true)
+                      setBloquerSuccess(false)
+                      console.log("erreur")
+                      console.log(error);
+                      window.setTimeout( function(){
+                        handleCloseBloquer()
+                        setBloquerSuccess(null)
+                        //window.location = "http://localhost:3000/vehicules";
+                      }, 2000 );
                       });
-  });
-  
+});
+
+const bloquerSuccessMessage = (
+  <div style={{margin:'20px 0px', padding:'12px'}}>
+           {(bloquerSuccess == true) && (
+              <Slide direction="up" in={slideBloquer} mountOnEnter unmountOnExit>
+              <Alert severity="success" onClose={() => {
+                  setSlide(false)
+                  //setTimeout(handleCloseSupprimer(), 4000)
+                  }}>
+                  <AlertTitle>Succés</AlertTitle>
+                  Le véhicule a été bloqué <strong>avec succés</strong>
+              </Alert>
+              </Slide>
+           ) } { (bloquerSuccess == false) && (
+              <Slide direction="up" in={slideBloquer} mountOnEnter unmountOnExit>
+              <Alert severity="error">
+                  <AlertTitle>Erreur!</AlertTitle>
+                  <strong>Erreur lors de la suppression du véhicule</strong>
+              </Alert>
+              </Slide>
+           ) }
+  </div>
+)
+
+const bloquerDialogue = (
+  // <Slide direction="up" in={slide} mountOnEnter unmountOnExit>
+  <div>
+      <Dialog
+          open={bloquer}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+      >
+      <DialogTitle style={{fontFamily:'Nunito-Regular', padding:'12px', margin:"8px", fontWeight:'bold', boxShadow:'none'}}>
+          <Typography style={{fontWeight:'bold', fontSize:'22px', fontFamily:'Nunito-Regular'}}>
+          Bloquer le véhicule
+          </Typography>
+      </DialogTitle>
+          <Typography style={{fontFamily:'Nunito-Regular', fontSize:'18px', padding:'14px 20px', boxShadow:'none'}}>
+          Etes-vous sur de vouloir bloquer ce véhicule?
+          </Typography>  
+          <DialogActions>
+          <Button onClick={onBloquerVehicule} style={{textTransform:"capitalize", color:"#F5365C", fontFamily:'Nunito-Regular', margin:"12px 20px", fontWeight:"bold"}}>
+              Confirmer
+          </Button>
+          <Button onClick={handleCloseBloquer} style={{textTransform:"capitalize", backgroundColor:"#252834", color:"white", fontFamily:'Nunito-Regular', padding:"6px 12px", margin:"12px 20px"}}>
+              Annuler
+          </Button>
+          </DialogActions>     
+
+          {bloquerSuccess ? bloquerSuccessMessage : <br></br>}
+      </Dialog>
+  </div>
+  // </Slide>
+)
   
   const preventDefault = event => event.preventDefault();
 
@@ -105,22 +295,6 @@ export const ListeVehicules = () => {
     },
   });
 
-  
-  const DialogTitle = withStyles(styles)((props) => {
-    const { children, classes, onClose, ...other } = props;
-    return (
-      <MuiDialogTitle disableTypography className={classes.root} {...other}>
-        <Typography variant="h6">{children}</Typography>
-        {onClose ? (
-          <IconButton aria-label="close" className={classes.closeButton} onClick={onClose}>
-            <CloseIcon />
-          </IconButton>
-        ) : null}
-      </MuiDialogTitle>
-    );
-  });
-  
-
   const [openAjout, setOpenAjout] = React.useState(false);
 
   const handleOpenAjout = () => {
@@ -128,6 +302,16 @@ export const ListeVehicules = () => {
   };
   const handleCloseAjout = () => {
     setOpenAjout(false);
+  };
+
+  const [openModif, setOpenModif] = React.useState(false);
+
+  const handleOpenModif = () => {
+    setOpenModif(true);
+    handleClose()
+  };
+  const handleCloseModif = () => {
+    setOpenModif(false);
   };
   // Relatif à la table
 
@@ -138,6 +322,8 @@ export const ListeVehicules = () => {
   const [anchorEl, setAnchorEl] = React.useState(null);
 
   const handleClick = (event) => {
+    setVehicule(vehicule);
+    console.log(vehicule);
     setAnchorEl(event.currentTarget);
   };
 
@@ -227,10 +413,8 @@ export const ListeVehicules = () => {
                       </NavLink>
                   </MenuItem>
 
-                  <MenuItem onClick={handleClose}>
-                      <NavLink to="#" variant="inherit" style={{fontFamily:'Nunito', color:'black'}}>
+                  <MenuItem onClick={handleOpenBloquer} style={{fontFamily:'Nunito'}}>
                         Bloquer
-                      </NavLink>
                   </MenuItem>
 
                   <MenuItem onClick={handleClose}>
@@ -239,16 +423,12 @@ export const ListeVehicules = () => {
                       </NavLink>
                   </MenuItem>
 
-                  <MenuItem onClick={handleClose}>
-                      <NavLink to="#" variant="inherit" style={{fontFamily:'Nunito', color:'#FFCB00'}}>
+                  <MenuItem onClick={handleOpenModif} style={{fontFamily:'Nunito', color:'#FFCB00'}}>
                         Modifier
-                      </NavLink>
                   </MenuItem>
 
-                  <MenuItem onClick={onSupprimerVehicule}>
-                      <NavLink to="#" variant="inherit" style={{fontFamily:'Nunito', color:'#F5365C'}}>
+                  <MenuItem onClick={handleOpenSupprimer} style={{fontFamily:'Nunito', color:'#F5365C',border:"none", textAlign:"left"}}>
                         Supprimer
-                      </NavLink>
                   </MenuItem>
                   </StyledMenu>              
               
@@ -259,6 +439,8 @@ export const ListeVehicules = () => {
       }
     }
   ];
+
+  const [rowData, setRowData] = useState([])
 
   const options = {
     filter: true,
@@ -272,13 +454,14 @@ export const ListeVehicules = () => {
     tableBodyMaxHeight,
     searchPlaceholder: 'Saisir un nom ou un ID..',
     onRowClick: (rowData, rowState) => {
-      setIdVehicule(rowData[0]);
-      console.log(rowData);
+      (idVehicule == null) ? setIdVehicule(rowData[0]) : setIdVehicule(idVehicule);
+      (vehicule == null) ? setVehicule(rowData) : setVehicule(vehicule);
+      console.log(vehicule);
       console.log(idVehicule);
     },
-    onColumnSortChange: (changedColumn, direction) => console.log('changedColumn: ', changedColumn, 'direction: ', direction),
-    onChangeRowsPerPage: numberOfRows => console.log('numberOfRows: ', numberOfRows),
-    onChangePage: currentPage => console.log('currentPage: ', currentPage),
+    // onColumnSortChange: (changedColumn, direction) => console.log('changedColumn: ', changedColumn, 'direction: ', direction),
+    // onChangeRowsPerPage: numberOfRows => console.log('numberOfRows: ', numberOfRows),
+    // onChangePage: currentPage => console.log('currentPage: ', currentPage),
     textLabels: {
       body: {
           noMatch: loading ?
@@ -301,19 +484,28 @@ export const ListeVehicules = () => {
               <Button variant="contained" onClick={handleOpenAjout} style={{backgroundColor:"#252834", textTransform:"capitalize", color:"white", fontWeight:'bold', width:'150px'}}>
               + Ajouter
               </Button>
-              {successMessage}
             </div>
             <MUIDataTable
               data={listeVehicules}
               columns={columns}
               options={options}
             />
+            {supprimerDialogue}
+            {bloquerDialogue}
           </Container>
           <Dialog onClose={handleCloseAjout} aria-labelledby="customized-dialog-title" open={openAjout} fullWidth='true' maxWidth='sm'>
               <AjouterVehicule
                 handleCloseAjout={handleCloseAjout} 
               />
           </Dialog>
+
+          <Dialog onClose={handleCloseModif} aria-labelledby="customized-dialog-title" open={openModif} fullWidth='true' maxWidth='sm'>
+              <ModifierVehicule
+                handleCloseModif={handleCloseModif} 
+                idVehicule={idVehicule}
+              />
+          </Dialog>
+
         </div>
       </div>
     </React.Fragment>
