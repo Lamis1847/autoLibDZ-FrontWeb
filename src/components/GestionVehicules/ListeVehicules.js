@@ -46,7 +46,6 @@ export const ListeVehicules = props => {
       // setSlideSupp(false)
   }
 
-
   const loadVehicules = useCallback(async () => {
     setLoading(true)
     api.get(`/api/vehicules`).then( res => {
