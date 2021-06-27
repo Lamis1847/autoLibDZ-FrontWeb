@@ -21,6 +21,7 @@ import ModifierVehicule from "./ModifierVehicule";
 import Slide from '@material-ui/core/Slide';
 import { Alert, AlertTitle } from '@material-ui/lab';
 import { duration } from "moment";
+import axios from "axios";
 
 export const ListeVehicules = props => {
 
@@ -56,6 +57,7 @@ export const ListeVehicules = props => {
     })
   }, []);
 
+  
   const onSupprimerVehicule = useCallback( async () => {
     const response = await axios.put(`${myServerBaseURL}/api/vehicules/${idVehicule}`, {
         numChassis: vehicule.numChassis,
@@ -113,7 +115,6 @@ export const ListeVehicules = props => {
                 <Slide direction="up" in={slideSupp} mountOnEnter unmountOnExit>
                 <Alert severity="success" onClose={() => {
                     setSlideSupp(false)
-                    //setTimeout(handleCloseSupprimer(), 4000)
                     }}>
                     <AlertTitle>Succés</AlertTitle>
                     Le véhicule a été supprimé <strong>avec succés</strong>
@@ -227,8 +228,7 @@ const bloquerSuccessMessage = (
               <Slide direction="up" in={slideBloquer} mountOnEnter unmountOnExit>
               <Alert severity="success" onClose={() => {
                   setSlide(false)
-                  //setTimeout(handleCloseSupprimer(), 4000)
-                  }}>
+                }}>
                   <AlertTitle>Succés</AlertTitle>
                   Le véhicule a été bloqué <strong>avec succés</strong>
               </Alert>
@@ -492,7 +492,7 @@ const bloquerDialogue = (
                 <Button variant="contained" onClick={handleOpenAjout} style={{backgroundColor:"#252834", textTransform:"capitalize", color:"white", fontWeight:'bold', width:'150px'}}>
                 + Ajouter
                 </Button>
-                {successMessage}
+                {suppSuccessMessage}
               </div>
               </>
             }
