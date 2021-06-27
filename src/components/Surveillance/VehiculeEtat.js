@@ -9,7 +9,9 @@ const VehiculeEtat = props => {
     
     useEffect(() => {
         getInfos(props.id)
-    }, [props.id])
+        setInterval(() => {},10000)
+    })
+
 
     const getInfos = id => {
         api.get(`api/vehicules/${id}`)

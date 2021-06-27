@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import './RechercheBorne.css';
-import { Collapse, Button, Form, FormGroup, Label, Input, FormText } from 'reactstrap';
+import { Container, Row, Col, Collapse, Button, Form, FormGroup, Label, Input, FormText } from 'reactstrap';
 import { Divider } from '@material-ui/core';
 import axios from "axios";
 import rollDown from "./rollDown.svg";
@@ -31,10 +31,9 @@ class RechercheBorne extends Component {
 
             // State of the UI component (open/close)
             collapse: false,
-            bornes: null
+            bornes: null,
+            staticBornes: null
         }
-
-        this.bornesForUI = this.bornesForUI.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     };
@@ -118,6 +117,7 @@ class RechercheBorne extends Component {
             axios.get(MICROSERVICE)
                 .then((res) => {
                     this.setState({ bornes: res.data })
+                    this.setState({ staticBornes: res.data })
                 })
                 .catch(error => {
                     this.errorHandler(error)
@@ -140,6 +140,7 @@ class RechercheBorne extends Component {
                 nbPlaces: this.state.placesLibres != '' ? parseInt(this.state.placesLibres) : (this.state.qtt == 'min' ? 0 : 99999)
             }).then((res) => {
                 this.setState({ bornes: res.data })
+                this.setState({ staticBornes: res.data })
             }).catch(error => {
                 this.errorHandler(error)
             })
@@ -221,181 +222,154 @@ class RechercheBorne extends Component {
      * affiche un message selon l'erreur qui s'est produite
      */
     errorHandler(error) {
-        switch (error.response.status) {
-            case 400:
-                alert("Quelque chose s'est mal déroulé lors de l'opération, veuillez ré-essayer ultérieurement. Code erreur : 400")
-                break;
-            case 401:
-                alert("Il semble que vous n'êtes plus authentifié. Veuillez vous authentifier pour effectuer cette action. Code erreur : 401")
-                break;
-            case 403:
-                alert("Vous ne disposez pas des privilèges nécessaires pour accéder à cette ressource. Code erreur : 403")
-                break;
-            case 404:
-                alert("Aucun résultat ne correspond à ce que vous recherchez. Code erreur : 404")
-                break;
-            case 500:
-                alert("Quelque chose s'est mal déroulé lors de l'opération de recherche, veuillez ré-essayer ultérieurement. Code erreur : 500")
-                break;
-            default:
-                alert("Quelque chose s'est mal déroulé, veuillez contacter le support pour plus d'informations")
-                break;
+        console.log(error)
+        if (error && error.response) {
+            switch (error.response.status) {
+                case 400:
+                    alert("Quelque chose s'est mal déroulé lors de l'opération, veuillez ré-essayer ultérieurement. Code erreur : 400")
+                    break;
+                case 401:
+                    alert("Il semble que vous n'êtes plus authentifié. Veuillez vous authentifier pour effectuer cette action. Code erreur : 401")
+                    break;
+                case 403:
+                    alert("Vous ne disposez pas des privilèges nécessaires pour accéder à cette ressource. Code erreur : 403")
+                    break;
+                case 404:
+                    alert("Aucun résultat ne correspond à ce que vous recherchez. Code erreur : 404")
+                    break;
+                case 500:
+                    alert("Quelque chose s'est mal déroulé lors de l'opération de recherche, veuillez ré-essayer ultérieurement. Code erreur : 500")
+                    break;
+                default:
+                    alert("Quelque chose s'est mal déroulé, veuillez contacter le support pour plus d'informations")
+                    break;
+            }
+        } else {
+            alert("Quelque chose s'est mal déroulé, veuillez contacter le support pour plus d'informations")
         }
     }
-
-    /**
-     * @returns {array} la nouvelle liste des bornes
-     */
-    bornesForUI() {
-        return this.state.bornes
-    }
-
 
     render() {
-
-        const styles = {
-            container: {
-
-            },
-            collapse: {
-                backgroundColor: "#ffffff",
-                marginLeft: "20%",
-                marginBottom: "2%",
-                paddingBottom: "2%",
-            },
-            form: {
-                backgroundColor: "#ffffff",
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "flex-start",
-                paddingLeft: "10%",
-                paddingBottom: "0"
-            },
-            button: {
-                backgroundColor: "#252834",
-                color: "#ffffff",
-
-            },
-            btnContainer: {
-                marginLeft: "40%"
-            },
-            row: {
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "baseline",
-                justifyContent: "flex-start"
-            },
-            inputs: {
-                // paddingRight: "80%"
-            },
-            inputsContainer: {
-                //marginLeft: "20%"
-            },
-            header: {
-                paddingRight: "2%",
-                marginLeft: "20%",
-                fontSize: "1.25rem",
-                color: "#32325d"
-            },
-            list: {
-                paddingLeft: "19%"
-            }
-
-        }
-
         return (
-            <div style={styles.container} >
-                <div style={styles.row}>
-                    <h2 style={styles.header}>Rechercher une borne</h2>
-                    <div>
-                        <a onClick={(e) => this.onCollapseClick(e)}>
-                            <img src={(this.state.collapse) ? rollUp : rollDown}
-                                alt="collapse" />
-                        </a>
-                    </div>
+            <>
+                <div className="main-content">
+                    <Container>
+                        <Row>
+                            <Col xs={12}>
+                                <Row>
+                                    <Col xs={3}>
+                                        <h2>Rechercher une borne</h2>
+                                    </Col>
+                                    <Col xs={1}>
+                                        <div>
+                                            <a onClick={(e) => this.onCollapseClick(e)}>
+                                                <img src={(this.state.collapse) ? rollUp : rollDown}
+                                                    alt="collapse" />
+                                            </a>
+                                        </div>
+                                    </Col>
+                                    <Col xs={8}></Col>
+                                </Row>
+
+                                <Collapse isOpen={this.state.collapse} style={{ backgroundColor: '#ffffff', padding: '2.5%' }}> {/* Permettre un affichage lors du clic */}
+                                    <Form onSubmit={this.handleSubmit}>
+                                        <Row>
+                                            <Col xs={12} md={9}>
+                                                <Row>
+                                                    <Col xs={12} md={4}>
+                                                        <FormGroup>
+                                                            <Label for="rb-wilaya">Wilaya</Label>
+                                                            <Input type="select" name="wilaya" id="rb-wilaya"
+                                                                value={this.state.wilaya} onChange={this.handleChange}>
+                                                                <option value="">-</option>
+                                                                {this.state.wilayas.map((wil) => {
+                                                                    return <option value={wil}>{wil}</option>
+                                                                })}
+                                                            </Input>
+                                                        </FormGroup>
+                                                    </Col>
+
+                                                    <Col xs={12} md={4}>
+                                                        <FormGroup>
+                                                            <Label for="rb-commune">Communes</Label>
+                                                            <Input type="select" name="commune" id="rb-commune"
+                                                                value={this.state.commune} onChange={this.handleChange}>
+                                                                <option value="">-</option>
+                                                                {this.state.communes.map((comm) => {
+                                                                    return <option value={comm}>{comm}</option>
+                                                                })}
+                                                            </Input>
+                                                        </FormGroup>
+                                                    </Col>
+
+                                                    <Col xs={12} md={4}>
+                                                        <FormGroup>
+                                                            <Label for="rb-capacite">Places totales</Label>
+                                                            <Input type="select" name="capacite" id="rb-capacite"
+                                                                value={this.state.capacite} onChange={this.handleChange}>
+                                                                <option value="">-</option>
+                                                                <option value="10">Moins de 10</option>
+                                                                <option value="50">Entre 10 et 50</option>
+                                                                <option value="100">Entre 50 et 100</option>
+                                                                <option value="101">Plus de 100</option>
+                                                            </Input>
+                                                        </FormGroup>
+                                                    </Col>
+                                                </Row>
+
+                                                <Row>
+                                                    <Col xs={12} md={6}>
+                                                        <Label for="rb-qtt">Places libres</Label>
+                                                        <Row>
+                                                            <Col xs={6}>
+                                                                <Input type="select" name="qtt" id="rb-qtt"
+                                                                    value={this.state.qtt} onChange={this.handleChange}>
+                                                                    <option value="min">min</option>
+                                                                    <option value="max">max</option>
+                                                                </Input>
+                                                            </Col>
+                                                            <Col xs={6}>
+                                                                <Input type="select" name="placesLibres" id="rb-plibres"
+                                                                    value={this.state.placesLibres} onChange={this.handleChange}>
+                                                                    <option value="">-</option>
+                                                                    <option value="5">5</option>
+                                                                    <option value="10">10</option>
+                                                                    <option value="30">30</option>
+                                                                    <option value="50">50</option>
+                                                                    <option value="100">100</option>
+                                                                </Input>
+                                                            </Col>
+                                                        </Row>
+                                                    </Col>
+
+                                                    <Col xs={12} md={6}>
+                                                        <FormGroup>
+                                                            <Label for="rb-id">id</Label>
+                                                            <Input type="text" name="id" id="rb-id" placeholder="Saisissez l'id de la borne"
+                                                                value={this.state.id} onChange={this.handleChange} />
+                                                        </FormGroup>
+                                                    </Col>
+                                                </Row>
+                                            </Col>
+
+                                            {/*JSON.stringify(this.state)*/}
+
+                                            <Col xs={12} md={3} className="mt-md-6 mt-xs-0">
+                                                <FormGroup>
+                                                    <Button type="submit" className="custom-btn-default" style={{ backgroundColor: '#252834', color: '#ffffff' }}>LANCER</Button>
+                                                </FormGroup>
+                                            </Col>
+                                        </Row>
+                                    </Form>
+                                    <em><center>Remarque : Lorsque vous effectuez une recherche par id, les autres champs sont ignorés.</center></em>
+                                </Collapse>
+                            </Col>
+                            <Divider variant="inset" style={{ width: "90%" }} />
+                        </Row>
+                    </Container >
+                    <ListBornes bornes={this.state.staticBornes}></ListBornes>
                 </div>
-
-                <Collapse isOpen={this.state.collapse} style={styles.collapse}> {/* Permettre un affichage lors du clic */}
-                    <Form onSubmit={this.handleSubmit} style={styles.form}> {/* Conteneur global - display flex */}
-                        <FormGroup> {/* Conteneur des 2 groupes de 3 select - display block */}
-                            <FormGroup style={styles.row}> {/* Conteneur des 3 select - display flex */}
-                                <FormGroup style={styles.inputsContainer}> {/* Conteneur individuel - display block */}
-                                    <Label for="rb-wilaya">Wilaya</Label>
-                                    <Input type="select" name="wilaya" id="rb-wilaya" style={styles.inputs}
-                                        value={this.state.wilaya} onChange={this.handleChange}>
-                                        <option value="">-</option>
-                                        {this.state.wilayas.map((wil) => {
-                                            return <option value={wil}>{wil}</option>
-                                        })}
-                                    </Input>
-                                </FormGroup>
-
-                                <FormGroup style={styles.inputsContainer}>
-                                    <Label for="rb-commune">Communes</Label>
-                                    <Input type="select" name="commune" id="rb-commune" style={styles.inputs}
-                                        value={this.state.commune} onChange={this.handleChange}>
-                                        <option value="">-</option>
-                                        {this.state.communes.map((comm) => {
-                                            return <option value={comm}>{comm}</option>
-                                        })}
-                                    </Input>
-                                </FormGroup>
-
-                                <FormGroup style={styles.inputsContainer}>
-                                    <Label for="rb-capacite">Places totales</Label>
-                                    <Input type="select" name="capacite" id="rb-capacite" style={styles.inputs}
-                                        value={this.state.capacite} onChange={this.handleChange}>
-                                        <option value="">-</option>
-                                        <option value="10">Moins de 10</option>
-                                        <option value="50">Entre 10 et 50</option>
-                                        <option value="100">Entre 50 et 100</option>
-                                        <option value="101">Plus de 100</option>
-                                    </Input>
-                                </FormGroup>
-                            </FormGroup>
-
-                            <FormGroup style={styles.row}>
-                                <FormGroup style={styles.inputsContainer}>
-                                    <Label for="rb-qtt">Places libres</Label>
-                                    <FormGroup style={styles.row}>
-                                        <Input type="select" name="qtt" id="rb-qtt" style={styles.inputs}
-                                            value={this.state.qtt} onChange={this.handleChange}>
-                                            <option value="min">min</option>
-                                            <option value="max">max</option>
-                                        </Input>
-                                        <Input type="select" name="placesLibres" id="rb-plibres" style={styles.inputs}
-                                            value={this.state.placesLibres} onChange={this.handleChange}>
-                                            <option value="">-</option>
-                                            <option value="5">5</option>
-                                            <option value="10">10</option>
-                                            <option value="30">30</option>
-                                            <option value="50">50</option>
-                                            <option value="100">100</option>
-                                        </Input>
-                                    </FormGroup>
-                                </FormGroup>
-
-                                <FormGroup style={styles.inputsContainer}>
-                                    <Label for="rb-id">id</Label>
-                                    <Input type="text" name="id" id="rb-id" placeholder="Saisissez l'id de la borne" style={styles.inputs}
-                                        value={this.state.id} onChange={this.handleChange} />
-                                </FormGroup>
-                            </FormGroup>
-                        </FormGroup>
-                        {/*JSON.stringify(this.state)*/}
-
-                        <FormGroup style={styles.btnContainer}>
-                            <Button type="submit" className="custom-btn-default" style={styles.button}>LANCER</Button>
-                        </FormGroup>
-                    </Form>
-                    <em><center>Remarque : Lorsque vous effectuez une recherche par id, les autres champs sont ignorés.</center></em>
-                </Collapse>
-                <Divider style={{ width: "90%" }} />
-                <div style={styles.list}>
-                    <ListBornes bornes={this.state.bornes}></ListBornes>
-                </div>
-            </div >
+            </>
         )
     };
 }

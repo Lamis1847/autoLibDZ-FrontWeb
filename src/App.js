@@ -44,8 +44,6 @@ function App() {
             </>
             :
             <>
-
-              <NavBar/>
               <Sidebar/>
               <Route path="/nav">
                 <NavBar/>

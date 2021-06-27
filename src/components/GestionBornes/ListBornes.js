@@ -14,7 +14,10 @@ import {
 import Map from "./Map.js"
 import AddBorne from "./AddBorne.js"
 import CustomAlert from './CustomAlert.js';
+import Failure from './Failure.js'
 import ResultOperation from './ResultOperation.js'
+import { getToken } from '../../scripts/Network.js'
+import VisuAndModifBorne from './VisuAndModifBorne/VisuAndModifBorne.js'
 const API_All_BORNES = process.env.REACT_APP_GESTION_BORNES_URL + 'all';
 const API_DELETE_BORNE = process.env.REACT_APP_GESTION_BORNES_URL;
 
@@ -30,25 +33,36 @@ class ListBornes extends Component {
     this.showAddBorneModal = this.showAddBorneModal.bind(this);
     this.onOppIrrever = this.onOppIrrever.bind(this);
     this.showDeleteModal  = this.showDeleteModal.bind(this);
+    this.onRowsDetails = this.onRowsDetails.bind(this);
+    this.showDetailsModal = this.showDetailsModal.bind(this);
+    this.onHideBorneDetailsModal = this.onHideBorneDetailsModal.bind(this);
     this.state = {
       selected: [36.7029047, 3.1428341],
       data: [],
       showModal: false,
       showAlertIrreversible: false,
       showSuccessOperation: false,
+      showFailure: false,
+      showDetails: false,
       keyModal: 0,  // we change the key of the modal so react re render it with shown state as true 
       keyModal2: 4,
       keyModal3: 6,
+      keyModal4: 8,
+      keyModal5: 9,
       rowtodelete: -1,
-      indextodelete: -1
+      indextodelete: -1,
+      indexDetails: -1,
+      rowTodetails: -1
     }
   }
 
   componentDidMount() {
     if (this.props.bornes == null) {
+      let tokenStr =  getToken();
+      //console.log(tokenStr);
       let bornes = []
       this.setState({ data: bornes });
-      axios.get(API_All_BORNES)
+      axios.get(API_All_BORNES,{ headers: {"Authorization" : `Bearer ${tokenStr}`} })
         .then((res) => {
           let bornes = []
           for (const borne of res.data) {
@@ -87,8 +101,9 @@ class ListBornes extends Component {
       });
     } else {
       let bornes = []
+      let tokenStr =  getToken();
       this.setState({ data: bornes });
-      axios.get(API_All_BORNES)
+      axios.get(API_All_BORNES,{ headers: {"Authorization" : `Bearer ${tokenStr}`} })
         .then((res) => {
           let bornes = []
           for (const borne of res.data) {
@@ -116,7 +131,27 @@ class ListBornes extends Component {
     this.setState({ rowtodelete: this.state.data[parseInt(rowsDeleted)][0] })
     this.showDeleteModal()
   }
-
+  onRowsDetails(rowIndex){
+    this.setState({ indexDetails: rowIndex})
+    let borne = this.state.data[parseInt(rowIndex)]
+    console.log(borne);
+  //  borne['idBorne'], borne['wilaya'], borne['nbVehicules'], borne['nbPlaces'], [borne['latitude'], borne['longitude']], borne['nomBorne']]
+    let broned = [parseInt(borne[0]), borne[5], borne[1], borne[5], borne[4][0], borne[4][1], borne[2],borne[3],1]
+    console.log(broned);
+    this.setState({ rowTodetails: broned})
+    this.showDetailsModal()
+  }
+  showDetailsModal(){
+    this.setState({showDetails:true,keyModal5: this.state.keyModal5 + 1 % 2})
+  }
+  onHideBorneDetailsModal(success, newBorne) {
+    let data = this.state.data
+    if (success) {
+     data[this.state.indexDetails] = [newBorne[0], newBorne[2], newBorne[6], newBorne[7], [newBorne[4], newBorne[5]], newBorne[1]]
+    // console.log(newBorne);
+      this.setState({ showSuccessOperation: success, data: data, keyModal3: this.state.keyModal3 + 1 % 6 })
+    }
+  }
   showAddBorneModal() {
     this.setState({ showModal: true, keyModal: this.state.keyModal + 1 % 2 })
   }
@@ -126,7 +161,6 @@ class ListBornes extends Component {
 
   onHideAddBorneModal(success, newBorne) {
     let data = this.state.data
-    console.log(newBorne)
     if (success) {
       data.push([newBorne['idBorne'], newBorne['wilaya'], newBorne['nbVehicules'], newBorne['nbPlaces'], [newBorne['latitude'], newBorne['longitude']], newBorne['nomBorne']])
       this.setState({ showSuccessOperation: success, data: data, keyModal3: this.state.keyModal3 + 1 % 6 })
@@ -138,16 +172,19 @@ class ListBornes extends Component {
     }
   }
   deleteBorne() {
-    console.log(this.state.rowtodelete)
-    axios.delete(API_DELETE_BORNE + this.state.rowtodelete)
+    //console.log(this.state.rowtodelete)
+     let tokenStr =  getToken();
+    axios.delete(API_DELETE_BORNE + this.state.rowtodelete,{ headers: {"Authorization" : `Bearer ${tokenStr}`} })
       .then((res) => {
         let bornes = this.state.data;
         bornes.splice(this.state.indextodelete, 1)
-        this.setState({ data: bornes, showSuccessOperation: true, keyModal3: this.state.keyModal3 + 1 % 6 });
+       this.setState({ data: bornes, showSuccessOperation: true, keyModal3: this.state.keyModal3 + 1 % 2 });
       })
       .catch(err => {
         if (err.response) {
-          console.log(err.response.data)
+          //console.log(err.response.data)
+          this.setState({ showFailure: true, keyModal4: this.state.keyModal4 + 1 % 2 })
+
         } else if (err.request) {
           // client never received a response, or request never left
           window.alert("Pas de réponse ou requête non envoyée !")
@@ -219,13 +256,13 @@ class ListBornes extends Component {
                 <DropdownMenu className="dropdown-menu-arrow" right>
                   <DropdownItem
                     href="#"
-                    onClick={(e) => { e.preventDefault(); console.log(dataIndex); }}
+                    onClick={(e) => { e.preventDefault(); this.onRowsDetails(dataIndex); }}
                   >
                     Détails
                     </DropdownItem>
                   <DropdownItem
                     href="#"
-                    onClick={(e) => { e.preventDefault(); console.log(dataIndex); this.onRowsSuprrimer(dataIndex); }}
+                    onClick={(e) => { e.preventDefault(); this.onRowsSuprrimer(dataIndex); }}
                     style={{ color: '#F5365C' }}
                   >
                     Supprimer
@@ -296,6 +333,8 @@ class ListBornes extends Component {
             <AddBorne key={this.state.keyModal} shown={this.state.showModal} onHide={this.onHideAddBorneModal}></AddBorne>
             <CustomAlert key={this.state.keyModal2} shown={this.state.showAlertIrreversible} onHide={this.onOppIrrever} ></CustomAlert>
             <ResultOperation key={this.state.keyModal3} shown={this.state.showSuccessOperation}></ResultOperation>
+            <Failure key={this.state.keyModal4} shown={this.state.showFailure}></Failure>
+            <VisuAndModifBorne key={this.state.keyModal5} shown={this.state.showDetails} borne={this.state.rowTodetails} onHide={this.onHideBorneDetailsModal}></VisuAndModifBorne>
           </Container>
         </div>
       </div>)
