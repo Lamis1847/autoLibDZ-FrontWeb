@@ -113,6 +113,7 @@ export const ListeVehicules = props => {
                 <Slide direction="up" in={slideSupp} mountOnEnter unmountOnExit>
                 <Alert severity="success" onClose={() => {
                     setSlideSupp(false)
+                    //setTimeout(handleCloseSupprimer(), 4000)
                     }}>
                     <AlertTitle>Succés</AlertTitle>
                     Le véhicule a été supprimé <strong>avec succés</strong>
@@ -226,7 +227,7 @@ const bloquerSuccessMessage = (
               <Slide direction="up" in={slideBloquer} mountOnEnter unmountOnExit>
               <Alert severity="success" onClose={() => {
                   setSlide(false)
-                  setTimeout(handleCloseSupprimer(), 2000)
+                  //setTimeout(handleCloseSupprimer(), 4000)
                   }}>
                   <AlertTitle>Succés</AlertTitle>
                   Le véhicule a été bloqué <strong>avec succés</strong>
@@ -244,6 +245,7 @@ const bloquerSuccessMessage = (
 )
 
 const bloquerDialogue = (
+  // <Slide direction="up" in={slide} mountOnEnter unmountOnExit>
   <div>
       <Dialog
           open={bloquer}
