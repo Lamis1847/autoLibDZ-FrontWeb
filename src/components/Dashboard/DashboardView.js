@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback} from "react";
 // javascipt plugin for creating charts
 import Chart from "chart.js";
 // react plugin used to create charts
-import { Line, Bar } from "react-chartjs-2";
+import { Line, Bar,Pie } from "react-chartjs-2";
 // reactstrap components
 import { Card, CardBody,Container,Row,Col } from "reactstrap";
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -18,6 +18,7 @@ import {
 import axios from "axios";
 
 import BarChart from './BarChart';
+import PieChart from './PieChart';
 import StatsCard from './StatsCard';
 
 const DashboardView = () => {
@@ -591,9 +592,9 @@ const DashboardView = () => {
                         col={"9"}
                         dark={false}
                         icon={"fas fa-car"}
-                        dataSetLabel={"Number"}
+                        dataSetLabel={"Locations"}
                     />
-                    <StatsCard
+                    <PieChart
                         text={"Taux de défaillance"}
                         value={tauxDef.percent}
                         percentage={true}
@@ -614,7 +615,7 @@ const DashboardView = () => {
                         col={"12"}
                         dark={true}
                         icon={"fas fa-user-plus"}
-                        dataSetLabel={"Number"}
+                        dataSetLabel={"Abonnements"}
                     />
                 </Row>
                 <Row className="mt-3">
@@ -654,7 +655,7 @@ const DashboardView = () => {
                         dark={true}
                         icon={"fas fa-money-bill-alt"}
                         line={true}
-                        dataSetLabel={"Sum"}
+                        dataSetLabel={"Somme"}
                     />
                 </Row>
                 <Row className="mt-3">
