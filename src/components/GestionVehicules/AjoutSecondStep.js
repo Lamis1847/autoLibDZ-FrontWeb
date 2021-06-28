@@ -123,8 +123,8 @@ export const AjoutSecondStep = (props) => {
                 required
                 error={errors.tempsDeRefroidissement === "" ? false : ""}
                 id="tempsDeRefroidissement"
-                label="Temps liquide de refroidissement"
-                placeholder="Exemple : 20s"
+                label="Température du liquide de refroidissement"
+                placeholder="Exemple : 80°C"
                 variant="outlined"
                 fullWidth='true'
                 type='number'
@@ -180,7 +180,7 @@ export const AjoutSecondStep = (props) => {
                 error={errors.anomalieCircuit === "" ? false : ""}
                 id="anomalieCircuit"
                 label="Anomalie circuit"
-                placeholder="Exemple : Rien"
+                placeholder="Exemple : Défaillance feux arrière"
                 variant="outlined"
                 fullWidth='true'
                 onChange={handleChange('anomalieCircuit')}
@@ -202,30 +202,34 @@ export const AjoutSecondStep = (props) => {
                 </div>
                 <br></br>
                 <div className="flex-container" style={{padding:"5px 40px", display: "flex", flexWrap:'wrap', gap:'30px', justifyContent:'center', alignItems:'center'}}>
+                <Tooltip title="Permet de réguler la vitesse du véhicule pendant la conduite" arrow style={{fontFamily:"Nunito-Regular"}}>
                 <TextField
                 required
                 error={errors.regulateurVitesse === "" ? false : ""}
                 id="regulateurVitesse"
                 label="Regulateur vitesse"
-                placeholder="Exemple : 20 KM/H"
+                placeholder="Exemple : 100 KM/H"
                 variant="outlined"
                 fullWidth='true'
                 type='number'
                 onChange={handleChange('regulateurVitesse')}
                 defaultValue={values.regulateurVitesse}
                 />
+                </Tooltip>
+                <Tooltip title="Indiquer la vitesse maximale que peut atteindre le véhicule" arrow style={{fontFamily:"Nunito-Regular"}}>
                 <TextField
                 required
                 error={errors.limiteurVitesse === "" ? false : ""}
                 id="limiteurVitesse"
                 label="Limiteur vitesse"
-                placeholder="Exemple : 20 KM/H"
+                placeholder="Exemple : 220 KM/H"
                 variant="outlined"
                 fullWidth='true'
                 type='number'
                 onChange={handleChange('limiteurVitesse')}
                 defaultValue={values.limiteurVitesse}
                 />
+                </Tooltip>
                 </div>
                 <br></br>
                 {message}
