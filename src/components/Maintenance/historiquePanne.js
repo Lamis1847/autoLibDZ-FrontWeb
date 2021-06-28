@@ -69,19 +69,10 @@ const Confirm=() => {
       {...props}
     />
   ));
-
   const columns = [
     {
       name: "description",
       label: "Description"
-    },
-    {
-      name: "latitude",
-      label: "Latitude"
-    },
-    {
-      name: "longitude",
-      label: "Longitude"
     },
     {
       name: "etat",
@@ -89,15 +80,23 @@ const Confirm=() => {
       options:{
         customBodyRender: (props) => {
           return (
-               props ? <h5 style={{color:'#2dce89'}}> Réglé </h5> : <h5 style={{color:'#f5365c'}}> Non reglé </h5>
+               props ? <h5 style={{color:'#2dce89'}}>Réparée</h5> : <h5 style={{color:'#f5365c'}}> Non réparée </h5>
           )
         }
       }
     },
     {
-        name: "vehicule",
-        label: "Vehicule"
+        name: "numImmatriculation",
+        label: "Matricule"
       },
+      {
+        name: "modele",
+        label: "Modele"
+      },{
+        name: "marque",
+        label: "Marque"
+      },
+
   ];
   
   const options = {
