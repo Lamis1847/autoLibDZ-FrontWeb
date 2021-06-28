@@ -9,26 +9,31 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import "../../assets/css/font.css"
 import { Typography } from '@material-ui/core';
+import { Select, NativeSelect } from '@material-ui/core';
+import InputLabel from '@material-ui/core/InputLabel';
 import axios from "axios";
+import {getToken} from '../../scripts/Network.js'
 
 export const ModifierVehicule = (props) => {
 
     const [state, setState] = useState({});
+    const [open, setOpen] = React.useState(false);
 
     const idVehicule = props.idVehicule
     const myServerBaseURL = "https://autolib-dz.herokuapp.com";
 
     const loadVehicule = useCallback(async () => {
-        const response = await axios.get(`${myServerBaseURL}/api/vehicules/${idVehicule}`);
+        const response = await axios.get(`${myServerBaseURL}/api/vehicules/${idVehicule}`, { headers : { authorization : `Basic ${getToken()}`}});
         const vehicule = response.data;
         setState(vehicule);
         console.log(state)
     }, []);
 
     const [bornes, setBornes] = useState([]);
+    const [idBorne, setIdBorne] = useState(state.idBorne);
 
     const loadBornes = useCallback(async () => {
-        const response = await axios.get(`${myServerBaseURL}/api/bornes/all`);
+        const response = await axios.get(`${myServerBaseURL}/api/bornes/all`, { headers : { authorization : `Basic ${getToken()}`}});
         const bornes = response.data;
         setBornes(bornes);
         console.log(bornes);
@@ -37,7 +42,7 @@ export const ModifierVehicule = (props) => {
     const [agents, setAgents] = useState([]);
 
     const loadAgents = useCallback(async () => {
-        const response = await axios.get(`${myServerBaseURL}/api/agent`);
+        const response = await axios.get(`${myServerBaseURL}/api/agent`, { headers : { authorization : `Basic ${getToken()}`}});
         const agents = response.data;
         setAgents(agents);
         console.log(agents);
@@ -105,6 +110,31 @@ export const ModifierVehicule = (props) => {
         </div>
     )
 
+    const [slideModif, setSlideModif] = useState(null)
+    const [modifSuccess, setModifSuccess] = useState(null)
+    const modifSuccessMessage = (
+        <div style={{margin:'20px 0px', padding:'12px'}}>
+                 {(modifSuccess == true) && (
+                    <Slide direction="up" in={slideModif} mountOnEnter unmountOnExit>
+                    <Alert severity="success" onClose={() => {
+                        setSlideModif(false)
+                        }}>
+                        <AlertTitle>Succés</AlertTitle>
+                        Le véhicule a été modifié <strong>avec succés</strong>
+                    </Alert>
+                    </Slide>
+                 ) } { (modifSuccess == false) && (
+                    <Slide direction="up" in={slideModif} mountOnEnter unmountOnExit>
+                    <Alert severity="error">
+                        <AlertTitle>Erreur!</AlertTitle>
+                        <strong>Erreur lors de la modification du véhicule</strong>
+                    </Alert>
+                    </Slide>
+                 ) }
+        </div>
+      )
+    
+
     const onModifierVehicule = useCallback( async () => {
         const response = await axios.put(`${myServerBaseURL}/api/vehicules/${idVehicule}`, {
             numChassis: state.numChassis,
@@ -126,27 +156,27 @@ export const ModifierVehicule = (props) => {
             idCloudinary: state.idCloudinary,
             secureUrl: state.secureUrl,
             id: state.id
-                        })
+                        },
+            { headers : { authorization : `Basic ${getToken()}`}})
                         .then((response) => {
-                            //setSlide(true)
-                            // setModifierSuccess(true)
-                            console.log("bloqué")
+                            setSlideModif(true)
+                            setModifSuccess(true)
+                            console.log("modifié")
                             console.log(response);
-                            // window.setTimeout( function(){
-                            //     handleCloseModifier()
-                            //     setBloquerSuccess(null)
-                            //     //window.location = "http://localhost:3000/vehicules";
-                            // }, 2000 );
+                            window.setTimeout( function(){
+                                handleCloseConfirmer()
+                                setModifSuccess(null)
+                                window.location.href = "/vehicules";
+                             }, 2000 );
                             }, (error) => {
-                            // setSlideBloquer(true)
-                            // setBloquerSuccess(false)
+                            setSlideModif(true)
+                            setModifSuccess(false)
                             console.log("erreur")
                             console.log(error);
-                            // window.setTimeout( function(){
-                            //   handleCloseBloquer()
-                            //   setBloquerSuccess(null)
-                            //   //window.location = "http://localhost:3000/vehicules";
-                            // }, 2000 );
+                            window.setTimeout( function(){
+                                handleCloseConfirmer()
+                                setModifSuccess(null)
+                            }, 2000 );
                             });
       });
 
@@ -167,16 +197,16 @@ export const ModifierVehicule = (props) => {
                 aria-labelledby="alert-dialog-title"
                 aria-describedby="alert-dialog-description"
             >
-                <Typography style={{fontFamily:'Nunito-Regular', fontSize:'18px', padding:'20px', fontWeight:'600', boxShadow:'none'}}>
+            <Typography style={{fontFamily:'Nunito-Regular', fontSize:'18px', padding:'14px 20px', boxShadow:'none'}}>
                     Voulez-vous vraiment annuler la modification du véhicule? 
                     <br></br>
                     Toutes les informations saisies seront perdues.
-                </Typography>                    
+            </Typography>                    
                 <DialogActions>
-                <Button onClick={handleCloseModif} style={{textTransform:"capitalize", backgroundColor:"#2DCE89", color:"white", fontFamily:'Nunito-Regular'}} variant="contained">
+                <Button onClick={handleCloseModif} style={{textTransform:"capitalize", color:"#F5365C", fontFamily:'Nunito-Regular', margin:"12px 20px", fontWeight:"bold"}}>
                     Oui
                 </Button>
-                <Button onClick={handleCloseAnnuler} style={{textTransform:"capitalize", backgroundColor:"#F5365C", color:"white", fontFamily:'Nunito-Regular'}} variant="contained">
+                <Button onClick={handleCloseAnnuler} style={{textTransform:"capitalize", backgroundColor:"#252834", color:"white", fontFamily:'Nunito-Regular', padding:"6px 12px", margin:"12px 20px"}}>
                     Non
                 </Button>
                 </DialogActions>
@@ -191,48 +221,22 @@ export const ModifierVehicule = (props) => {
                 aria-labelledby="alert-dialog-title"
                 aria-describedby="alert-dialog-description"
             >
-                <Typography style={{fontFamily:'Nunito-Regular', fontSize:'18px', padding:'20px', fontWeight:'600', boxShadow:'none'}}>
+            <Typography style={{fontFamily:'Nunito-Regular', fontSize:'18px', padding:'14px 20px', boxShadow:'none'}}>
                     Voulez-vous confirmer la modification du véhicule? 
                 </Typography>                    
                 <DialogActions>
-                <Button onClick={onModifierVehicule} style={{textTransform:"capitalize", backgroundColor:"#2DCE89", color:"white", fontFamily:'Nunito-Regular'}} variant="contained">
+                <Button onClick={onModifierVehicule} style={{textTransform:"capitalize", color:"#F5365C", fontFamily:'Nunito-Regular', margin:"12px 20px", fontWeight:"bold"}}>
                     Oui
                 </Button>
-                <Button onClick={handleCloseConfirmer} style={{textTransform:"capitalize", backgroundColor:"#F5365C", color:"white", fontFamily:'Nunito-Regular'}} variant="contained">
+                <Button onClick={handleCloseConfirmer} style={{textTransform:"capitalize", backgroundColor:"#252834", color:"white", fontFamily:'Nunito-Regular', padding:"6px 12px", margin:"12px 20px"}}>
                     Non
                 </Button>
                 </DialogActions>
+                {modifSuccess ? modifSuccessMessage : <br></br>}
             </Dialog>
         </div>
     )
     
-    const marques = [
-        {
-            value: 'Chevrolet'
-        },
-        {
-            value: 'Citroen'
-        },
-        {
-            value: 'Dacia'
-        },
-        {
-            value: 'Hyundai'
-        },
-        {
-            value: 'KIA'
-        },
-        {
-            value: 'Peugeot'
-        },
-        {
-            value: 'Renault'
-        },
-        {
-            value: 'Toyota'
-        }
-    ]
-
     const etats = [
         {
             value: 'circulation'
@@ -252,77 +256,73 @@ export const ModifierVehicule = (props) => {
                     </div>
                     <form noValidate="false">
                         <div style={{padding:"5px 40px"}}>
+                        <InputLabel>Matricule</InputLabel>
                         <TextField
                         required
                         error={errors.numImmatriculation === "" ? false : ""}
                         id="numImmatriculation"
-                        label="Matricule"
-                        placeholder="Exemple : 201411742"
                         variant="outlined"
                         fullWidth='true'
                         onChange={handleChange('numImmatriculation')}
-                        defaultValue={state.numImmatriculation}
+                        value={state.numImmatriculation}
                         />
                         </div>
                         <br></br>
                         <div style={{padding:"5px 40px"}}>
-                        <TextField
+                        <InputLabel>Borne</InputLabel>
+                        <Select
                         required
                         id="idBorne"
                         label="Borne"
-                        placeholder="Exemple : Oued Semmar"
                         variant="outlined"
                         fullWidth='true'
-                        select
                         onChange={handleChange('idBorne')}
-                        defaultValue={state.idBorne}
+                        value={idBorne}
                         >
                             {bornes.map((borne) => (
                                 <MenuItem key={borne.idBorne} value={borne.idBorne}>
                                     {borne.nomBorne} ({borne.idBorne})
                                 </MenuItem>
                             ))}
-                        </TextField>
+                        </Select>
                         </div>
                         <br></br>
                         <div style={{padding:"5px 40px"}}>
-                        <TextField
+                        <InputLabel>Agent de maintenance</InputLabel>
+                        <Select
                         required
                         id="idAgentMaintenance"
                         label="Agent de maintenance"
-                        placeholder=""
                         variant="outlined"
                         fullWidth='true'
-                        select
                         onChange={handleChange('idAgentMaintenance')}
-                        defaultValue={state.idAgentMaintenance}
+                        value={state.idAgentMaintenance}
                         >
                             {agents.map((agent) => (
                                 <MenuItem key={agent.idAgentMaintenance} value={agent.idAgentMaintenance}>
                                     {agent.nom} ({agent.idAgentMaintenance})
                                 </MenuItem>
                             ))}
-                        </TextField>
+                        </Select>
                         </div>
                         <br></br>
                         <div style={{padding:"5px 40px"}}>
-                        <TextField
+                        <InputLabel>Etat</InputLabel>
+                        <Select
                         required
                         id="etat"
                         label="Etat"
-                        placeholder=""
                         variant="outlined"
                         fullWidth='true'
-                        select
                         onChange={handleChange('etat')}
-                        defaultValue={state.etat}
+                        value={state.etat}
                         >
                             {etats.map((etat) => (
                                 <MenuItem key={etat.value} value={etat.value}>
                                     {etat.value} 
                                 </MenuItem>
                             ))}
-                        </TextField>
+                        </Select>
                         </div>
                         <br></br>
                         {message}

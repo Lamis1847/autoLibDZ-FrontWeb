@@ -22,6 +22,13 @@ import Slide from '@material-ui/core/Slide';
 import { Alert, AlertTitle } from '@material-ui/lab';
 import { duration } from "moment";
 import axios from "axios";
+import {getToken} from '../../scripts/Network.js'
+import {
+  DropdownMenu,
+  DropdownItem,
+  UncontrolledDropdown,
+  DropdownToggle,
+} from "reactstrap";
 
 export const ListeVehicules = props => {
 
@@ -56,9 +63,9 @@ export const ListeVehicules = props => {
     })
   }, []);
 
-  
   const onSupprimerVehicule = useCallback( async () => {
-    const response = await axios.put(`${myServerBaseURL}/api/vehicules/${idVehicule}`, {
+    const response = await axios.put(`${myServerBaseURL}/api/vehicules/${idVehicule}`, 
+    {
         numChassis: vehicule.numChassis,
         numImmatriculation: vehicule.numImmatriculation,
         modele: vehicule.modele,
@@ -78,7 +85,9 @@ export const ListeVehicules = props => {
         idCloudinary: vehicule.idCloudinary,
         secureUrl: vehicule.secureUrl,
         id: vehicule.id
-                    })
+        },
+        { headers : { authorization : `Basic ${getToken()}`}},
+                    )
                     .then((response) => {
                         setSlideSupp(true)
                         setSuppSuccess(true)
@@ -87,7 +96,7 @@ export const ListeVehicules = props => {
                         window.setTimeout( function(){
                             handleCloseSupprimer()
                             setSuppSuccess(null)
-                            //window.location = "http://localhost:3000/vehicules";
+                            window.location.href = "/vehicules";
                         }, 2000 );
                         }, (error) => {
                         setSlideSupp(true)
@@ -97,7 +106,7 @@ export const ListeVehicules = props => {
                         window.setTimeout( function(){
                           handleCloseSupprimer()
                           setSuppSuccess(null)
-                          //window.location = "http://localhost:3000/vehicules";
+                          window.location.href = "/vehicules";
                         }, 2000 );
                         });
   });
@@ -158,7 +167,6 @@ export const ListeVehicules = props => {
             {suppSuccess ? suppSuccessMessage : <br></br>}
         </Dialog>
     </div>
-    // </Slide>
 )
 
 const [slideBloquer, setSlideBloquer] = useState(null)
@@ -168,16 +176,15 @@ const [bloquer, setBloquer] = useState(null)
   const handleOpenBloquer = () => {
     setBloquer(true)
     handleClose()
-    //setSlideSupp(true)
   }
 
   const handleCloseBloquer = () => {
       setBloquer(false)
-      // setSlideSupp(false)
   }
 
 const onBloquerVehicule = useCallback( async () => {
-  const response = await axios.put(`${myServerBaseURL}/api/vehicules/${idVehicule}`, {
+  const response = await axios.put(`${myServerBaseURL}/api/vehicules/${idVehicule}`,
+    {
       numChassis: vehicule.numChassis,
       numImmatriculation: vehicule.numImmatriculation,
       modele: vehicule.modele,
@@ -197,7 +204,9 @@ const onBloquerVehicule = useCallback( async () => {
       idCloudinary: vehicule.idCloudinary,
       secureUrl: vehicule.secureUrl,
       id: vehicule.id
-                  })
+                  },
+      { headers : { authorization : `Basic ${getToken()}`}}
+                  )
                   .then((response) => {
                       setSlideBloquer(true)
                       setBloquerSuccess(true)
@@ -206,8 +215,8 @@ const onBloquerVehicule = useCallback( async () => {
                       window.setTimeout( function(){
                           handleCloseBloquer()
                           setBloquerSuccess(null)
-                          //window.location = "http://localhost:3000/vehicules";
-                      }, 2000 );
+                          window.location.href = "/vehicules";
+                        }, 2000 );
                       }, (error) => {
                       setSlideBloquer(true)
                       setBloquerSuccess(false)
@@ -216,7 +225,7 @@ const onBloquerVehicule = useCallback( async () => {
                       window.setTimeout( function(){
                         handleCloseBloquer()
                         setBloquerSuccess(null)
-                        //window.location = "http://localhost:3000/vehicules";
+                        window.location.href = "/vehicules";
                       }, 2000 );
                       });
 });
@@ -244,7 +253,6 @@ const bloquerSuccessMessage = (
 )
 
 const bloquerDialogue = (
-  // <Slide direction="up" in={slide} mountOnEnter unmountOnExit>
   <div>
       <Dialog
           open={bloquer}
@@ -271,11 +279,8 @@ const bloquerDialogue = (
           {bloquerSuccess ? bloquerSuccessMessage : <br></br>}
       </Dialog>
   </div>
-  // </Slide>
 )
   
-  const preventDefault = event => event.preventDefault();
-
   //Charger la liste des véhicules
   useEffect(() => {
     loadVehicules();
@@ -329,6 +334,10 @@ const bloquerDialogue = (
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+  const onRowSelect = (dataIndex) => {
+    console.log(dataIndex)
+  }
 
   const StyledMenu = withStyles({
     paper: {
@@ -399,50 +408,72 @@ const bloquerDialogue = (
       options: {
         viewColumns: false,
         filter: false,
-        customBodyRender: (value, tableMeta, updateValue) => {
+        customBodyRenderLite: (dataIndex) => {
           return (
             props.noadd ?
             null
             :
-            <div>
-              <Button aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick}>
-                <MenuIcon />
-              </Button>
-                <StyledMenu>
-                  <MenuItem onClick={handleClose}>
-                      <NavLink to={"/vehicules/" + idVehicule} variant="inherit" style={{fontFamily:'Nunito', color:'black'}}>
-                        Détails
-                      </NavLink>
-                  </MenuItem>
-
-                  <MenuItem onClick={handleOpenBloquer} style={{fontFamily:'Nunito'}}>
-                        Bloquer
-                  </MenuItem>
-
-                  <MenuItem onClick={handleClose}>
-                      <NavLink to={"/vehicules/historique/" + idVehicule} variant="inherit" style={{fontFamily:'Nunito', color:'black'}}>
-                        Historique
-                      </NavLink>
-                  </MenuItem>
-
-                  <MenuItem onClick={handleOpenModif} style={{fontFamily:'Nunito', color:'#FFCB00'}}>
-                        Modifier
-                  </MenuItem>
-
-                  <MenuItem onClick={handleOpenSupprimer} style={{fontFamily:'Nunito', color:'#F5365C',border:"none", textAlign:"left"}}>
-                        Supprimer
-                  </MenuItem>
-                  </StyledMenu>              
-              
-                
-            </div>
+            <UncontrolledDropdown>
+              <DropdownToggle
+                className="btn-icon-only text-light"
+                href="#pablo"
+                role="button"
+                size="sm"
+                color=""
+                onClick={(e) => e.preventDefault()}
+              >
+                <i className="fas fa-ellipsis-v" />
+              </DropdownToggle>
+              <DropdownMenu className="dropdown-menu-arrow" right>
+                <DropdownItem
+                  onClick={(e) => { e.preventDefault(); onRowSelect(dataIndex); }}
+                >
+                <NavLink to={"/vehicules/" + idVehicule} variant="inherit" style={{fontFamily:'Nunito', color:'black'}}>
+                      Détails
+                </NavLink>
+                </DropdownItem>
+                <DropdownItem
+                  href="#"
+                  onClick={(e) => { e.preventDefault(); onRowSelect(dataIndex); handleOpenBloquer() }}
+                >
+                  Bloquer
+                </DropdownItem>
+                <DropdownItem
+                  href="#"
+                  onClick={(e) => { e.preventDefault(); onRowSelect(dataIndex); }}
+                >
+                <NavLink to={"/vehicules/historique/" + idVehicule} variant="inherit" style={{fontFamily:'Nunito', color:'black'}}>
+                      Historique
+                </NavLink>
+                </DropdownItem>
+                <DropdownItem
+                  href="#"
+                  onClick={(e) => { e.preventDefault(); onRowSelect(dataIndex); handleOpenModif()}}
+                  style={{fontFamily:'Nunito', color:'#FFCB00'}}
+                >
+                  Modifier
+                </DropdownItem>
+                <DropdownItem
+                  href="#"
+                  onClick={(e) => { e.preventDefault(); onRowSelect(dataIndex); handleOpenSupprimer()}}
+                  style={{fontFamily:'Nunito', color:'#F5365C',border:"none", textAlign:"left"}}>
+                  Supprimer
+                </DropdownItem>
+              </DropdownMenu>
+            </UncontrolledDropdown>
           );
         }
       }
     }
   ];
 
-  const [rowData, setRowData] = useState([])
+  const onRowSelection = async(rowData, rowState) => {
+    await setIdVehicule(rowData[0]);
+    let vehicule = vehicules.find(vehicule => vehicule.numChassis == idVehicule)
+    await setVehicule(vehicule);
+    console.log(idVehicule)
+    console.log(vehicule)
+  }
 
   const options = {
     filter: true,
@@ -455,23 +486,26 @@ const bloquerDialogue = (
     tableBodyHeight,
     tableBodyMaxHeight,
     searchPlaceholder: 'Saisir un nom ou un ID..',
-    onRowClick: (rowData, rowState) => {
-      (idVehicule == null) ? setIdVehicule(rowData[0]) : setIdVehicule(idVehicule);
-      (vehicule == null) ? setVehicule(rowData) : setVehicule(vehicule);
-      console.log(vehicule);
-      console.log(idVehicule);
-    },
-    // onColumnSortChange: (changedColumn, direction) => console.log('changedColumn: ', changedColumn, 'direction: ', direction),
-    // onChangeRowsPerPage: numberOfRows => console.log('numberOfRows: ', numberOfRows),
-    // onChangePage: currentPage => console.log('currentPage: ', currentPage),
+    onRowClick: onRowSelection,
     textLabels: {
       body: {
-          noMatch: loading ?
-              <CircularProgress /> :
-              'Aucune donnée trouvée',
+        noMatch: loading ?
+        <CircularProgress /> :
+        'Aucune donnée trouvée',
+        toolTip: "Trier",
       },
-  },
-
+      pagination: {
+        next: "Page suivante",
+        previous: "Page précédente",
+        rowsPerPage: "Ligne par page:",
+        displayRows: "/",
+      },
+      selectedRows: {
+        text: "ligne(s) sélectionné(s)",
+        delete: "Supprimer",
+        deleteAria: "Supprimer les lignes choisies",
+      },
+    }
   };
   
   return (
@@ -491,7 +525,6 @@ const bloquerDialogue = (
                 <Button variant="contained" onClick={handleOpenAjout} style={{backgroundColor:"#252834", textTransform:"capitalize", color:"white", fontWeight:'bold', width:'150px'}}>
                 + Ajouter
                 </Button>
-                {suppSuccessMessage}
               </div>
               </>
             }
@@ -520,8 +553,6 @@ const bloquerDialogue = (
         </div>
       </div>
     </React.Fragment>
-    
-      
    
   )
 }

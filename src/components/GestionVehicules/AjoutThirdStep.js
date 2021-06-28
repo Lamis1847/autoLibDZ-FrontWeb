@@ -15,6 +15,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import "../../assets/css/font.css"
 import { Typography } from '@material-ui/core';
+import {getToken} from '../../scripts/Network.js'
 
 export const AjoutThirdStep = (props) => {
     
@@ -23,7 +24,7 @@ export const AjoutThirdStep = (props) => {
     const [bornes, setBornes] = useState([]);
 
     const loadBornes = useCallback(async () => {
-        const response = await axios.get(`${myServerBaseURL}/api/bornes/all`);
+        const response = await axios.get(`${myServerBaseURL}/api/bornes/all`,{ headers : { authorization : `Basic ${getToken()}`}});
         const bornes = response.data;
         setBornes(bornes);
         console.log(bornes);
@@ -32,7 +33,7 @@ export const AjoutThirdStep = (props) => {
     const [agents, setAgents] = useState([]);
 
     const loadAgents = useCallback(async () => {
-        const response = await axios.get(`${myServerBaseURL}/api/agent`);
+        const response = await axios.get(`${myServerBaseURL}/api/agent`,{ headers : { authorization : `Basic ${getToken()}`}});
         const agents = response.data;
         setAgents(agents);
         console.log(agents);
@@ -43,8 +44,6 @@ export const AjoutThirdStep = (props) => {
         loadAgents();
       }, [loadBornes, loadAgents]);
 
-    const [errors, setErrors] = useState({})
-    const [slide, setSlide] = useState(null)
     const {values, handleChange, handleChangeImage} = props;
     const handleCloseAjout = props.handleCloseAjout
     
@@ -60,38 +59,8 @@ export const AjoutThirdStep = (props) => {
 
     const continuer = e => {
         e.preventDefault();
-        if(validate()){
-            props.nextStep();
-        } else {
-            setSlide(true)
-        }
+        props.nextStep();
     }
-
-    const validate = (fieldValues = values) => {
-        let temp = { ...errors }
-        if ('idBorne' in fieldValues)
-            temp.idBorne = fieldValues.idBorne ? "" : "Ce champs est requis."
-        if ('idAgentMaintenance' in fieldValues)
-            temp.idAgentMaintenance = fieldValues.idAgentMaintenance ? "" : "Ce champs est requis."
-        
-        setErrors({
-            ...temp
-        })
-
-        if (fieldValues == values)
-            return Object.values(temp).every(x => x == "")
-    }
-
-    const message = (
-        <div style={{margin:'10px 40px 20px 40px'}}>
-            <Slide direction="up" in={slide} mountOnEnter unmountOnExit>
-                <Alert severity="error">
-                    <strong>Veuillez renseigner les champs requis.</strong>
-                </Alert>
-            </Slide>
-        </div>
-
-    )
 
     const annulerDialogue = (
         <div>
@@ -131,7 +100,6 @@ export const AjoutThirdStep = (props) => {
                     </div>
                     <div style={{padding:"5px 40px"}}>
                     <TextField
-                    required
                     id="idBorne"
                     label="Borne"
                     placeholder="Exemple : Oued Semmar"
@@ -151,7 +119,6 @@ export const AjoutThirdStep = (props) => {
                     <br></br>
                     <div style={{padding:"5px 40px"}}>
                     <TextField
-                    required
                     id="idAgentMaintenance"
                     label="Agent de maintenance"
                     placeholder=""
@@ -181,7 +148,6 @@ export const AjoutThirdStep = (props) => {
                     />
                     </div>
                     <br></br>
-                    {message}
                     <div className="flex-container" style={{display: "flex", flexWrap:'wrap', gap:'30px', justifyContent:'center', alignItems:'center'}}>
                             <div>
                             <IconButton onClick={back} style={{textTransform:"capitalize", fontWeight:'bold', color:'black'}} variant="contained">

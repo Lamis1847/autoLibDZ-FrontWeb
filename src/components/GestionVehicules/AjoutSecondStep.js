@@ -174,6 +174,7 @@ export const AjoutSecondStep = (props) => {
                 </div>
                 <br></br>
                 <div className="flex-container" style={{padding:"5px 40px", display: "flex", flexWrap:'wrap', gap:'30px', justifyContent:'center', alignItems:'center'}}>
+                <Tooltip title="Type d'anomalie dans le circuit du véhicule, s'il existe" arrow style={{fontFamily:"Nunito-Regular"}}>
                 <TextField
                 required
                 error={errors.anomalieCircuit === "" ? false : ""}
@@ -185,6 +186,7 @@ export const AjoutSecondStep = (props) => {
                 onChange={handleChange('anomalieCircuit')}
                 defaultValue={values.anomalieCircuit}
                 />
+                </Tooltip>
                 <TextField
                 required
                 error={errors.niveauMinimumHuile === "" ? false : ""}

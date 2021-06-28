@@ -19,6 +19,8 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { Typography } from '@material-ui/core';
+import {getToken} from '../../scripts/Network.js'
+import { NavLink } from 'react-router-dom'
 
 export const DetailsVehicule = () => {
 
@@ -32,18 +34,18 @@ export const DetailsVehicule = () => {
     const [agent, setAgent] = useState(null);
 
     const loadVehicule = useCallback(async () => {
-        const response1 = await axios.get(`${myServerBaseURL}/api/vehicules/${idVehicule}`);
+        const response1 = await axios.get(`${myServerBaseURL}/api/vehicules/${idVehicule}`, { headers : { authorization : `Basic ${getToken()}`}});
         const vehicule = response1.data;
         setVehicule(vehicule);
         console.log(vehicule)
         if(vehicule.idBorne != null){
-            const response2 = await axios.get(`${myServerBaseURL}/api/bornes/${vehicule.idBorne}`);
-            const borne = response2.data;
+            const response2 = await axios.get(`${myServerBaseURL}/api/bornes/${vehicule.idBorne}`, { headers : { authorization : `Basic ${getToken()}`}});
+            const borne = response2.data[0];
             setBorne(borne);
             console.log(borne)
         }
         if(vehicule.idAgentMaintenance != null) {
-            const response3 = await axios.get(`${myServerBaseURL}/api/agent/${vehicule.idAgentMaintenance}`);
+            const response3 = await axios.get(`${myServerBaseURL}/api/agent/${vehicule.idAgentMaintenance}`, { headers : { authorization : `Basic ${getToken()}`}});
             const agent = response3.data;
             setAgent(agent);
             console.log(agent)
@@ -72,7 +74,9 @@ export const DetailsVehicule = () => {
             idCloudinary: vehicule.idCloudinary,
             secureUrl: vehicule.secureUrl,
             id: vehicule.id
-                        })
+                        },
+            { headers : { authorization : `Basic ${getToken()}`}}
+                        )
                         .then((response) => {
                             handleCloseSupprimer()
                             setSlide(true)
@@ -353,9 +357,9 @@ export const DetailsVehicule = () => {
                         <div className="flex-container" style={{display: "flex", flexWrap:'wrap', gap:'60px', justifyContent:'center', alignItems:'center'}}>
                             <div>
                             <button style={{padding:'0 30px', backgroundColor:'#F2F2F2', borderRadius:'4px', color:'black', fontWeight:'bold', height: 40, border:0}}>         
-                            <Link href="/vehicules" variant="inherit">
+                            <NavLink to={"/vehicules/historique/" + idVehicule} variant="inherit" style={{fontFamily:'Nunito', color:'black'}}>
                                 Historique des réservations
-                            </Link> 
+                            </NavLink> 
                             </button>
                             </div>
                             <div>
