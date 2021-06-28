@@ -38,7 +38,7 @@ const SalaryPies = ({ text , salaries, textColor,icon }) => {
         datasets: [
             {
                 label: 'Sommes',
-                data: [Math.round(salaries.admin.avg),Math.round(salaries.agent.avg),Math.round(salaries.dirigeant.sum)],
+                data: [Math.round(salaries.admin.avg),Math.round(salaries.agent.avg),Math.round(salaries.dirigeant.avg)],
                 backgroundColor: ['rgb(255, 99, 132)',
                                 'rgb(54, 162, 235)',
                                 'rgb(244, 208, 63)'],
