@@ -19,6 +19,7 @@ import Agent from './components/GestionUtilisateurs/Agent';
 import Surveillance from './components/Surveillance/Surveillance'
 import Operateur from './components/GestionUtilisateurs/Operateur';
 import Dirigeant from './components/GestionUtilisateurs/Dirigeant';
+import Panne from './components/Maintenance/historiquePanne';
 import { isTypeAuthenticated , isAuth  } from "./scripts/Network"
 import RechercheBorne from './components/GestionBornes/RechercheBorne/RechercheBorne'
 import Abonnement from './components/GestionAbonnement/Tab'
@@ -85,11 +86,13 @@ function App() {
                   <Route path="/Abonnement">
                     <Abonnement></Abonnement>
                   </Route>
+                  <Route path="/maintenance" component={Panne} />
+                  
                   </>
                 :
                   isTypeAuthenticated("operateur") ?  
                   <Route path="/Abonnement">
-                    <Abonnement></Abonnement>
+                    <Panne></Panne>
                   </Route>
                   : null       
                 }

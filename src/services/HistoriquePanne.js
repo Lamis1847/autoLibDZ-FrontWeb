@@ -1,9 +1,9 @@
 import http from '../scripts/http-common';
 
 const getAll = () => {
-  return http.get("/locataire/getLocataires");
+  return http.get("/pannes");
 };
-const LocataireService = {
+const HistoriquePanneService = {
     getAll
   };
   export default HistoriquePanneService;  
