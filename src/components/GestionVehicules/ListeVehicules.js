@@ -10,7 +10,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import { withStyles } from '@material-ui/core/styles';
 import { makeStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import axios from "axios";
+import {api} from "../../scripts/Network"
 import Dialog from '@material-ui/core/Dialog';
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
 import IconButton from '@material-ui/core/IconButton';
@@ -32,11 +32,12 @@ export const ListeVehicules = props => {
   const [loading, setLoading] = useState(null);
   const loadVehicules = useCallback(async () => {
     setLoading(true)
-    const response = await axios.get(`${myServerBaseURL}/api/vehicules`);
-    const vehicules = response.data;
-    console.log(vehicules);
-    setVehicules(vehicules);
-    setLoading(false)
+    api.get(`/api/vehicules`).then( res => {
+      const vehicules = res;
+      console.log(vehicules);
+      setVehicules(vehicules);
+      setLoading(false)
+    })
   }, []);
 
   let listeVehicules = vehicules.map(obj => Object.values(obj));
@@ -65,7 +66,7 @@ export const ListeVehicules = props => {
   )
 
   const onSupprimerVehicule = useCallback( async () => {
-    const response = await axios.delete(`${myServerBaseURL}/api/vehicules/${idVehicule}`)
+    const response = await api.delete(`api/vehicules/${idVehicule}`)
                     .then((response) => {
                         setSlide(true)
                         setSuccess(true)
@@ -214,6 +215,9 @@ export const ListeVehicules = props => {
         filter: false,
         customBodyRender: (value, tableMeta, updateValue) => {
           return (
+            props.noadd ?
+            null
+            :
             <div>
               <Button aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick}>
                 <MenuIcon />

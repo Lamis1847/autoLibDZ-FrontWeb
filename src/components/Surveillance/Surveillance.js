@@ -6,7 +6,7 @@ import { Card, CardBody,Container,Row,Col } from "reactstrap";
 
 const Surveillance = () => {
     
-    const [id, setid] = useState(456789)
+    const [id, setid] = useState(null)
 
     return (
         <div className="main-content">

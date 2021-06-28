@@ -2,14 +2,18 @@ import React, { Component } from 'react';
 import Divider from '@material-ui/core/Divider';
 import MUIDataTable from 'mui-datatables';
 import { Container, Row, Col } from 'reactstrap';
+
 import './VisuAndModifBorne.css';
 import outLink from "./outLink.svg";
 import refresh from "./refresh.svg"
-import axios from "axios";
 
-const API = 'https://autolib-dz.herokuapp.com/api/';
-const SERVICES = { Borne: 'bornes/', VecBorne: 'vehicules/' }
-const WEB = 'https://autolib-dz-front.herokuapp.com/vehicules/'
+import axios from "axios";
+import { getToken } from '../../../scripts/Network';
+
+const API_BORNES = process.env.REACT_APP_GESTION_BORNES_URL;
+const MICROSERVICES = { VecBorne: 'vehicules/' }
+//const WEB = process.env.REACT_APP_DEPLOYED_URL;
+const WEB = "https://autolib-dz-front.herokuapp.com/vehicules/";
 
 class VehiculesBorne extends Component {
     constructor(props) {
@@ -21,52 +25,35 @@ class VehiculesBorne extends Component {
     }
 
     componentDidMount() {
-        this.getVehiculesBorne()
+        this.getVehiculesBorne();
     }
 
     getVehiculesBorne() {
-        let MICROSERVICE = API + SERVICES['Borne'] + this.props.borne[0] + '/' + SERVICES['VecBorne']
-        axios.get(MICROSERVICE)
+        let MICROSERVICE = API_BORNES + this.props.borne[0] + '/' + MICROSERVICES['VecBorne'];
+        let tokenStr = getToken();
+        axios.get(MICROSERVICE, { headers: { "authorization": `Bearer ${tokenStr}` } })
             .then((res) => {
-                let listVehicules = []
+                let listVehicules = [];
                 res.data.forEach(vec => {
                     listVehicules.push({ numImmatriculation: vec['numImmatriculation'], marque: vec['marque'], modele: vec['modele'], etat: vec['etat'], options: WEB + vec['numChassis'] })
-                    //listVehicules.push(vec)
-                })
-                this.setState({ vehicules: listVehicules })
+                });
+                this.setState({ vehicules: listVehicules });
             })
             .catch(error => {
-                this.errorHandler(error)
+                this.errorHandler(error);
             })
     }
 
     /**
      * affiche un message selon l'erreur qui s'est produite
      */
-    errorHandler(error) {
-        if (error && error.response) {
-            switch (error.response.status) {
-                case 400:
-                    alert("Quelque chose s'est mal déroulé lors de l'opération, veuillez ré-essayer ultérieurement. Code erreur : 400")
-                    break;
-                case 401:
-                    alert("Il semble que vous n'êtes plus authentifié. Veuillez vous authentifier pour effectuer cette action. Code erreur : 401")
-                    break;
-                case 403:
-                    alert("Vous ne disposez pas des privilèges nécessaires pour accéder à cette ressource. Code erreur : 403")
-                    break;
-                case 404:
-                    alert("Aucun résultat ne correspond à ce que vous recherchez. Code erreur : 404")
-                    break;
-                case 500:
-                    alert("Quelque chose s'est mal déroulé lors de votre opération, veuillez ré-essayer ultérieurement. Code erreur : 500")
-                    break;
-                default:
-                    alert("Quelque chose s'est mal déroulé, veuillez contacter le support pour plus d'informations")
-                    break;
-            }
+    errorHandler(err) {
+        if (err && err.response) {
+            window.alert("Erreur : " + err.response.status + " - " + err.response.data.error);
+        } else if (err.request) {
+            window.alert("Pas de réponse ou requête non envoyée !");
         } else {
-            alert("Quelque chose s'est mal déroulé, veuillez contacter le support pour plus d'informations")
+            window.alert("Une erreur est survenue !");
         }
     }
 
@@ -120,7 +107,7 @@ class VehiculesBorne extends Component {
 
 
                         return (
-                            <h5 style={{ color: colorTxt }} > { etatVec}</h5>
+                            <h5 style={{ color: colorTxt }} > {etatVec}</h5>
                         )
                     }
                 }
@@ -184,7 +171,7 @@ class VehiculesBorne extends Component {
                             <br />
                             <Row>
                                 <Col xs={12}>
-                                    <Divider variant="left" style={{ width: '100%' }}></Divider>
+                                    <Divider variant="inset" style={{ width: '100%' }}></Divider>
                                 </Col>
                             </Row>
                         </Container>
