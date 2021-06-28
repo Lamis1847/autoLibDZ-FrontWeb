@@ -4,6 +4,8 @@ import Input from "react-validation/build/input";
 import axios from "axios";
 import { Button, Modal, ModalBody, ModalFooter, Row,Col, Dropdown, DropdownToggle, DropdownMenu, DropdownItem,Alert} from "reactstrap";
 import { Select } from '@material-ui/core';
+import Failure from './Failure.js'
+import { getToken } from '../../scripts/Network.js'
 
 const API_All_WILAYAS= process.env.REACT_APP_ALGERIA_CITIES_URL;
 const API_ADD_BORNE= process.env.REACT_APP_GESTION_BORNES_URL;
@@ -40,10 +42,13 @@ class AddBorne extends Component{
                 communes: [],
                 wilayaSelected:false,
                 showAlertcw:false,
+                showFailure: false,
+                keyModal: 0,
          }
     }
     componentDidMount(){   
-      axios.get(API_All_WILAYAS)
+      let tokenStr =  getToken();
+      axios.get(API_All_WILAYAS,{ headers: {"authorization" : `Basic ${tokenStr}`} })
       .then((res) => {
          this.setState({wilayas:res.data});
       })
@@ -140,17 +145,19 @@ class AddBorne extends Component{
             commune: this.state.commune,
             latitude: this.state.latitude,
             longitude: this.state.longitude,
-            nbVehicules: "0",
-            nbPlaces: this.state.capacite,
+            nbVehicules: parseInt(this.state.capacite),
+            nbPlaces:  parseInt(this.state.capacite),
           }
-          console.log(newBorne)
-          axios.post(API_ADD_BORNE,newBorne)
+         // console.log(newBorne)
+         let tokenStr =  getToken();
+          axios.post(API_ADD_BORNE,newBorne,{ headers: {"authorization" : `Basic ${tokenStr}`} })
           .then((res) => {
             this.setModalOpen(false,true,res.data)
           })
           .catch(err => {
             if (err.response) {
-              console.log(err.response.data)
+              //console.log(err.response.data)
+              this.setState({ showFailure: true, keyModal: this.state.keyModal + 1 % 2 })
             } else if (err.request) {
               // client never received a response, or request never left
               window.alert("Pas de réponse ou requête non envoyée ! Borne non ajoutée !")
@@ -160,10 +167,6 @@ class AddBorne extends Component{
             )      
         }
 
-        //TODO: 
-        /*
-        -create alerts for error cases
-        */
     }
   }
 
@@ -190,10 +193,11 @@ createCommunes(){
 }
 
     onDropdownSelected(e) {
+      let tokenStr =  getToken();
       let wilaya = this.state.wilayas[e.target.value].wilaya
       if(wilaya!=this.state.wilaya){
         this.setState({wilaya:wilaya,commune:''})
-      axios.get(API_All_WILAYAS+wilaya+"/commune")
+      axios.get(API_All_WILAYAS+wilaya+"/commune",{ headers: {"authorization" : `Basic ${tokenStr}`} })
       .then((res) => {
          this.setState({communes:res.data,wilayaSelected:true});
       })
@@ -321,7 +325,7 @@ createCommunes(){
               <Row>{
                     (this.state.showAlertcw)?
                 <Alert className="mt-3 center" color="danger">
-                  This is a danger alert — check it out!
+                  Il faut sélectionner une wilaya et une commune !
                 </Alert>:<></>
                 }
                 </Row>
@@ -356,6 +360,7 @@ createCommunes(){
           </Button>
         </ModalFooter>
         </Form>
+        <Failure key={this.state.keyModal} shown={this.state.showFailure}></Failure>
       </Modal>
         
      )

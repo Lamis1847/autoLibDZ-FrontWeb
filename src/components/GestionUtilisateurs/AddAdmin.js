@@ -1,6 +1,8 @@
 import React from "react";
 import AdminService from "../../services/AdministrateurService";
-
+import { Container } from "reactstrap";
+import TextField from '@material-ui/core/TextField';
+import Slide from '@material-ui/core/Slide';
 // reactstrap components
 import {
   Button,
@@ -17,7 +19,9 @@ import {
   Col,
   Row
 } from "reactstrap";
-
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import { Typography } from '@material-ui/core';
 class Modals extends React.Component {
   constructor(props) {
     super(props);
@@ -28,7 +32,7 @@ class Modals extends React.Component {
     this.onChangeSalaire = this.onChangeSalaire.bind(this);
     this.saveAdmin = this.saveAdmin.bind(this);
     this.newAdmin= this.newAdmin.bind(this);
-
+  
     this.state = { 
       nom: "",
       prenom: "", 
@@ -37,9 +41,13 @@ class Modals extends React.Component {
       salaire:0,
       submitted: false,
       exampleModal: false,
-      message:''
+      message:'',
+      slide:'false',
+
     };
   }
+
+
   toggleModal = state => {
        this.setState({
         [state]: !this.state[state]
@@ -93,7 +101,12 @@ class Modals extends React.Component {
         });        
       })
       .catch(err => { 
-        this.setState({message: "assurer que tout les champs sont remplis ainsi que le mot de passe et l'email sont valides!"});
+        if (err.response) {
+
+         this.setState({
+           message:err.response.data.message,
+          }
+         )} 
       });
   }
 
@@ -114,15 +127,12 @@ class Modals extends React.Component {
   render() {
     return (
       <>
-       <Button
-          color="default"
-          type="button"
-          size="sm"
-          onClick={() => this.toggleModal("exampleModal")}
-        >
-          <i className="ni ni-fat-add" />
-          Ajouter un Administrateur
-        </Button>  
+      <div style={{padding:"12px 12px 20px 12px"}}>
+              <Button type='button' variant="contained"  onClick={() => this.toggleModal("exampleModal")} style={{backgroundColor:"#252834", textTransform:"capitalize", color:"white", fontWeight:'bold', width:'150px'}}>
+              + Ajouter
+              </Button>
+        
+            </div>  
         <Modal
         backdrop="static" keyboard={false}
           className="modal-dialog-centered"
@@ -152,9 +162,9 @@ class Modals extends React.Component {
         
         </>
           ) : (
-              <div className="modal-body p-0">
-                <Card className="bg-secondary shadow border-0">
-                <button
+            <React.Fragment>
+             <Container fluid style={{paddingBottom:"40px"}}>
+             <button
               style={{margin:"3%"}}
               aria-label="Close"
               className="close"
@@ -164,126 +174,98 @@ class Modals extends React.Component {
             >
               <span aria-hidden={true}>×</span>
             </button>
-                  <CardBody className="px-lg-5 py-lg-5">
-                    <div className="text-center text-muted mb-4">
-                     <h1>Ajouter un nouvel administrateur</h1> 
+                    <div style={{padding:"20px"}}>
+                    <h1>Nouvel Administrateur</h1>
+                    <h4 style={{opacity:'0.5'}}>informations d'un administrateur</h4>
                     </div>
-                    <div className="text-center">
-                     <p> {this.state.message}</p> 
-                    </div>
-                    <Form role="form" onSubmit={this.saveAdmin}>
-                    <FormGroup>
-                        <InputGroup className="input-group-alternative">
-                          <InputGroupAddon addonType="prepend">
-                            <InputGroupText>
-                              <i className="ni ni-circle-08" />
-                            </InputGroupText>
-                          </InputGroupAddon>
-                          <Input 
-                            type="text"
-                            className="form-control"
-                            id="nom"
-                            required
-                            value={this.state.nom}
-                            onChange={this.onChangeNom}
-                            name="nom"
-                          placeholder="Nom" />
-                        </InputGroup>
-                      </FormGroup>
-                      <FormGroup>
-                        <InputGroup className="input-group-alternative">
-                          <InputGroupAddon addonType="prepend">
-                            <InputGroupText>
-                              <i className="ni ni-circle-08" />
-                            </InputGroupText>
-                          </InputGroupAddon>
-                          <Input 
-                            type="text"
-                            className="form-control"
-                            id="prenom"
-                            required
-                            value={this.state.prenom}
-                            onChange={this.onChangePrenom}
-                            name="prenom"
-                          placeholder="Prénom" />
-                        </InputGroup>
-                      </FormGroup>
-                      <FormGroup className="mb-3">
-                        <InputGroup className="input-group-alternative">
-                          <InputGroupAddon addonType="prepend">
-                            <InputGroupText>
-                              <i className="ni ni-email-83" />
-                            </InputGroupText>
-                          </InputGroupAddon>
-                          <Input placeholder="Email"
-                           type="email"
-                           className="form-control"
-                           id="email"
-                           required="true"
-                           value={this.state.email}
-                           onChange={this.onChangeEmail}
-                           name="email"/>
-                        </InputGroup>
-                      </FormGroup>
-                      <FormGroup>
-                        <InputGroup className="input-group-alternative">
-                          <InputGroupAddon addonType="prepend">
-                            <InputGroupText>
-                              <i className="ni ni-lock-circle-open" />
-                            </InputGroupText>
-                          </InputGroupAddon>
-                          <Input 
-                            type="password"
-                            className="form-control"
-                            id="mdb"
-                            required
-                            value={this.state.mdp}
-                            onChange={this.onChangeMDP}
-                            name="mdb"
-                          placeholder="Mot de passe" />
-    
-                        </InputGroup>
-                        <div className="text-center">
-                        <p>le mot de passe doit contenir au moins une majuscule, et au moins 8 caractéres</p>
+                    <div style={{margin:'10px 40px 30px 40px'}}>
+                          <strong style={{color:'#F5365C'}}>{this.state.message}</strong>
+                       </div>
+                    <form onSubmit={this.saveAdmin}>
+                        <div style={{padding:"5px 40px"}}>
+                        <TextField
+                        type='text'
+                        required
+                        id="nom"
+                        label="Nom"
+                        placeholder="Exemple : Boucherir"
+                        variant="outlined"
+                        fullWidth='true'
+                        onChange={this.onChangeNom}
+                        />
                         </div>
-                       
-                      </FormGroup>
-                      <FormGroup className="mb-3">
-                        <InputGroup className="input-group-alternative">
-                          <InputGroupAddon addonType="prepend">
-                            <InputGroupText>
-                              <i className="ni ni-money-coins" />
-                            </InputGroupText>
-                          </InputGroupAddon>
-                          <Input placeholder="Salaire"
-                           type="number"
-                           className="form-control"
-                           id="salaire"
-                           required
-                           value={this.state.salaire}
-                           min='0'
-                           onChange={this.onChangeSalaire}
-                           name="salaire"/>
-                        </InputGroup>
-                      </FormGroup>
-                     
-                      <div className="text-center">
-                        <Button
-                          className="my-4"
-                          color="default"
-                          type="submit"
-    
+                        <br></br>
+                        <div style={{padding:"5px 40px"}}>
+                        <TextField
+                        type='text'
+                        required
+                        id="prenom"
+                        label="Prénom"
+                        placeholder="Exemple : Mohamed"
+                        variant="outlined"
+                        fullWidth='true'
+                        onChange={this.onChangePrenom}
+                        />
+                        </div>
+                        <br></br>
+                        <div style={{padding:"5px 40px"}}>
+                        <TextField
+                        type='email'
+                        required
+                        id="email"
+                        label="Email"
+                        placeholder="Exemple : admin@esi.dz"
+                        variant="outlined"
+                        fullWidth='true'
+                        onChange={this.onChangeEmail}
                         >
-                          Confirmer l'ajout
-                        </Button>
-                      </div>
-                    </Form>
-                  </CardBody>
-                </Card>
-              </div>
+                        </TextField>
+                        </div>
+                        <br></br>
+                        <div style={{padding:"5px 40px"}}>
+                        <TextField
+                        required
+                        id="motdepasse"
+                        label="Mot de passe"
+                        variant="outlined"
+                        fullWidth='true'
+                        onChange={this.onChangeMDP}
+                        type='password'
+                        />
+                        <div className="text-center">
+                        <strong>le mot de passe doit contenir au moins une majuscule, et au moins 8 caractéres</strong>
+                        </div>
+                        </div>
+                        <br></br>
+                        <div style={{padding:"5px 40px"}}>
+                        <TextField
+                        required
+                        type='number'
+                        id="salaire"
+                        label="Salaire"
+                        placeholder="Salaire"
+                        variant="outlined"
+                        fullWidth='true'
+                        onChange={this.onChangeSalaire}
+                        InputProps={{ inputProps: { min: 0} }}
+                        />
+                        </div>
+                        
+                        <div className="flex-container" style={{display: "flex", flexWrap:'wrap', gap:'30px', justifyContent:'center', alignItems:'center'}}>
+                                <div>
+                                <Button type='submit' style={{backgroundColor:"#252834", textTransform:"capitalize", color:"white", fontWeight:'bold', width:'150px'}} variant="contained">
+                                    Confirmer
+                                </Button>
+                                </div>
+                        </div>
+                    </form>
+            </Container>
+        </React.Fragment>
+              
                   )}
   
               </div>
+            
               </Modal>
       </>
     );

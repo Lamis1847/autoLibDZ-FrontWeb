@@ -13,6 +13,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import "../../assets/css/font.css"
 import { Typography } from '@material-ui/core';
+import carlist from './car-list.json'
 
 export const AjoutFirstStep = (props) => {
 
@@ -23,6 +24,7 @@ export const AjoutFirstStep = (props) => {
     const [errors, setErrors] = useState({})
     const [slide, setSlide] = useState(null)
     const [annuler, setAnnuler] = useState(null)
+    const [modele, setModele] = useState(null)
 
     const handleOpenAnnuler = () => {
         setAnnuler(true)
@@ -79,49 +81,22 @@ export const AjoutFirstStep = (props) => {
                 aria-labelledby="alert-dialog-title"
                 aria-describedby="alert-dialog-description"
             >
-                <Typography style={{fontFamily:'Nunito-Regular', fontSize:'18px', padding:'20px', fontWeight:'600', boxShadow:'none'}}>
+                <Typography style={{fontFamily:'Nunito-Regular', fontSize:'18px', padding:'14px 20px', boxShadow:'none'}}>
                     Voulez-vous vraiment annuler l'ajout d'un nouveau véhicule? 
                     <br></br>
                     Toutes les informations saisies seront perdues.
                 </Typography>                    
                 <DialogActions>
-                <Button onClick={handleCloseAjout} style={{textTransform:"capitalize", backgroundColor:"#2DCE89", color:"white", fontFamily:'Nunito-Regular'}} variant="contained">
+                <Button onClick={handleCloseAjout} style={{textTransform:"capitalize", color:"#F5365C", fontFamily:'Nunito-Regular', margin:"12px 20px", fontWeight:"bold"}}>
                     Oui
                 </Button>
-                <Button onClick={handleCloseAnnuler} style={{textTransform:"capitalize", backgroundColor:"#F5365C", color:"white", fontFamily:'Nunito-Regular'}} variant="contained">
+                <Button onClick={handleCloseAnnuler} style={{textTransform:"capitalize", backgroundColor:"#252834", color:"white", fontFamily:'Nunito-Regular', padding:"6px 12px", margin:"12px 20px"}}>
                     Non
                 </Button>
                 </DialogActions>
             </Dialog>
         </div>
     )
-    
-    const marques = [
-        {
-            value: 'Chevrolet'
-        },
-        {
-            value: 'Citroen'
-        },
-        {
-            value: 'Dacia'
-        },
-        {
-            value: 'Hyundai'
-        },
-        {
-            value: 'KIA'
-        },
-        {
-            value: 'Peugeot'
-        },
-        {
-            value: 'Renault'
-        },
-        {
-            value: 'Toyota'
-        }
-    ]
 
         return (
         <React.Fragment>
@@ -136,7 +111,7 @@ export const AjoutFirstStep = (props) => {
                         required
                         error={errors.numChassis === "" ? false : ""}
                         id="numChassis"
-                        label="Identifiant"
+                        label="Numéro de chassis"
                         placeholder="Exemple : VF7-SBHMZO-LW554823"
                         variant="outlined"
                         fullWidth='true'
@@ -172,9 +147,9 @@ export const AjoutFirstStep = (props) => {
                         onChange={handleChange('marque')}
                         defaultValue={values.marque}
                         >
-                            {marques.map((marque) => (
-                                <MenuItem key={marque.value} value={marque.value}>
-                                    {marque.value}
+                            {carlist.map((car) => (
+                                <MenuItem key={car.brand} value={car.brand}>
+                                    {car.brand}
                                 </MenuItem>
                             ))}
                         </TextField>
@@ -183,15 +158,22 @@ export const AjoutFirstStep = (props) => {
                         <div style={{padding:"5px 40px"}}>
                         <TextField
                         required
-                        id="modele"
-                        label="Modèle"
                         error={errors.modele === "" ? false : ""}
+                        id="modele"
+                        label="Modéle"
+                        select
                         placeholder="Exemple : 306"
                         variant="outlined"
                         fullWidth='true'
                         onChange={handleChange('modele')}
                         defaultValue={values.modele}
-                        />
+                        >
+                            {(values.marque != '') ? (carlist.filter(function (car) {return car.brand == values.marque}))[0]['models'].map((modele) => (
+                                <MenuItem key={modele} value={modele}>
+                                    {modele}
+                                </MenuItem>
+                            )) : "Veuillez d'abord choisir une marque"}
+                        </TextField>
                         </div>
                         <br></br>
                         <div style={{padding:"5px 40px"}}>
