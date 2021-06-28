@@ -24,6 +24,7 @@ import TodayIcon from '@material-ui/icons/Today';
 import AccessTimeIcon from '@material-ui/icons/AccessTime';
 import LocalAtmIcon from '@material-ui/icons/LocalAtm';
 import { useParams } from 'react-router';
+import {getToken} from '../../scripts/Network.js'
 
 export const HistoriqueVehicule = () => {
 
@@ -33,7 +34,7 @@ export const HistoriqueVehicule = () => {
   const [historique, setHistorique] = useState([]) 
   const [historiqueList, setHistoriqueList] = useState([]) 
   const loadHistorique = useCallback(async () => {
-    const response = await axios.get(`${myServerBaseURL}/api/vehicules/historique-reservation/${idVehicule}`);
+    const response = await axios.get(`${myServerBaseURL}/api/vehicules/historique-reservation/${idVehicule}`, { headers : { authorization : `Basic ${getToken()}`}});
     var data = response.data;
     console.log(data) 
     data = data.map(reservation => ({
@@ -276,13 +277,9 @@ export const HistoriqueVehicule = () => {
     selectableRows:false,
     onRowClick: (rowData, rowState) => {
       let idReservation = rowData[0]
-      
-
       let reservation = historique.find(reservation => reservation.idReservation == idReservation)
       console.log(reservation)
       setSelectedReservation(reservation)
-      
-
     },
     onColumnSortChange: (changedColumn, direction) => console.log('changedColumn: ', changedColumn, 'direction: ', direction),
     onChangeRowsPerPage: numberOfRows => console.log('numberOfRows: ', numberOfRows),

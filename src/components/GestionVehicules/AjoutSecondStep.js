@@ -15,6 +15,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import "../../assets/css/font.css"
 import { Typography } from '@material-ui/core';
+import Tooltip from '@material-ui/core/Tooltip';
 
 export const AjoutSecondStep = (props) => {
     
@@ -86,16 +87,16 @@ export const AjoutSecondStep = (props) => {
                 aria-labelledby="alert-dialog-title"
                 aria-describedby="alert-dialog-description"
             >
-                <Typography style={{fontFamily:'Nunito-Regular', fontSize:'18px', padding:'20px', fontWeight:'600', boxShadow:'none'}}>
+                <Typography style={{fontFamily:'Nunito-Regular', fontSize:'18px', padding:'14px 20px', boxShadow:'none'}}>
                     Voulez-vous vraiment annuler l'ajout d'un nouveau véhicule? 
                     <br></br>
                     Toutes les informations saisies seront perdues.
                 </Typography>                    
                 <DialogActions>
-                <Button onClick={handleCloseAjout} style={{textTransform:"capitalize", backgroundColor:"#2DCE89", color:"white", fontFamily:'Nunito-Regular'}} variant="contained">
+                <Button onClick={handleCloseAjout} style={{textTransform:"capitalize", color:"#F5365C", fontFamily:'Nunito-Regular', margin:"12px 20px", fontWeight:"bold"}}>
                     Oui
                 </Button>
-                <Button onClick={handleCloseAnnuler} style={{textTransform:"capitalize", backgroundColor:"#F5365C", color:"white", fontFamily:'Nunito-Regular'}} variant="contained">
+                <Button onClick={handleCloseAnnuler} style={{textTransform:"capitalize", backgroundColor:"#252834", color:"white", fontFamily:'Nunito-Regular', padding:"6px 12px", margin:"12px 20px"}}>
                     Non
                 </Button>
                 </DialogActions>
@@ -117,24 +118,26 @@ export const AjoutSecondStep = (props) => {
                 <h4 style={{opacity:'0.5'}}>caractéristiques du véhicule</h4>
                 </div>
                 <div className="flex-container" style={{padding:"5px 40px", display: "flex", flexWrap:'wrap', gap:'30px', justifyContent:'center', alignItems:'center'}}>
+                <Tooltip title="Température du liquide de refroidissement dans le moteur" arrow style={{fontFamily:"Nunito-Regular"}}>
                 <TextField
                 required
                 error={errors.tempsDeRefroidissement === "" ? false : ""}
                 id="tempsDeRefroidissement"
-                label="Température de refroidissement"
-                placeholder="23"
+                label="Temps liquide de refroidissement"
+                placeholder="Exemple : 20s"
                 variant="outlined"
                 fullWidth='true'
                 type='number'
                 onChange={handleChange('tempsDeRefroidissement')}
                 defaultValue={values.tempsDeRefroidissement}
                 />
+                </Tooltip>
                 <TextField
                 required
                 error={errors.pressionHuileMoteur === "" ? false : ""}
                 id="pressionHuileMoteur"
-                label="Pression huile moteur"
-                placeholder="23"
+                label="Pression d'huile du moteur"
+                placeholder="Exemple : 20 Bar"
                 variant="outlined"
                 fullWidth='true'
                 type='number'
@@ -148,8 +151,8 @@ export const AjoutSecondStep = (props) => {
                 required
                 error={errors.chargeBatterie === "" ? false : ""}
                 id="chargeBatterie"
-                label="Charge batterie"
-                placeholder="20000"
+                label="Charge de la batterie"
+                placeholder="Exemple 20%"
                 variant="outlined"
                 fullWidth='true'
                 type='number'
@@ -160,8 +163,8 @@ export const AjoutSecondStep = (props) => {
                 required
                 error={errors.pressionPneus === "" ? false : ""}
                 id="pressionPneus"
-                label="Pression pneus"
-                placeholder="23"
+                label="Pression des pneus"
+                placeholder="Exemple : 20 Bar"
                 variant="outlined"
                 fullWidth='true'
                 type='number'
@@ -171,23 +174,25 @@ export const AjoutSecondStep = (props) => {
                 </div>
                 <br></br>
                 <div className="flex-container" style={{padding:"5px 40px", display: "flex", flexWrap:'wrap', gap:'30px', justifyContent:'center', alignItems:'center'}}>
+                <Tooltip title="Type d'anomalie dans le circuit du véhicule, s'il existe" arrow style={{fontFamily:"Nunito-Regular"}}>
                 <TextField
                 required
                 error={errors.anomalieCircuit === "" ? false : ""}
                 id="anomalieCircuit"
                 label="Anomalie circuit"
-                placeholder=""
+                placeholder="Exemple : Rien"
                 variant="outlined"
                 fullWidth='true'
                 onChange={handleChange('anomalieCircuit')}
                 defaultValue={values.anomalieCircuit}
                 />
+                </Tooltip>
                 <TextField
                 required
                 error={errors.niveauMinimumHuile === "" ? false : ""}
                 id="niveauMinimumHuile"
-                label="Niveau minimum huile"
-                placeholder="23"
+                label="Niveau minimum d'huile"
+                placeholder="Exemple : 20 litres"
                 variant="outlined"
                 fullWidth='true'
                 type='number'
@@ -202,7 +207,7 @@ export const AjoutSecondStep = (props) => {
                 error={errors.regulateurVitesse === "" ? false : ""}
                 id="regulateurVitesse"
                 label="Regulateur vitesse"
-                placeholder="23"
+                placeholder="Exemple : 20 KM/H"
                 variant="outlined"
                 fullWidth='true'
                 type='number'
@@ -214,7 +219,7 @@ export const AjoutSecondStep = (props) => {
                 error={errors.limiteurVitesse === "" ? false : ""}
                 id="limiteurVitesse"
                 label="Limiteur vitesse"
-                placeholder="23"
+                placeholder="Exemple : 20 KM/H"
                 variant="outlined"
                 fullWidth='true'
                 type='number'

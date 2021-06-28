@@ -15,6 +15,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import "../../assets/css/font.css"
 import { Typography } from '@material-ui/core';
+import {getToken} from '../../scripts/Network.js'
 
 export const AjoutThirdStep = (props) => {
     
@@ -23,7 +24,7 @@ export const AjoutThirdStep = (props) => {
     const [bornes, setBornes] = useState([]);
 
     const loadBornes = useCallback(async () => {
-        const response = await axios.get(`${myServerBaseURL}/api/bornes/all`);
+        const response = await axios.get(`${myServerBaseURL}/api/bornes/all`,{ headers : { authorization : `Basic ${getToken()}`}});
         const bornes = response.data;
         setBornes(bornes);
         console.log(bornes);
@@ -32,14 +33,12 @@ export const AjoutThirdStep = (props) => {
     const [agents, setAgents] = useState([]);
 
     const loadAgents = useCallback(async () => {
-        const response = await axios.get(`${myServerBaseURL}/api/agent`);
+        const response = await axios.get(`${myServerBaseURL}/api/agent`,{ headers : { authorization : `Basic ${getToken()}`}});
         const agents = response.data;
         setAgents(agents);
         console.log(agents);
     }, []);
     
-    let listeBornes = bornes.map(obj => Object.values(obj));
-
     useEffect(() => {
         loadBornes();
         loadAgents();
@@ -102,16 +101,16 @@ export const AjoutThirdStep = (props) => {
                 aria-labelledby="alert-dialog-title"
                 aria-describedby="alert-dialog-description"
             >
-                <Typography style={{fontFamily:'Nunito-Regular', fontSize:'18px', padding:'20px', fontWeight:'600', boxShadow:'none'}}>
+                <Typography style={{fontFamily:'Nunito-Regular', fontSize:'18px', padding:'14px 20px', boxShadow:'none'}}>
                     Voulez-vous vraiment annuler l'ajout d'un nouveau véhicule? 
                     <br></br>
                     Toutes les informations saisies seront perdues.
                 </Typography>                    
                 <DialogActions>
-                <Button onClick={handleCloseAjout} style={{textTransform:"capitalize", backgroundColor:"#2DCE89", color:"white", fontFamily:'Nunito-Regular'}} variant="contained">
+                <Button onClick={handleCloseAjout} style={{textTransform:"capitalize", color:"#F5365C", fontFamily:'Nunito-Regular', margin:"12px 20px", fontWeight:"bold"}}>
                     Oui
                 </Button>
-                <Button onClick={handleCloseAnnuler} style={{textTransform:"capitalize", backgroundColor:"#F5365C", color:"white", fontFamily:'Nunito-Regular'}} variant="contained">
+                <Button onClick={handleCloseAnnuler} style={{textTransform:"capitalize", backgroundColor:"#252834", color:"white", fontFamily:'Nunito-Regular', padding:"6px 12px", margin:"12px 20px"}}>
                     Non
                 </Button>
                 </DialogActions>

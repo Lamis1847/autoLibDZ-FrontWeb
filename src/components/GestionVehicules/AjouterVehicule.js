@@ -29,7 +29,6 @@ export const AjouterVehicule = ({handleCloseAjout}) => {
 	    secureUrl: ''
     });
 
-
     //prochaine etape
     const nextStep = () => {
         const {step} = state;
@@ -47,9 +46,6 @@ export const AjouterVehicule = ({handleCloseAjout}) => {
     const values = { numChassis, numImmatriculation, marque, modele, couleur, tempsDeRefroidissement,
     pressionHuileMoteur, chargeBatterie, pressionPneus, anomalieCircuit, niveauMinimumHuile, regulateurVitesse, limiteurVitesse, idBorne, idAgentMaintenance, idCloudinary, secureUrl};
 
-    // const [idcloudinary, setIdCloudinary] = useState('')
-    // const [secureurl, setSecureUrl] = useState('')
-
     // handle fields change
     const handleChange = input => e => {
         setState({...state, [input]: e.target.value})
@@ -65,10 +61,6 @@ export const AjouterVehicule = ({handleCloseAjout}) => {
             console.log(response)
             console.log(response.data.public_id)
             console.log(response.data.secure_url)
-            // setSecureUrl(response.data.secure_url)
-            // setIdCloudinary(response.data.public_id)
-            // console.log("first" + secureurl)
-            // console.log("second" + idcloudinary)
             setState(
                 prevState => { return {...prevState, idCloudinary:response.data.public_id, secureUrl:response.data.secure_url}})
 

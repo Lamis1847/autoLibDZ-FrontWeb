@@ -14,8 +14,14 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Divider from '@material-ui/core/Divider';
 import Slide from '@material-ui/core/Slide';
 import { Alert, AlertTitle } from '@material-ui/lab';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import "../../assets/css/font.css"
+import { Typography } from '@material-ui/core';
 import axios from "axios";
 import { NavLink } from 'react-router-dom'
+import {getToken} from '../../scripts/Network.js'
 
 export const ConfirmAjout = (props) => {
 
@@ -33,19 +39,39 @@ export const ConfirmAjout = (props) => {
 
     const [slide, setSlide] = useState(null)
     const [success, setSuccess] = useState(false)
+    const [annuler, setAnnuler] = useState(null)
 
     const [openAnnuler, setOpenAnnuler] = useState(false);
+    const handleCloseAjout = props.handleCloseAjout
 
     const handleConfirmAnnuler = () => {
-        setOpenAnnuler(true);
+        setAnnuler(true);
     };
     const handleCloseAnnuler = () => {
-        setOpenAnnuler(false);
+        setAnnuler(false);
     };
 
-    const annulerMsg=(
+    const annulerDialogue = (
         <div>
-            
+            <Dialog
+                open={annuler}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <Typography style={{fontFamily:'Nunito-Regular', fontSize:'18px', padding:'14px 20px', boxShadow:'none'}}>
+                    Voulez-vous vraiment annuler l'ajout d'un nouveau véhicule? 
+                    <br></br>
+                    Toutes les informations saisies seront perdues.
+                </Typography>                    
+                <DialogActions>
+                <Button onClick={handleCloseAjout} style={{textTransform:"capitalize", color:"#F5365C", fontFamily:'Nunito-Regular', margin:"12px 20px", fontWeight:"bold"}}>
+                    Oui
+                </Button>
+                <Button onClick={handleCloseAnnuler} style={{textTransform:"capitalize", backgroundColor:"#252834", color:"white", fontFamily:'Nunito-Regular', padding:"6px 12px", margin:"12px 20px"}}>
+                    Non
+                </Button>
+                </DialogActions>
+            </Dialog>
         </div>
     )
     const successMessage = (
@@ -97,13 +123,14 @@ export const ConfirmAjout = (props) => {
                 secureUrl: secureUrl,
                 image:"TESTTTT"
 
-            })
+            },
+            { headers : { authorization : `Basic ${getToken()}`}})
             .then((response) => {
                 setSlide(true)
                 setSuccess(true)
                 console.log(response);
                 window.setTimeout( function(){
-                    window.location = "https://autolib-dz.herokuapp.com/vehicules";
+                    window.location.href = "/vehicules";
                 }, 2000 );
               }, (error) => {
                 setSlide(true)
@@ -200,7 +227,7 @@ export const ConfirmAjout = (props) => {
                             </div>
 
                             <div>
-                            <Button style={{backgroundColor:"#F5365C", textTransform:"capitalize", color:"white", fontWeight:'bold'}} variant="contained">
+                            <Button onClick={handleConfirmAnnuler} style={{backgroundColor:"#F5365C", textTransform:"capitalize", color:"white", fontWeight:'bold'}} variant="contained">
                                 Annuler
                             </Button>
                             </div>
@@ -213,6 +240,7 @@ export const ConfirmAjout = (props) => {
                             </Button>
                             </div>
                     </div>
+                    {annulerDialogue}
                 </Container>
             </React.Fragment>
         )
