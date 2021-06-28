@@ -2,11 +2,12 @@ import React, { useState, useEffect, useCallback} from "react";
 // javascipt plugin for creating charts
 import Chart from "chart.js";
 // react plugin used to create charts
-import { Line, Bar } from "react-chartjs-2";
+import { Line, Bar,Pie } from "react-chartjs-2";
 // reactstrap components
 import { Card, CardBody,Container,Row,Col } from "reactstrap";
 import CircularProgress from '@material-ui/core/CircularProgress';
 import MUIDataTable from "mui-datatables";
+import {getToken} from '../../scripts/Network.js'
 
 // core components
 import {
@@ -18,6 +19,7 @@ import {
 import axios from "axios";
 
 import BarChart from './BarChart';
+import PieChart from './PieChart';
 import StatsCard from './StatsCard';
 
 const DashboardView = () => {
@@ -30,7 +32,7 @@ const DashboardView = () => {
     }
 
     const month_labels = ["Jan","Fev","Mar","Avr","Mai","Juin","Juil", "Août", "Sep", "Oct", "Nov", "Dec"]
-    const seasons_labels = ["Hiver","Printemps","Eté","Automne"]
+    const seasons_labels = ["Trimestre 1","Trimestre 2","Trimestre 3","Trimestre 4"]
 
     const [locationsStats, setLocationsStats] = useState({
         locationsParMois : [],
@@ -397,9 +399,15 @@ const DashboardView = () => {
                 ...prevState,
                 listeResRet:tab,
             }))
+            console.log("Tab:        "+tab)
             setLoadingRetards(false)
         }
-        catch(e){}
+        catch(e){
+            setRetards((prevState)=>({
+                ...prevState,
+                listeResRet:null
+            }))
+        }
     }
 
     // Changer l'année pour les locations (handle year change)
@@ -473,7 +481,13 @@ const DashboardView = () => {
     // fetch Locations Stats
     const fetchLocationsStats = async (year) => {
         let stats = []
-        await axios.get(`${api_url}/trajet/countByMonth/${year}`)
+        await axios.get(`${api_url}/trajet/countByMonth/${year}`,
+            {
+                headers: {
+                    authorization: `Basic ${getToken()}`
+                }
+            }
+        )
             .then(res => {
                 stats = res.data
             })
@@ -483,7 +497,13 @@ const DashboardView = () => {
     // fetch Abonnements Stats
     const fetchAbonnementsStats = async (year) => {
         let stats = []
-        await axios.get(`${api_url}/abonnement/countByMonth/${year}`)
+        await axios.get(`${api_url}/abonnement/countByMonth/${year}`,
+            {
+                headers: {
+                    authorization: `Basic ${getToken()}`
+                }
+            }
+        )
             .then(res => {
                 stats = res.data
             })
@@ -493,7 +513,13 @@ const DashboardView = () => {
     // fetch transactions Stats
     const fetchTransactionsStats = async (year) => {
         let stats = []
-        await axios.get(`${api_url}/transaction/stats/${year}`)
+        await axios.get(`${api_url}/transaction/stats/${year}`,
+            {
+                headers: {
+                    authorization: `Basic ${getToken()}`
+                }
+            }
+        )
             .then(res => {
                 stats = res.data
             })
@@ -503,7 +529,13 @@ const DashboardView = () => {
     // fetch Locations Stats
     const fetchBugsStats = async (year) => {
         let stats = []
-        await axios.get(`${api_url}/reclamation/countByMonth/${year}`)
+        await axios.get(`${api_url}/reclamation/countByMonth/${year}`,
+            {
+                headers: {
+                    authorization: `Basic ${getToken()}`
+                }
+            }
+        )
             .then(res => {
                 stats = res.data
             })
@@ -513,7 +545,13 @@ const DashboardView = () => {
     // fetch Location Years
     const fetchLocationsYears = async () => {
         let years = []
-        await axios.get(`${api_url}/trajet/getYears`)
+        await axios.get(`${api_url}/trajet/getYears`,
+            {
+                headers: {
+                    authorization: `Basic ${getToken()}`
+                }
+            }
+        )
             .then(res => {
                 years = res.data
             })
@@ -524,7 +562,13 @@ const DashboardView = () => {
     // fetch Abonnements Years
     const fetchAbonnemenetsYears = async () => {
         let years = []
-        await axios.get(`${api_url}/abonnement/getYears`)
+        await axios.get(`${api_url}/abonnement/getYears`,
+            {
+                headers: {
+                    authorization: `Basic ${getToken()}`
+                }
+            }
+        )
             .then(res => {
                 years = res.data
             })
@@ -535,7 +579,13 @@ const DashboardView = () => {
     // fetch Transactions Years
     const fetchTransactionsYears = async () => {
         let years = []
-        await axios.get(`${api_url}/transaction/getYears`)
+        await axios.get(`${api_url}/transaction/getYears`,
+            {
+                headers: {
+                    authorization: `Basic ${getToken()}`
+                }
+            }
+        )
             .then(res => {
                 years = res.data
             })
@@ -546,7 +596,13 @@ const DashboardView = () => {
     // fetch Location Years
     const fetchBugsYears = async () => {
         let years = []
-        await axios.get(`${api_url}/reclamation/getYears`)
+        await axios.get(`${api_url}/reclamation/getYears`,
+            {
+                headers: {
+                    authorization: `Basic ${getToken()}`
+                }
+            }
+        )
             .then(res => {
                 years = res.data
             })
@@ -557,7 +613,13 @@ const DashboardView = () => {
     // fetch les données pour taux def
     const fetchTauxDef = async () => {
         let stats = []
-        await axios.get(`${api_url}/vehicules/count`)
+        await axios.get(`${api_url}/vehicules/count`,
+            {
+                headers: {
+                    authorization: `Basic ${getToken()}`
+                }
+            }
+        )
             .then(res => {
                 stats = res.data
             })
@@ -567,7 +629,13 @@ const DashboardView = () => {
     // fetch les retard de remise des véhicules
     const fetchRetardReservation = async () => {
         let stats = []
-        await axios.get(`${api_url}/reservation/lesRetards`)
+        await axios.get(`${api_url}/reservation/lesRetards`,
+            {
+                headers: {
+                    authorization: `Basic ${getToken()}`
+                }
+            }
+        )
             .then(res => {
                 stats = res.data
             })
@@ -591,9 +659,9 @@ const DashboardView = () => {
                         col={"9"}
                         dark={false}
                         icon={"fas fa-car"}
-                        dataSetLabel={"Number"}
+                        dataSetLabel={"Locations"}
                     />
-                    <StatsCard
+                    <PieChart
                         text={"Taux de défaillance"}
                         value={tauxDef.percent}
                         percentage={true}
@@ -614,7 +682,7 @@ const DashboardView = () => {
                         col={"12"}
                         dark={true}
                         icon={"fas fa-user-plus"}
-                        dataSetLabel={"Number"}
+                        dataSetLabel={"Abonnements"}
                     />
                 </Row>
                 <Row className="mt-3">
@@ -631,11 +699,17 @@ const DashboardView = () => {
                                 </div>
                             </div>
                             <CardBody>
-                                <MUIDataTable
-                                    data={retards.listeResRet}
-                                    columns={retardsTabColumns}
-                                    options={retardsTabOptions}
-                                />
+                                {(retards.listeResRet!=null) ? 
+                                <div>
+                                    <MUIDataTable
+                                        data={retards.listeResRet}
+                                        columns={retardsTabColumns}
+                                        options={retardsTabOptions}
+                                    />
+                                    </div>
+                                :
+                                <p>Aucun Retard</p>
+                                }
                             </CardBody>     
                         </Card>
                     </Col>   
@@ -654,7 +728,7 @@ const DashboardView = () => {
                         dark={true}
                         icon={"fas fa-money-bill-alt"}
                         line={true}
-                        dataSetLabel={"Sum"}
+                        dataSetLabel={"Somme"}
                     />
                 </Row>
                 <Row className="mt-3">
