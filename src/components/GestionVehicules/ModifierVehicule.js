@@ -134,9 +134,8 @@ export const ModifierVehicule = (props) => {
         </div>
       )
     
-
     const onModifierVehicule = useCallback( async () => {
-        const response = await axios.put(`${myServerBaseURL}/api/vehicules/${idVehicule}`, {
+        const response = await axios.put(`${myServerBaseURL}/api/vehicules/update/${idVehicule}`, {
             numChassis: state.numChassis,
             numImmatriculation: state.numImmatriculation,
             modele: state.modele,

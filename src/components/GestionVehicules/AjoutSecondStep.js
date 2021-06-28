@@ -123,8 +123,8 @@ export const AjoutSecondStep = (props) => {
                 required
                 error={errors.tempsDeRefroidissement === "" ? false : ""}
                 id="tempsDeRefroidissement"
-                label="Température de refroidissement"
-                placeholder="23"
+                label="Temps liquide de refroidissement"
+                placeholder="Exemple : 20s"
                 variant="outlined"
                 fullWidth='true'
                 type='number'
@@ -137,7 +137,7 @@ export const AjoutSecondStep = (props) => {
                 error={errors.pressionHuileMoteur === "" ? false : ""}
                 id="pressionHuileMoteur"
                 label="Pression d'huile du moteur"
-                placeholder="23"
+                placeholder="Exemple : 20 Bar"
                 variant="outlined"
                 fullWidth='true'
                 type='number'
@@ -152,7 +152,7 @@ export const AjoutSecondStep = (props) => {
                 error={errors.chargeBatterie === "" ? false : ""}
                 id="chargeBatterie"
                 label="Charge de la batterie"
-                placeholder="20000"
+                placeholder="Exemple 20%"
                 variant="outlined"
                 fullWidth='true'
                 type='number'
@@ -164,7 +164,7 @@ export const AjoutSecondStep = (props) => {
                 error={errors.pressionPneus === "" ? false : ""}
                 id="pressionPneus"
                 label="Pression des pneus"
-                placeholder="23"
+                placeholder="Exemple : 20 Bar"
                 variant="outlined"
                 fullWidth='true'
                 type='number'
@@ -180,7 +180,7 @@ export const AjoutSecondStep = (props) => {
                 error={errors.anomalieCircuit === "" ? false : ""}
                 id="anomalieCircuit"
                 label="Anomalie circuit"
-                placeholder=""
+                placeholder="Exemple : Rien"
                 variant="outlined"
                 fullWidth='true'
                 onChange={handleChange('anomalieCircuit')}
@@ -192,7 +192,7 @@ export const AjoutSecondStep = (props) => {
                 error={errors.niveauMinimumHuile === "" ? false : ""}
                 id="niveauMinimumHuile"
                 label="Niveau minimum d'huile"
-                placeholder="23"
+                placeholder="Exemple : 20 litres"
                 variant="outlined"
                 fullWidth='true'
                 type='number'
@@ -207,7 +207,7 @@ export const AjoutSecondStep = (props) => {
                 error={errors.regulateurVitesse === "" ? false : ""}
                 id="regulateurVitesse"
                 label="Regulateur vitesse"
-                placeholder="23"
+                placeholder="Exemple : 20 KM/H"
                 variant="outlined"
                 fullWidth='true'
                 type='number'
@@ -219,7 +219,7 @@ export const AjoutSecondStep = (props) => {
                 error={errors.limiteurVitesse === "" ? false : ""}
                 id="limiteurVitesse"
                 label="Limiteur vitesse"
-                placeholder="23"
+                placeholder="Exemple : 20 KM/H"
                 variant="outlined"
                 fullWidth='true'
                 type='number'

@@ -44,6 +44,8 @@ export const AjoutThirdStep = (props) => {
         loadAgents();
       }, [loadBornes, loadAgents]);
 
+    const [errors, setErrors] = useState({})
+    const [slide, setSlide] = useState(null)
     const {values, handleChange, handleChangeImage} = props;
     const handleCloseAjout = props.handleCloseAjout
     
@@ -59,8 +61,38 @@ export const AjoutThirdStep = (props) => {
 
     const continuer = e => {
         e.preventDefault();
-        props.nextStep();
+        if(validate()){
+            props.nextStep();
+        } else {
+            setSlide(true)
+        }
     }
+
+    const validate = (fieldValues = values) => {
+        let temp = { ...errors }
+        if ('idBorne' in fieldValues)
+            temp.idBorne = fieldValues.idBorne ? "" : "Ce champs est requis."
+        if ('idAgentMaintenance' in fieldValues)
+            temp.idAgentMaintenance = fieldValues.idAgentMaintenance ? "" : "Ce champs est requis."
+        
+        setErrors({
+            ...temp
+        })
+
+        if (fieldValues == values)
+            return Object.values(temp).every(x => x == "")
+    }
+
+    const message = (
+        <div style={{margin:'10px 40px 20px 40px'}}>
+            <Slide direction="up" in={slide} mountOnEnter unmountOnExit>
+                <Alert severity="error">
+                    <strong>Veuillez renseigner les champs requis.</strong>
+                </Alert>
+            </Slide>
+        </div>
+
+    )
 
     const annulerDialogue = (
         <div>
@@ -100,6 +132,7 @@ export const AjoutThirdStep = (props) => {
                     </div>
                     <div style={{padding:"5px 40px"}}>
                     <TextField
+                    required
                     id="idBorne"
                     label="Borne"
                     placeholder="Exemple : Oued Semmar"
@@ -119,6 +152,7 @@ export const AjoutThirdStep = (props) => {
                     <br></br>
                     <div style={{padding:"5px 40px"}}>
                     <TextField
+                    required
                     id="idAgentMaintenance"
                     label="Agent de maintenance"
                     placeholder=""
@@ -148,6 +182,7 @@ export const AjoutThirdStep = (props) => {
                     />
                     </div>
                     <br></br>
+                    {message}
                     <div className="flex-container" style={{display: "flex", flexWrap:'wrap', gap:'30px', justifyContent:'center', alignItems:'center'}}>
                             <div>
                             <IconButton onClick={back} style={{textTransform:"capitalize", fontWeight:'bold', color:'black'}} variant="contained">

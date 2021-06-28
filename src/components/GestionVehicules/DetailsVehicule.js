@@ -245,7 +245,7 @@ export const DetailsVehicule = () => {
                                     primary={
                                         
                                         <div style={{textAlign:'center'}}>
-                                            <h3>Temps de refroidissement : {vehicule.tempsDeRefroidissement} min</h3>
+                                            <h3>Temps de refroidissement : {vehicule.tempsDeRefroidissement} s</h3>
                                         </div>
                                         
                                     }
@@ -256,7 +256,7 @@ export const DetailsVehicule = () => {
                                     <ListItemText
                                     primary={
                                         <div style={{textAlign:'center'}}>
-                                            <h3>Pression huile moteur : {vehicule.pressionHuileMoteur}</h3>
+                                            <h3>Pression huile moteur : {vehicule.pressionHuileMoteur} Bar</h3>
                                         </div>
                                     }
                                     />
@@ -266,7 +266,7 @@ export const DetailsVehicule = () => {
                                     <ListItemText
                                     primary={
                                         <div style={{textAlign:'center'}}>
-                                            <h3>Charge batterie : {vehicule.chargeBatterie}</h3>
+                                            <h3>Charge batterie : {vehicule.chargeBatterie} %</h3>
                                         </div>
                                     }
                                     />
@@ -290,7 +290,7 @@ export const DetailsVehicule = () => {
                                 <ListItemText
                                 primary={
                                     <div style={{textAlign:'center'}}>
-                                        <h3>Regulateur de Vitesse : {vehicule.regulateurVitesse}</h3>
+                                        <h3>Regulateur de Vitesse : {vehicule.regulateurVitesse} KM/H</h3>
                                     </div>
                                 }
                                 />
@@ -313,7 +313,7 @@ export const DetailsVehicule = () => {
                                 <ListItemText
                                 primary={
                                     <div style={{textAlign:'center'}}>
-                                        <h3>Niveau Minimum Huile : {vehicule.niveauMinimumHuile}</h3>
+                                        <h3>Niveau Minimum Huile : {vehicule.niveauMinimumHuile} Litres</h3>
                                     </div>     
                                 }
                                 />
@@ -323,7 +323,7 @@ export const DetailsVehicule = () => {
                                 <ListItemText
                                 primary={
                                     <div style={{textAlign:'center'}}>
-                                        <h3>Limiteur de vitesse : {vehicule.limiteurVitesse}</h3>
+                                        <h3>Limiteur de vitesse : {vehicule.limiteurVitesse} KM/H</h3>
                                     </div>     
                                 }
                                 />
@@ -333,7 +333,7 @@ export const DetailsVehicule = () => {
                                 <ListItemText
                                 primary={
                                     <div style={{textAlign:'center'}}>
-                                        <h3>Pression pneus : {vehicule.pressionPneus}</h3>
+                                        <h3>Pression pneus : {vehicule.pressionPneus} Bar</h3>
                                     </div>
                                 }
                                 />
