@@ -48,7 +48,7 @@ class AddBorne extends Component{
     }
     componentDidMount(){   
       let tokenStr =  getToken();
-      axios.get(API_All_WILAYAS,{ headers: {"Authorization" : `Bearer ${tokenStr}`} })
+      axios.get(API_All_WILAYAS,{ headers: {"authorization" : `Basic ${tokenStr}`} })
       .then((res) => {
          this.setState({wilayas:res.data});
       })
@@ -150,7 +150,7 @@ class AddBorne extends Component{
           }
          // console.log(newBorne)
          let tokenStr =  getToken();
-          axios.post(API_ADD_BORNE,newBorne,{ headers: {"Authorization" : `Bearer ${tokenStr}`} })
+          axios.post(API_ADD_BORNE,newBorne,{ headers: {"authorization" : `Basic ${tokenStr}`} })
           .then((res) => {
             this.setModalOpen(false,true,res.data)
           })
@@ -197,7 +197,7 @@ createCommunes(){
       let wilaya = this.state.wilayas[e.target.value].wilaya
       if(wilaya!=this.state.wilaya){
         this.setState({wilaya:wilaya,commune:''})
-      axios.get(API_All_WILAYAS+wilaya+"/commune",{ headers: {"Authorization" : `Bearer ${tokenStr}`} })
+      axios.get(API_All_WILAYAS+wilaya+"/commune",{ headers: {"authorization" : `Basic ${tokenStr}`} })
       .then((res) => {
          this.setState({communes:res.data,wilayaSelected:true});
       })

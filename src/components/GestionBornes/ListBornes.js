@@ -62,7 +62,7 @@ class ListBornes extends Component {
       //console.log(tokenStr);
       let bornes = []
       this.setState({ data: bornes });
-      axios.get(API_All_BORNES,{ headers: {"Authorization" : `Bearer ${tokenStr}`} })
+      axios.get(API_All_BORNES,{ headers: {"authorization" : `Basic ${tokenStr}`} })
         .then((res) => {
           let bornes = []
           for (const borne of res.data) {
@@ -103,7 +103,7 @@ class ListBornes extends Component {
       let bornes = []
       let tokenStr =  getToken();
       this.setState({ data: bornes });
-      axios.get(API_All_BORNES,{ headers: {"Authorization" : `Bearer ${tokenStr}`} })
+      axios.get(API_All_BORNES,{ headers: {"authorization" : `Basic ${tokenStr}`} })
         .then((res) => {
           let bornes = []
           for (const borne of res.data) {
@@ -174,7 +174,7 @@ class ListBornes extends Component {
   deleteBorne() {
     //console.log(this.state.rowtodelete)
      let tokenStr =  getToken();
-    axios.delete(API_DELETE_BORNE + this.state.rowtodelete,{ headers: {"Authorization" : `Bearer ${tokenStr}`} })
+    axios.delete(API_DELETE_BORNE + this.state.rowtodelete,{ headers: {"authorization" : `Basic ${tokenStr}`} })
       .then((res) => {
         let bornes = this.state.data;
         bornes.splice(this.state.indextodelete, 1)
@@ -279,6 +279,7 @@ class ListBornes extends Component {
       filterType: 'checkbox',
       selectableRows: 'none',
       responsive: 'simple',
+      viewColumns:false,
       filter: false,
       print: false,
       onRowClick: this.onRowSelection,
@@ -305,6 +306,11 @@ class ListBornes extends Component {
       <div className="main-content">
         <div className="mt-40">
           <Container>
+          <div style={{padding:"12px 12px 20px 12px"}}>
+                <Button variant="contained" onClick={this.showAddBorneModal} style={{backgroundColor:"#252834", textTransform:"capitalize", color:"white", fontWeight:'bold', width:'150px'}}>
+                + Ajouter
+                </Button>
+              </div>
             <Row>
               <Col xs={6} md={8}>
                 <h2>Liste des bornes</h2>
@@ -314,9 +320,6 @@ class ListBornes extends Component {
                       <Row>
                         <Col md={8}>
                           <h3>{"Toutes les bornes (" + this.state.data.length + " résultats)"}</h3>
-                        </Col>
-                        <Col md={4}>
-                          <Button onClick={this.showAddBorneModal}>Ajouter</Button>
                         </Col>
                       </Row>
                     </div>}
