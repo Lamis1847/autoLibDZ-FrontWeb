@@ -3,19 +3,13 @@ import { NavLink as NavLinkRRD, Link } from "react-router-dom";
 import logo3 from "../../assets/img/brand/logo3.png";
 import { PropTypes } from "prop-types";
 import routes from "./routes"
-
 import {
-  Button,
-  Card,
-  CardHeader,
-  CardBody,
-  CardTitle,
+
   Collapse,
   DropdownMenu,
   DropdownItem,
   UncontrolledDropdown,
   DropdownToggle,
-  FormGroup,
   Form,
   Input,
   InputGroupAddon,
@@ -27,14 +21,11 @@ import {
   NavItem,
   NavLink,
   Nav,
-  Progress,
-  Table,
   Container,
   Row,
   Col
 } from "reactstrap";
-
-var ps;
+import { disconnect } from "../../scripts/Network";
 
 class Sidebar extends React.Component {
   state = {
@@ -101,10 +92,10 @@ class Sidebar extends React.Component {
     }
     return (
       <Navbar
-        className="navbar-vertical fixed-left navbar-light"
+        className="navbar-vertical fixed-left navbar-light bg-dark"
         expand="md"
         id="sidenav-main"
-        style={{"height" : "100%", "backgroundColor" : "#252834"}}
+        style={{"height" : "100%"}}
       >
         <Container fluid>
           {/* Toggler */}
@@ -227,7 +218,7 @@ class Sidebar extends React.Component {
               </InputGroup>
             </Form>
             {/* Navigation */}
-            <Nav navbar >{this.createLinks(routes,"")}</Nav>
+            <Nav navbar className="mt--5" >{this.createLinks(routes,"")}</Nav>
             {/* Divider */}
             <hr className="my-3" />
             <h6 className="navbar-heading text-muted">Véhicules et bornes</h6>
@@ -239,6 +230,7 @@ class Sidebar extends React.Component {
             <h6 className="navbar-heading text-muted">Utilisteurs</h6>
             {/* links */}
             <Nav navbar>{this.createLinks(routes,"utilisateurs")}</Nav>
+            <Nav navbar>{this.createLinks(routes, 'abonnement')}</Nav>
             <hr className="my-3" />
             {/* Heading */}
             <h6 className="navbar-heading text-muted">Suivi et monitoring</h6>
@@ -249,6 +241,8 @@ class Sidebar extends React.Component {
             <h6 className="navbar-heading text-muted">Suivi et monitoring</h6>
             {/* links */}
             <Nav navbar>{this.createLinks(routes,"autre")}</Nav>
+            
+            <button className="button decobutton" onClick={disconnect} > <span>Se deconnecter</span> </button>
             
           </Collapse>
         </Container>

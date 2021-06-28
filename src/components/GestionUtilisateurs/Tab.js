@@ -2,6 +2,10 @@ import React from "react";
 import classnames from "classnames";
 import { Container } from "reactstrap";
 import ListLocataires from "./ListLocataires"
+import ListAdmin from "./ListAdministrateurs"
+import ListAgents from "./ListAgents"
+import ListOperateurs from "./ListOperateur"
+import ListDirigeants from "./ListDirigeant"
 // reactstrap components
 import {
   Card,
@@ -12,7 +16,6 @@ import {
   TabContent,
   TabPane
 } from "reactstrap";
-
 class Navs extends React.Component {
   state = {
     tabs: 1
@@ -126,22 +129,22 @@ class Navs extends React.Component {
               </TabPane>
               <TabPane tabId="tabs2">
                 <p className="description">
-                  ici c'est la liste des Administrateurs
+                  <ListAdmin></ListAdmin>
                 </p>
               </TabPane>
               <TabPane tabId="tabs3">
                 <p className="description">
-                  Ici c'est la liste des agents de maintenanace
+                  <ListAgents></ListAgents>
                 </p>
               </TabPane>
               <TabPane tabId="tabs4">
                 <p className="description">
-                  Ici c'est la liste des opérateurs
+                  <ListOperateurs></ListOperateurs>
                 </p>
               </TabPane>
               <TabPane tabId="tabs5">
                 <p className="description">
-                  Ici c'est la liste des Dirigeants
+                  <ListDirigeants></ListDirigeants>
                 </p>
               </TabPane>
             </TabContent>

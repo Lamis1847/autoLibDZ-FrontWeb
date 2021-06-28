@@ -48,7 +48,7 @@ const updateActive = status => {
       .then(response => {
         setCurrentLocataire({ ...currentLocataire, Active: status });
         console.log(response.data);
-        setMessage("The status was updated successfully!");
+        setMessage("Le status et modifié avec succée!");
       })
       .catch(e => {
         console.log(e);
@@ -58,11 +58,12 @@ const updateActive = status => {
     const { name, value } = event.target;
     setCurrentLocataire({ ...currentLocataire, [name]: value });
   };
-  const updateLocataire = () => {
+  const updateLocataire = (event) => {
+    event.preventDefault();
     LocataireService.update(currentLocataire.idLocataire, currentLocataire)
       .then(response => {
         console.log(response.data);
-        setMessage("The Locataire was updated successfully!");
+        setMessage("Le locataire est modifié avec succée!");
       })
       .catch(e => {
         console.log(e);
@@ -78,10 +79,10 @@ const updateActive = status => {
           </div>
  <div className="modal-body p-0">
  {currentLocataire ? (
-<Card className="bg-secondary shadow border-0">
+<Card className="bg-secondary shadow border-0" >
   <CardBody className="px-lg-5 py-lg-5">
     
-    <Form role="form">
+    <Form role="form" onSubmit={updateLocataire}>
     <FormGroup>
         <InputGroup className="input-group-alternative">
           <InputGroupAddon addonType="prepend">
@@ -125,7 +126,7 @@ const updateActive = status => {
           </InputGroupAddon>
           <Input 
            required
-           type="text"
+           type="email"
               className="form-control"
               id="email"
               name="email"
@@ -150,10 +151,15 @@ const updateActive = status => {
           </Button>
         )}
 
-            <Button color="default" type="submit" onClick={updateLocataire}>
+            <Button color="default" type="submit">
                 Modifier
           </Button>  
-        </div>     
+        </div>    
+        <br></br>
+        <br></br>
+        <div className="text-center">
+          <p>{message}</p>
+          </div> 
       </Form>
   </CardBody>
 </Card>

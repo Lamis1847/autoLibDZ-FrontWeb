@@ -1,13 +1,13 @@
-import http from '../scripts/Network';
+import http from '../scripts/http-common';
 
 const getAll = () => {
-  return http.get("/locataire");
+  return http.get("/locataire/getLocataires");
 };
 const create = (data) => {
   return http.post("/locataire/createLocataire", data);
 };
 const remove = (id) => {
-  return http.delete(`/locataire/${id}`);
+  return http.put(`/locataire/delete/${id}`);
 };
 const get = (id) => {
   return http.get(`/locataire/${id}`);
@@ -18,12 +18,24 @@ const update = (id, data) => {
 const block = (id) => {
   return http.put(`/locataire/block/${id}`);
 };
+const getPermis = (id) => {
+  return http.get(`/identites/locataire/${id}`);
+};
+const validePermis = (numero) =>{
+  return http.put(`/identites/${numero}/valider`);
+};
+const invalidePermis = (numero) =>{
+  return http.put(`/identites/${numero}/invalider`);
+};
 const LocataireService = {
     getAll,
     create,
     remove,
     get,
     update,
-    block
+    block,
+    getPermis,
+    validePermis,
+    invalidePermis
   };
   export default LocataireService;  
