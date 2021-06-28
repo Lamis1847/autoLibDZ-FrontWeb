@@ -7,6 +7,7 @@ import { Line, Bar,Pie } from "react-chartjs-2";
 import { Card, CardBody,Container,Row,Col } from "reactstrap";
 import CircularProgress from '@material-ui/core/CircularProgress';
 import MUIDataTable from "mui-datatables";
+import {getToken} from '../../scripts/Network.js'
 
 // core components
 import {
@@ -23,15 +24,15 @@ import StatsCard from './StatsCard';
 
 const DashboardView = () => {
 
-    const api_url="https://autolib-dz.herokuapp.com/api";
-    //const api_url="http://localhost:4000/api";
+    //const api_url="https://autolib-dz.herokuapp.com/api";
+    const api_url="http://localhost:4000/api";
 
     if (window.Chart) {
         parseOptions(Chart, chartOptions());
     }
 
     const month_labels = ["Jan","Fev","Mar","Avr","Mai","Juin","Juil", "Août", "Sep", "Oct", "Nov", "Dec"]
-    const seasons_labels = ["Hiver","Printemps","Eté","Automne"]
+    const seasons_labels = ["Trimestre 1","Trimestre 2","Trimestre 3","Trimestre 4"]
 
     const [locationsStats, setLocationsStats] = useState({
         locationsParMois : [],
@@ -398,9 +399,15 @@ const DashboardView = () => {
                 ...prevState,
                 listeResRet:tab,
             }))
+            console.log("Tab:        "+tab)
             setLoadingRetards(false)
         }
-        catch(e){}
+        catch(e){
+            setRetards((prevState)=>({
+                ...prevState,
+                listeResRet:null
+            }))
+        }
     }
 
     // Changer l'année pour les locations (handle year change)
@@ -474,7 +481,13 @@ const DashboardView = () => {
     // fetch Locations Stats
     const fetchLocationsStats = async (year) => {
         let stats = []
-        await axios.get(`${api_url}/trajet/countByMonth/${year}`)
+        await axios.get(`${api_url}/trajet/countByMonth/${year}`,
+            {
+                headers: {
+                    authorization: `Basic ${getToken()}`
+                }
+            }
+        )
             .then(res => {
                 stats = res.data
             })
@@ -484,7 +497,13 @@ const DashboardView = () => {
     // fetch Abonnements Stats
     const fetchAbonnementsStats = async (year) => {
         let stats = []
-        await axios.get(`${api_url}/abonnement/countByMonth/${year}`)
+        await axios.get(`${api_url}/abonnement/countByMonth/${year}`,
+            {
+                headers: {
+                    authorization: `Basic ${getToken()}`
+                }
+            }
+        )
             .then(res => {
                 stats = res.data
             })
@@ -494,7 +513,13 @@ const DashboardView = () => {
     // fetch transactions Stats
     const fetchTransactionsStats = async (year) => {
         let stats = []
-        await axios.get(`${api_url}/transaction/stats/${year}`)
+        await axios.get(`${api_url}/transaction/stats/${year}`,
+            {
+                headers: {
+                    authorization: `Basic ${getToken()}`
+                }
+            }
+        )
             .then(res => {
                 stats = res.data
             })
@@ -504,7 +529,13 @@ const DashboardView = () => {
     // fetch Locations Stats
     const fetchBugsStats = async (year) => {
         let stats = []
-        await axios.get(`${api_url}/reclamation/countByMonth/${year}`)
+        await axios.get(`${api_url}/reclamation/countByMonth/${year}`,
+            {
+                headers: {
+                    authorization: `Basic ${getToken()}`
+                }
+            }
+        )
             .then(res => {
                 stats = res.data
             })
@@ -514,7 +545,13 @@ const DashboardView = () => {
     // fetch Location Years
     const fetchLocationsYears = async () => {
         let years = []
-        await axios.get(`${api_url}/trajet/getYears`)
+        await axios.get(`${api_url}/trajet/getYears`,
+            {
+                headers: {
+                    authorization: `Basic ${getToken()}`
+                }
+            }
+        )
             .then(res => {
                 years = res.data
             })
@@ -525,7 +562,13 @@ const DashboardView = () => {
     // fetch Abonnements Years
     const fetchAbonnemenetsYears = async () => {
         let years = []
-        await axios.get(`${api_url}/abonnement/getYears`)
+        await axios.get(`${api_url}/abonnement/getYears`,
+            {
+                headers: {
+                    authorization: `Basic ${getToken()}`
+                }
+            }
+        )
             .then(res => {
                 years = res.data
             })
@@ -536,7 +579,13 @@ const DashboardView = () => {
     // fetch Transactions Years
     const fetchTransactionsYears = async () => {
         let years = []
-        await axios.get(`${api_url}/transaction/getYears`)
+        await axios.get(`${api_url}/transaction/getYears`,
+            {
+                headers: {
+                    authorization: `Basic ${getToken()}`
+                }
+            }
+        )
             .then(res => {
                 years = res.data
             })
@@ -547,7 +596,13 @@ const DashboardView = () => {
     // fetch Location Years
     const fetchBugsYears = async () => {
         let years = []
-        await axios.get(`${api_url}/reclamation/getYears`)
+        await axios.get(`${api_url}/reclamation/getYears`,
+            {
+                headers: {
+                    authorization: `Basic ${getToken()}`
+                }
+            }
+        )
             .then(res => {
                 years = res.data
             })
@@ -558,7 +613,13 @@ const DashboardView = () => {
     // fetch les données pour taux def
     const fetchTauxDef = async () => {
         let stats = []
-        await axios.get(`${api_url}/vehicules/count`)
+        await axios.get(`${api_url}/vehicules/count`,
+            {
+                headers: {
+                    authorization: `Basic ${getToken()}`
+                }
+            }
+        )
             .then(res => {
                 stats = res.data
             })
@@ -568,7 +629,13 @@ const DashboardView = () => {
     // fetch les retard de remise des véhicules
     const fetchRetardReservation = async () => {
         let stats = []
-        await axios.get(`${api_url}/reservation/lesRetards`)
+        await axios.get(`${api_url}/reservation/lesRetards`,
+            {
+                headers: {
+                    authorization: `Basic ${getToken()}`
+                }
+            }
+        )
             .then(res => {
                 stats = res.data
             })
@@ -632,11 +699,17 @@ const DashboardView = () => {
                                 </div>
                             </div>
                             <CardBody>
-                                <MUIDataTable
-                                    data={retards.listeResRet}
-                                    columns={retardsTabColumns}
-                                    options={retardsTabOptions}
-                                />
+                                {(retards.listeResRet!=null) ? 
+                                <div>
+                                    <MUIDataTable
+                                        data={retards.listeResRet}
+                                        columns={retardsTabColumns}
+                                        options={retardsTabOptions}
+                                    />
+                                    </div>
+                                :
+                                <p>Aucun Retard</p>
+                                }
                             </CardBody>     
                         </Card>
                     </Col>   
