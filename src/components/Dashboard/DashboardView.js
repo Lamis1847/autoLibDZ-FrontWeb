@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback} from "react";
 // javascipt plugin for creating charts
 import Chart from "chart.js";
 // react plugin used to create charts
-import { Line, Bar,Pie } from "react-chartjs-2";
+
 // reactstrap components
 import { Card, CardBody,Container,Row,Col } from "reactstrap";
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -20,7 +20,7 @@ import axios from "axios";
 
 import BarChart from './BarChart';
 import PieChart from './PieChart';
-import StatsCard from './StatsCard';
+import SalaryPies from './SalaryPies';
 
 const DashboardView = () => {
 
@@ -77,6 +77,12 @@ const DashboardView = () => {
         responsive: "vertical",
         bodyHeight:"400px",
         bodyMaxHeight:"800px"
+    })
+
+    const [sumAvgSalaries,setSumAvgSalaries] = useState({
+        admin:{},
+        agent:{},
+        dirigeant:{}
     })
 
     const [loadingRetards,setLoadingRetards] = useState(null)
@@ -148,6 +154,7 @@ const DashboardView = () => {
         loadBugsStatsAll();
         loadTauxDef();
         loadRetardReservations();
+        loadSumAvgSalaries();
     },[]);
 
     // Charger les locations par mois ou par saison
@@ -375,6 +382,18 @@ const DashboardView = () => {
             })
         }
         catch(e){}
+    })
+
+    // Charger les sommes et les moyennes des salaires
+    const loadSumAvgSalaries = useCallback(async () => {
+        try{
+            const resultFromServer = await fetchSumAvgSalaries()
+            setSumAvgSalaries(resultFromServer)
+            console.log(resultFromServer)
+        }
+        catch(e){
+            
+        }
     })
 
     // Charger les tous les statistiques pour les retards de remise des vehicules
@@ -642,6 +661,42 @@ const DashboardView = () => {
         return stats     
     }
 
+    // fetch les sommes et les moyennes des salaires pour : Admin, Agent Maintenance et Dirigeant
+    const fetchSumAvgSalaries = async () => {
+        let stats = {}
+        await axios.get(`${api_url}/administrateur/sumAvgSalaries`,
+            {
+                headers: {
+                    authorization: `Basic ${getToken()}`
+                }
+            }
+        )
+            .then(res => {
+                stats = {...stats,admin:res.data}
+            })
+        await axios.get(`${api_url}/agent/sumAvgSalaries`,
+            {
+                headers: {
+                    authorization: `Basic ${getToken()}`
+                }
+            }
+        )
+            .then(res => {
+                stats = {...stats,agent:res.data}
+            })
+        await axios.get(`${api_url}/dirigeant/sumAvgSalaries`,
+            {
+                headers: {
+                    authorization: `Basic ${getToken()}`
+                }
+            }
+        )
+            .then(res => {
+                stats = {...stats,dirigeant:res.data}
+            })
+        return stats     
+    }
+
       
     return(
         <div className="main-content">
@@ -713,6 +768,14 @@ const DashboardView = () => {
                             </CardBody>     
                         </Card>
                     </Col>   
+                </Row>
+                <Row>
+                    <SalaryPies
+                        text={"Les salaires"}
+                        salaries={sumAvgSalaries}
+                        textColor={"default"}
+                        icon={"fas fa-dollar-sign"}                        
+                    />
                 </Row>
                 <Row className="mt-3">
                     <BarChart
