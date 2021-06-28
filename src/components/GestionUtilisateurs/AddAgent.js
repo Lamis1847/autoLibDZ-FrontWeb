@@ -95,7 +95,9 @@ class Modals extends React.Component {
         });        
       })
       .catch(err => { 
-        this.setState({message: "assurer que tout les champs sont remplis ainsi que le mot de passe et l'email sont valides!"});
+        this.setState({
+          message:err.response.data.message,
+         })
       });
   }
 
