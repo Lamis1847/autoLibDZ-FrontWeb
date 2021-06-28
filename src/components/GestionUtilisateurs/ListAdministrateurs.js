@@ -174,6 +174,7 @@ const ListAdmin=() => {
     onRowClick: (rowData, rowState) => {
       setIdAdministrateur(rowData[0]);
       setRowIndex(rowState.rowIndex);
+      console.log(rowIndex);
       console.log(rowData);
       console.log(idAdministrateur);
     },

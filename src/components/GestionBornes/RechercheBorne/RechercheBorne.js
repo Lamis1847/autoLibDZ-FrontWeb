@@ -1,15 +1,19 @@
 import React, { Component } from 'react';
-import './RechercheBorne.css';
 import { Container, Row, Col, Collapse, Button, Form, FormGroup, Label, Input, FormText } from 'reactstrap';
 import { Divider } from '@material-ui/core';
-import axios from "axios";
+
 import rollDown from "./rollDown.svg";
 import rollUp from "./rollUp.svg";
+import './RechercheBorne.css';
+
+import axios from "axios";
+import { getToken } from '../../../scripts/Network';
 import ListBornes from '../ListBornes';
 
 
-const API = 'https://autolib-dz.herokuapp.com/api/';
-const MICROSERVICES = { bornes: 'bornes/', wilayas: 'bornes/wilaya/', filtres: 'bornes/filter/' }
+
+const API_BORNES = process.env.REACT_APP_GESTION_BORNES_URL;
+const MICROSERVICES = { wilayas: 'wilaya/', filtres: 'filter/' }
 
 class RechercheBorne extends Component {
     constructor(props) {
@@ -29,7 +33,7 @@ class RechercheBorne extends Component {
             toutesCommunes: [],
             communes: [],
 
-            // State of the UI component (open/close)
+            // State of UI elements
             collapse: false,
             bornes: null,
             staticBornes: null
@@ -42,10 +46,11 @@ class RechercheBorne extends Component {
      * recupère les bornes disponibles et modifie l'état du composant
      */
     componentDidMount() {
-        let MICROSERVICE = API + MICROSERVICES['wilayas']
+        let tokenStr = getToken();
+        let MICROSERVICE = API_BORNES + MICROSERVICES['wilayas']
         let allWilayas = [], allCommunesWil = [], allCommunes = []
 
-        axios.get(MICROSERVICE)
+        axios.get(MICROSERVICE, { headers: { "authorization": `Bearer ${tokenStr}` } })
             .then((res) => {
                 for (const elt of res.data) {
                     allWilayas.push(elt['wilaya'])
@@ -64,7 +69,7 @@ class RechercheBorne extends Component {
 
                 // Si tout ce qui précède s'est bien déroulé, on exécute les requêtes suivantes (communes)
                 allWilayas.forEach(elt => {
-                    axios.get(MICROSERVICE + elt + '/commune')
+                    axios.get(MICROSERVICE + elt + '/commune', { headers: { "authorization": `Bearer ${tokenStr}` } })
                         .then((result) => {
                             allCommunesWil = []
                             allCommunesWil.push()
@@ -109,12 +114,13 @@ class RechercheBorne extends Component {
     handleSubmit(e) {
         e.preventDefault();
 
-        let MICROSERVICE
-        let newProps = []
+        let MICROSERVICE;
+        let newProps = [];
         //Cas où l'on a une recherche par l'id (service get borne par id)
+        let tokenStr = getToken();
         if (this.state.id != '') {
-            MICROSERVICE = API + MICROSERVICES['bornes'] + this.state.id.toString() + '/'
-            axios.get(MICROSERVICE)
+            MICROSERVICE = API_BORNES + this.state.id.toString() + '/'
+            axios.get(MICROSERVICE, { headers: { "authorization": `Bearer ${tokenStr}` } })
                 .then((res) => {
                     this.setState({ bornes: res.data })
                     this.setState({ staticBornes: res.data })
@@ -126,8 +132,8 @@ class RechercheBorne extends Component {
 
             //Cas où l'on a une recherche multicritères
         } else {
-            MICROSERVICE = API + MICROSERVICES['filtres']
-
+            MICROSERVICE = API_BORNES + MICROSERVICES['filtres']
+            let tokenStr = getToken();
             let capacite = this.checkCapacite(this.state.capacite)
 
             axios.post(MICROSERVICE, {
@@ -138,9 +144,9 @@ class RechercheBorne extends Component {
                 nbVehiculesMax: parseInt(capacite[1]),
                 nbPlacesOp: this.state.qtt,
                 nbPlaces: this.state.placesLibres != '' ? parseInt(this.state.placesLibres) : (this.state.qtt == 'min' ? 0 : 99999)
-            }).then((res) => {
+            }, { headers: { "authorization": `Bearer ${tokenStr}` } }).then((res) => {
                 this.setState({ bornes: res.data })
-                this.setState({ staticBornes: res.data })
+                //this.setState({ staticBornes: res.data })
             }).catch(error => {
                 this.errorHandler(error)
             })
@@ -221,31 +227,13 @@ class RechercheBorne extends Component {
     /**
      * affiche un message selon l'erreur qui s'est produite
      */
-    errorHandler(error) {
-        console.log(error)
-        if (error && error.response) {
-            switch (error.response.status) {
-                case 400:
-                    alert("Quelque chose s'est mal déroulé lors de l'opération, veuillez ré-essayer ultérieurement. Code erreur : 400")
-                    break;
-                case 401:
-                    alert("Il semble que vous n'êtes plus authentifié. Veuillez vous authentifier pour effectuer cette action. Code erreur : 401")
-                    break;
-                case 403:
-                    alert("Vous ne disposez pas des privilèges nécessaires pour accéder à cette ressource. Code erreur : 403")
-                    break;
-                case 404:
-                    alert("Aucun résultat ne correspond à ce que vous recherchez. Code erreur : 404")
-                    break;
-                case 500:
-                    alert("Quelque chose s'est mal déroulé lors de l'opération de recherche, veuillez ré-essayer ultérieurement. Code erreur : 500")
-                    break;
-                default:
-                    alert("Quelque chose s'est mal déroulé, veuillez contacter le support pour plus d'informations")
-                    break;
-            }
+    errorHandler(err) {
+        if (err && err.response) {
+            window.alert("Erreur : " + err.response.status + " - " + err.response.data.error);
+        } else if (err.request) {
+            window.alert("Pas de réponse ou requête non envoyée !");
         } else {
-            alert("Quelque chose s'est mal déroulé, veuillez contacter le support pour plus d'informations")
+            window.alert("Une erreur est survenue !");
         }
     }
 
@@ -345,7 +333,7 @@ class RechercheBorne extends Component {
                                                     <Col xs={12} md={6}>
                                                         <FormGroup>
                                                             <Label for="rb-id">id</Label>
-                                                            <Input type="text" name="id" id="rb-id" placeholder="Saisissez l'id de la borne"
+                                                            <Input type="number" name="id" id="rb-id" placeholder="Saisissez l'id de la borne"
                                                                 value={this.state.id} onChange={this.handleChange} />
                                                         </FormGroup>
                                                     </Col>
@@ -367,7 +355,7 @@ class RechercheBorne extends Component {
                             <Divider variant="inset" style={{ width: "90%" }} />
                         </Row>
                     </Container >
-                    <ListBornes bornes={this.state.staticBornes}></ListBornes>
+                    <ListBornes bornes={this.state.bornes}></ListBornes>
                 </div>
             </>
         )

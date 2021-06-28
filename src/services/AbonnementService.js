@@ -1,4 +1,4 @@
-import http from '../scripts/Network';
+import http from '../scripts/http-common';
 
 const get = (id) => {
   return http.get(`/abonnement/${id}`);

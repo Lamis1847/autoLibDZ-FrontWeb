@@ -1,12 +1,7 @@
 import Axios from "axios";
 import _ from "lodash";
 
-export default Axios.create({
-  baseURL: "https://autolib-dz.herokuapp.com/api/",
-  headers: {
-    "Content-type": "application/json"
-  }
-});
+
 
 /*
     *Pour faire une requete api il faut faire 

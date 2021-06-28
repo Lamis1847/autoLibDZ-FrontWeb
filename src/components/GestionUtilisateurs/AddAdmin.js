@@ -42,6 +42,7 @@ class Modals extends React.Component {
       submitted: false,
       exampleModal: false,
       message:'',
+      slide:'false',
 
     };
   }
@@ -100,7 +101,12 @@ class Modals extends React.Component {
         });        
       })
       .catch(err => { 
-        this.setState({message:"assurer que le mot de passe est valide !"});
+        if (err.response) {
+
+         this.setState({
+           message:err.response.data.message,
+          }
+         )} 
       });
   }
 
@@ -172,6 +178,9 @@ class Modals extends React.Component {
                     <h1>Nouvel Administrateur</h1>
                     <h4 style={{opacity:'0.5'}}>informations d'un administrateur</h4>
                     </div>
+                    <div style={{margin:'10px 40px 30px 40px'}}>
+                          <strong style={{color:'#F5365C'}}>{this.state.message}</strong>
+                       </div>
                     <form onSubmit={this.saveAdmin}>
                         <div style={{padding:"5px 40px"}}>
                         <TextField
@@ -229,7 +238,7 @@ class Modals extends React.Component {
                         </div>
                         <br></br>
                         <div style={{padding:"5px 40px"}}>
-                        <Input
+                        <TextField
                         required
                         type='number'
                         id="salaire"
@@ -237,14 +246,10 @@ class Modals extends React.Component {
                         placeholder="Salaire"
                         variant="outlined"
                         fullWidth='true'
-                        min='0'
                         onChange={this.onChangeSalaire}
+                        InputProps={{ inputProps: { min: 0} }}
                         />
                         </div>
-                      
-                        <div style={{margin:'10px 40px 30px 40px'}}>
-                          <strong>{this.state.message}</strong>
-                      </div>
                         
                         <div className="flex-container" style={{display: "flex", flexWrap:'wrap', gap:'30px', justifyContent:'center', alignItems:'center'}}>
                                 <div>

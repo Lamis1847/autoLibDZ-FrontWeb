@@ -1,4 +1,4 @@
-import http from '../scripts/Network';
+import http from '../scripts/http-common';
 
 const getAll = () => {
   return http.get("/agent");
