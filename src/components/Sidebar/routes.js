@@ -1,4 +1,5 @@
 import ListLocataires from "../GestionUtilisateurs/ListLocataires";
+import ListPannes from "../Maintenance/historiquePanne";
 import Locataire from "../GestionUtilisateurs/Locataire";
 import ListeVehicules from "../GestionVehicules/ListeVehicules"
 import Abonnement from '../GestionAbonnement/Abonnement';
@@ -87,10 +88,10 @@ var AdminRoutes = [
   },
   {
     section: "suivi",
-    path: "/suivi",
+    path: "/maintenance",
     name: "Gestion Maintenance",
     icon: "fa fa-filter",
-    component: ListeVehicules,
+    component: ListPannes,
     layout: "",
     api: false
   },
