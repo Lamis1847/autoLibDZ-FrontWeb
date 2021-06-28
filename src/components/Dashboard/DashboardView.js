@@ -24,8 +24,8 @@ import StatsCard from './StatsCard';
 
 const DashboardView = () => {
 
-    //const api_url="https://autolib-dz.herokuapp.com/api";
-    const api_url="http://localhost:4000/api";
+    const api_url="https://autolib-dz.herokuapp.com/api";
+    //const api_url="http://localhost:4000/api";
 
     if (window.Chart) {
         parseOptions(Chart, chartOptions());
