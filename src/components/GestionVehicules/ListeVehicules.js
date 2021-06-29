@@ -472,7 +472,7 @@ const bloquerDialogue = (
     let vehicule = vehicules.find(vehicule => vehicule.numChassis == idVehicule)
     await setVehicule(vehicule);
     setIdVehicule(rowData[0]);
-    props.setSel(rowData[0]);
+    if (!!props.setSel) props.setSel(rowData[0])
     console.log(idVehicule)
     console.log(vehicule)
   }
