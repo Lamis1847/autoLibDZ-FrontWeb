@@ -24,7 +24,7 @@ import { isTypeAuthenticated , isAuth  } from "./scripts/Network"
 import RechercheBorne from './components/GestionBornes/RechercheBorne/RechercheBorne'
 import Abonnement from './components/GestionAbonnement/Tab'
 import NavBar from './components/Sidebar/Navbar' ;
-
+import React from "react"
 
 function App() {
 
@@ -57,7 +57,7 @@ function App() {
                 isTypeAuthenticated("administrateur") ? 
                   <>
                   <Route exact path="/vehicules">
-                    <ListeVehicules></ListeVehicules>
+                    <ListeVehicules/>
                   </Route>
                   <Route exact path="/vehicules/historique/:id" component={props => (
                     <HistoriqueVehicule

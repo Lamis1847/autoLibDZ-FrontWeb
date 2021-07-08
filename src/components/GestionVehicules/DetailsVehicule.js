@@ -25,7 +25,9 @@ import { NavLink } from 'react-router-dom'
 export const DetailsVehicule = () => {
 
     //Relatif à l'API
-    let idVehicule = useParams().id;
+
+    let idVehicule = window.location.pathname.split("/")[2];
+
 
     const myServerBaseURL = "https://autolib-dz.herokuapp.com";
 

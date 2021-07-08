@@ -31,7 +31,8 @@ class Valide extends React.Component{
             prenom: props.data? props.data[2]:"",
             permis: "",
             photo: "",
-            numeroPermis: null,
+            idLocataire: null,
+            identite: null,
         }
     }
 
@@ -43,12 +44,13 @@ class Valide extends React.Component{
           prenom: this.props.data[2]
         });
         this.toggleModal("valideModal");
-        let permis = await (await LocataireService.getPermis(this.props.data[0])).data[0];
-        if (permis){
+        let identite = await (await LocataireService.getPermis(this.props.data[0]));
+        if (identite){
           this.setState({
-            permis: permis.secureUrl,
-            numeroPermis: permis.numeroPermis,
-            photo: permis.secureUrlPhotoSelfie
+            identite: identite.data.id,
+            permis: identite.data.secureUrl,
+            idLocataire: identite.data.idLocataire,
+            photo: identite.data.secureUrlPhotoSelfie
           });
         }
       }
@@ -156,7 +158,7 @@ class Valide extends React.Component{
                                           <div className="ml-2">
                                             <Button
                                               color="default"
-                                              onClick={() => {LocataireService.validePermis(this.state.numeroPermis);this.toggleModal("valideModal")}}
+                                              onClick={() => {LocataireService.validePermis(this.state.identite);this.toggleModal("valideModal")}}
                                             >
                                               Valider
                                             </Button>
@@ -164,7 +166,7 @@ class Valide extends React.Component{
                                           <div>
                                             <Button
                                               color="danger"
-                                              onClick={() => {LocataireService.invalidePermis(this.state.numeroPermis);this.toggleModal("valideModal")}}
+                                              onClick={() => {LocataireService.invalidePermis(this.state.identite);this.toggleModal("valideModal")}}
                                               >
                                               Invalider
                                             </Button>
