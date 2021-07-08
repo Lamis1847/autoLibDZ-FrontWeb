@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import MUIDataTable from "mui-datatables";
-import { NavLink } from 'react-router-dom'
+import { NavLink , useHistory } from 'react-router-dom'
 import EtatVehiculeCol from './EtatVehiculeCol'
 import MenuIcon from "@material-ui/icons/Menu";
 import { Container } from "reactstrap";
@@ -30,7 +30,8 @@ import {
   DropdownToggle,
 } from "reactstrap";
 
-export const ListeVehicules = props => {
+const ListeVehicules = (props) => {
+
 
   //Relatif à l'API
 
@@ -339,6 +340,10 @@ const bloquerDialogue = (
     console.log(dataIndex)
   }
 
+  const handleDetail = (idVehicule) =>{
+    window.location.href =  `/vehicules/${idVehicule}`
+  }
+
   const StyledMenu = withStyles({
     paper: {
       border: "1px solid #d3d4d5"
@@ -426,11 +431,9 @@ const bloquerDialogue = (
               </DropdownToggle>
               <DropdownMenu className="dropdown-menu-arrow" right>
                 <DropdownItem
-                  onClick={(e) => { e.preventDefault(); onRowSelect(dataIndex); }}
+                  onClick={(e) => { e.preventDefault(); onRowSelect(dataIndex); handleDetail(idVehicule) ;}}
                 >
-                <NavLink to={"/vehicules/" + idVehicule} variant="inherit" style={{fontFamily:'Nunito', color:'black'}}>
                       Détails
-                </NavLink>
                 </DropdownItem>
                 <DropdownItem
                   href="#"
@@ -472,7 +475,7 @@ const bloquerDialogue = (
     let vehicule = vehicules.find(vehicule => vehicule.numChassis == idVehicule)
     await setVehicule(vehicule);
     setIdVehicule(rowData[0]);
-    props.setSel(rowData[0]);
+    if (props.setSel)props.setSel(rowData[0]);
     console.log(idVehicule)
     console.log(vehicule)
   }
