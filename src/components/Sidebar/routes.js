@@ -4,6 +4,7 @@ import Locataire from "../GestionUtilisateurs/Locataire";
 import ListeVehicules from "../GestionVehicules/ListeVehicules"
 import Abonnement from '../GestionAbonnement/Abonnement';
 import { getUserType} from '../../scripts/Network'
+import { ListeReclamations } from "../GestionVehicules/ListeReclamations";
 
 
 var DirigeantRoutes = [
@@ -92,6 +93,15 @@ var AdminRoutes = [
     name: "Gestion Maintenance",
     icon: "fa fa-filter",
     component: ListPannes,
+    layout: "",
+    api: false
+  },
+  {
+    section: "suivi",
+    path: "/reclamations",
+    name: "Gestion Réclamations",
+    icon: "fa fa-exclamation-triangle",
+    component: ListeReclamations,
     layout: "",
     api: false
   },
