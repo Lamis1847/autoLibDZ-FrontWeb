@@ -26,7 +26,6 @@ import Abonnement from './components/GestionAbonnement/Tab'
 import NavBar from './components/Sidebar/Navbar' ;
 import { ListeReclamations } from './components/GestionVehicules/ListeReclamations';
 
-
 function App() {
 
   return (
@@ -58,7 +57,7 @@ function App() {
                 isTypeAuthenticated("administrateur") ? 
                   <>
                   <Route exact path="/vehicules">
-                    <ListeVehicules></ListeVehicules>
+                    <ListeVehicules/>
                   </Route>
                   <Route exact path="/vehicules/historique/:id" component={props => (
                     <HistoriqueVehicule

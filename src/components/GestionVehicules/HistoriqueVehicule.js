@@ -28,7 +28,8 @@ import {getToken} from '../../scripts/Network.js'
 
 export const HistoriqueVehicule = () => {
 
-  let idVehicule = useParams().id;
+  let idVehicule = window.location.pathname.split("/")[3]
+  
   const myServerBaseURL = "https://autolib-dz.herokuapp.com";
 
   const [historique, setHistorique] = useState([]) 
