@@ -45,12 +45,10 @@ export const ListeVehicules = props => {
   const handleOpenSupprimer = () => {
     setSupprimer(true)
     handleClose()
-    //setSlideSupp(true)
   }
 
   const handleCloseSupprimer = () => {
       setSupprimer(false)
-      // setSlideSupp(false)
   }
 
   const loadVehicules = useCallback(async () => {
@@ -64,7 +62,7 @@ export const ListeVehicules = props => {
   }, []);
 
   const onSupprimerVehicule = useCallback( async () => {
-    const response = await axios.put(`${myServerBaseURL}/api/vehicules/${idVehicule}`, 
+    const response = await axios.put(`${myServerBaseURL}/api/vehicules/update/${idVehicule}`, 
     {
         numChassis: vehicule.numChassis,
         numImmatriculation: vehicule.numImmatriculation,
@@ -183,7 +181,7 @@ const [bloquer, setBloquer] = useState(null)
   }
 
 const onBloquerVehicule = useCallback( async () => {
-  const response = await axios.put(`${myServerBaseURL}/api/vehicules/${idVehicule}`,
+  const response = await axios.put(`${myServerBaseURL}/api/vehicules/update/${idVehicule}`,
     {
       numChassis: vehicule.numChassis,
       numImmatriculation: vehicule.numImmatriculation,
