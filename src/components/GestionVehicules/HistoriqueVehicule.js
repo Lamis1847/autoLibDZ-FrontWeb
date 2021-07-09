@@ -33,8 +33,10 @@ export const HistoriqueVehicule = () => {
   const myServerBaseURL = "https://autolib-dz.herokuapp.com";
 
   const [historique, setHistorique] = useState([]) 
+  const [loading, setLoading] = useState(null);
   const [historiqueList, setHistoriqueList] = useState([]) 
   const loadHistorique = useCallback(async () => {
+    setLoading(true)
     const response = await axios.get(`${myServerBaseURL}/api/vehicules/historique-reservation/${idVehicule}`, { headers : { authorization : `Basic ${getToken()}`}});
     var data = response.data;
     console.log(data) 
@@ -56,6 +58,7 @@ export const HistoriqueVehicule = () => {
               obj.etatReservation == "Terminée" ?  obj.tempsEstime : obj.tempsReel,
               obj.etatReservation == "Terminée" ? obj.prixAPayer : obj.prixEstime]
     }))
+    setLoading(null)
   }, [historiqueList]);
 
   useEffect(() => {
@@ -276,6 +279,26 @@ export const HistoriqueVehicule = () => {
     searchPlaceholder: 'Saisir un nom ou in ID..',
     selectableRowsHeader: false,
     selectableRows:false,
+    textLabels: {
+      body: {
+        noMatch: 
+        !loading ?
+          <CircularProgress /> :
+          "Ce véhicule n'a pas de réservations",
+          toolTip: "Trier",
+      },
+      pagination: {
+        next: "Page suivante",
+        previous: "Page précédente",
+        rowsPerPage: "Ligne par page:",
+        displayRows: "/",
+      },
+      selectedRows: {
+        text: "ligne(s) sélectionné(s)",
+        delete: "Supprimer",
+        deleteAria: "Supprimer les lignes choisies",
+      },
+    },
     onRowClick: (rowData, rowState) => {
       let idReservation = rowData[0]
       let reservation = historique.find(reservation => reservation.idReservation == idReservation)

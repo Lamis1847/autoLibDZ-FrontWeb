@@ -46,12 +46,10 @@ const ListeVehicules = (props) => {
   const handleOpenSupprimer = () => {
     setSupprimer(true)
     handleClose()
-    //setSlideSupp(true)
   }
 
   const handleCloseSupprimer = () => {
       setSupprimer(false)
-      // setSlideSupp(false)
   }
 
   const loadVehicules = useCallback(async () => {
@@ -65,7 +63,7 @@ const ListeVehicules = (props) => {
   }, []);
 
   const onSupprimerVehicule = useCallback( async () => {
-    const response = await axios.put(`${myServerBaseURL}/api/vehicules/${idVehicule}`, 
+    const response = await axios.put(`${myServerBaseURL}/api/vehicules/update/${idVehicule}`, 
     {
         numChassis: vehicule.numChassis,
         numImmatriculation: vehicule.numImmatriculation,
@@ -184,7 +182,7 @@ const [bloquer, setBloquer] = useState(null)
   }
 
 const onBloquerVehicule = useCallback( async () => {
-  const response = await axios.put(`${myServerBaseURL}/api/vehicules/${idVehicule}`,
+  const response = await axios.put(`${myServerBaseURL}/api/vehicules/update/${idVehicule}`,
     {
       numChassis: vehicule.numChassis,
       numImmatriculation: vehicule.numImmatriculation,
@@ -475,7 +473,7 @@ const bloquerDialogue = (
     let vehicule = vehicules.find(vehicule => vehicule.numChassis == idVehicule)
     await setVehicule(vehicule);
     setIdVehicule(rowData[0]);
-    if (props.setSel)props.setSel(rowData[0]);
+    if (!!props.setSel) props.setSel(rowData[0])
     console.log(idVehicule)
     console.log(vehicule)
   }
